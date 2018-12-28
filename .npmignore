@@ -1,0 +1,4 @@
+node_modules
+src
+coverage
+__test__
