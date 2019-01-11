@@ -7,12 +7,11 @@
 const fs = require('fs')
 const path = require('path')
 const is = require('is-type-of')
+const Container = require('../container')
 // const debug = require('debug')('daze-framework:config')
 
 const SET_VALUE = Symbol('Config#setValue')
 const PARSE = Symbol('Config#parse')
-const CONFIG_PATH = Symbol('Config#configPath')
-const CONFIG = Symbol('Config#config')
 
 const envMap = new Map([
   ['development', 'dev'],
@@ -21,13 +20,12 @@ const envMap = new Map([
 ])
 
 class Config {
-  constructor(configPath) {
-    /** @type {string} this[CONFIG_PATH] configuration dir path   */
-    this[CONFIG_PATH] = configPath
+  app = Container.get('app');
 
-    /** @type {object} this[CONFIG] configuration */
-    this[CONFIG] = {}
+  /** @type {object} this.items configuration */
+  items = {};
 
+  constructor() {
     // parse configuration files
     this[PARSE]()
   }
@@ -39,9 +37,9 @@ class Config {
     const currentEnv = this.env
     // 读取名称不包含 '.' 的配置文件
     fs
-      .readdirSync(this[CONFIG_PATH]).filter(file => !~path.basename(file, '.js').indexOf('.'))
+      .readdirSync(this.app.configPath).filter(file => !~path.basename(file, '.js').indexOf('.'))
       .forEach(file => {
-        const currentConfig = require(path.join(this[CONFIG_PATH], file))
+        const currentConfig = require(path.join(this.app.configPath, file))
         const basename = path.basename(file, '.js')
         if (!this.has(basename)) {
           this.set(basename, currentConfig)
@@ -49,9 +47,9 @@ class Config {
       })
     // 读取包含 '.' 的配置文件
     fs
-      .readdirSync(this[CONFIG_PATH]).filter(file => ~file.indexOf(`.${currentEnv}.js`))
+      .readdirSync(this.app.configPath).filter(file => ~file.indexOf(`.${currentEnv}.js`))
       .forEach(file => {
-        const currentConfig = require(path.join(this[CONFIG_PATH], file))
+        const currentConfig = require(path.join(this.app.configPath, file))
         const basename = path.basename(file, `.${currentEnv}.js`)
         if (!this.has(basename)) {
           this.set(basename, currentConfig)
@@ -64,7 +62,7 @@ class Config {
           }
         }
       })
-    return this[CONFIG]
+    return this.items
   }
 
   /**
@@ -92,23 +90,23 @@ class Config {
    * Set the property value according to the property name
    * @param {array|string} name name,  array or string
    * @param {mixed} value set value
-   * @returns {object} this[CONFIG]
+   * @returns {object} this.items
    */
   set(name, value = null) {
     if (typeof name === 'string') { // if name is a string
       const names = name.split('.')
       const nameValue = this[SET_VALUE](names, value)
       // Merge configuration attributes
-      this[CONFIG] = Object.assign(this[CONFIG], nameValue)
+      this.items = Object.assign(this.items, nameValue)
     } else if (Array.isArray(name)) { // if name is a array
       for (const n of name) {
         const names = n.split('.')
         const nameValue = this[SET_VALUE](names, value)
         // Merge configuration attributes
-        this[CONFIG] = Object.assign(this[CONFIG], nameValue)
+        this.items = Object.assign(this.items, nameValue)
       }
     }
-    return this[CONFIG]
+    return this.items
   }
 
   /**
@@ -117,7 +115,7 @@ class Config {
    * @param {mixed} def The default configuration
    */
   get(name = null, def = null) {
-    let value = this[CONFIG]
+    let value = this.items
     // Gets all the configuration when name is empty
     if (name === null) {
       return value

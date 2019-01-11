@@ -55,7 +55,10 @@ class Base {
   }
 
   get view() {
-    return this.context[INJECTOR_CONETXT.VIEW]
+    if (!this.viewInstance) {
+      this.viewInstance = this.context[INJECTOR_CONETXT.VIEW]
+    }
+    return this.viewInstance
   }
 
   get body() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018 zewail
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
  *
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
@@ -7,57 +7,32 @@
 const is = require('is-type-of')
 const { MULTITON } = require('../symbol')
 
-// const f = require('../decorators')
-// f.
-
 const BIND = Symbol('Container#bind')
 /**
  * The Container
  */
 class Container {
   /**
-   * The constructor
+   * Container binding identifier
+   *
+   * @var {Map}
    */
-  constructor() {
-    /**
-     * Container binding identifier
-     */
-    this.binds = new Map([
-      ['app', {
-        concrete: require('../foundation/application'),
-        shared: true,
-      }],
-      ['config', {
-        concrete: require('../config'),
-        shared: true,
-      }],
-      ['router', {
-        concrete: require('koa-router'),
-        shared: true,
-      }],
-      ['koa', {
-        concrete: require('koa'),
-        shared: true,
-      }],
-      ['messenger', {
-        concrete: require('../cluster/messenger'),
-        shared: true,
-      }],
-      ['logger', {
-        concrete: require('../logger'),
-        shared: true,
-      }],
-    ])
-    /**
-     * instances Map in the container
-     */
-    this.instances = new Map()
-  }
+  binds = new Map();
+
+  /**
+   * instances Map in the container
+   *
+   * @var {Map}
+   */
+  instances = new Map();
 
   /**
    * Bind a singleton to the container
+   *
    * @param {string} abstract Object identifier
    * @param {mixed} concrete The object instance
+   * @returns {void}
+   * @public
    */
   singleton(abstract, concrete = null) {
     this[BIND](abstract, concrete, true)
@@ -65,8 +40,11 @@ class Container {
 
   /**
    * Bind a multiton to the container
+   *
    * @param {string} abstract Object identifier
    * @param {mixed} concrete The object instance
+   * @returns {void}
+   * @public
    */
   multiton(abstract, concrete = null) {
     this[BIND](abstract, concrete, false)
@@ -74,7 +52,10 @@ class Container {
 
   /**
    * Determines if the instance is Shared
+   *
    * @param {string} abstract Object identifier
+   * @returns {boolean}
+   * @public
    */
   isShared(abstract) {
     return this.instances.has(abstract) || (
@@ -84,7 +65,10 @@ class Container {
 
   /**
    * Identifies whether the container has been bound
+   *
    * @param {mixed} abstract Object identifier
+   * @returns {boolean}
+   * @public
    */
   bound(abstract) {
     return this.binds.has(abstract) || this.instances.has(abstract)
@@ -92,7 +76,9 @@ class Container {
 
   /**
    * Identifies whether the container has been instance
+   *
    * @param {mixed} abstract Object identifier
+   * @public
    */
   exists(abstract) {
     return this.instances.has(abstract)
@@ -100,8 +86,11 @@ class Container {
 
   /**
    * Bind an object to the container
+   *
    * @param {string} abstract Object identifier
    * @param {mixed} concrete The object instance to bind to
+   * @returns {Container} this
+   * @private
    */
   [BIND](abstract, concrete = null, shared = false) {
     if (!abstract || !concrete) return
@@ -132,7 +121,10 @@ class Container {
 
   /**
    * Bind multiple dependencies to the container
+   *
    * @param {MapArray} mapArray multiple dependencies array
+   * @returns {void}
+   * @public
    */
   setBinds(mapArray) {
     for (const m of mapArray) {
@@ -149,6 +141,8 @@ class Container {
    * @param {string} abstract Object identifier
    * @param {array} args params
    * @param {boolean} force forced instantiation
+   * @returns {Container} this
+   * @public
    */
   make(abstract, args = [], force = false) {
     const shared = this.isShared(abstract)
@@ -174,8 +168,12 @@ class Container {
 
   /**
    * gets the object instance in the container
+   *
    * @param {string} abstract class name or identif∂ier
    * @param {array} args params
+   * @returns {mixed} instance
+   * @public
+   * @static
    */
   static get(abstract, args = []) {
     return this.getInstance().make(abstract, args)
@@ -183,9 +181,13 @@ class Container {
 
   /**
    * bind an abstract in container
+   *
    * @param {string} abstract Object identifier
    * @param {array} args params
    * @param {boolean} shared forced instantiation
+   * @returns {mixed} instance
+   * @public
+   * @static
    */
   static bind(abstract, concrete = null, shared = true) {
     return this.getInstance()[BIND](abstract, concrete, shared)
@@ -193,7 +195,11 @@ class Container {
 
   /**
    * Determines whether there is a corresponding binding within the container instance
+   *
    * @param {mixed} abstract Object identifier
+   * @returns {boolean} has abstract
+   * @public
+   * @static
    */
   static has(abstract) {
     return this.getInstance().binds.has(abstract) || this.getInstance().instances.has(abstract)
@@ -201,7 +207,10 @@ class Container {
 
   /**
    * Get the container instance
+   *
    * @returns {object} container instance
+   * @public
+   * @static
    */
   static getInstance() {
     if (this.instance === null) {
@@ -212,7 +221,11 @@ class Container {
 
   /**
    * Set the container instance
+   *
    * @param {object} instance container instance
+   * @returns {void}
+   * @public
+   * @static
    */
   static setInstance(instance) {
     this.instance = instance

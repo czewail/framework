@@ -16,10 +16,8 @@ const session = require('koa-session')
 const serve = require('koa-static')
 const mount = require('koa-mount')
 const nunjucks = require('nunjucks')
-const Tokens = require('csrf')
 const Keygrip = require('keygrip')
 const Container = require('../container')
-const Daze = require('../daze')
 const { Master, Worker } = require('../cluster')
 const ExceptionHandler = require('../errors/handle')
 const HttpError = require('../errors/http-error')
@@ -30,35 +28,160 @@ const ResponseFactory = require('../response/factory')
 const injectorFactory = require('./injector/factory')
 const sessionDrivers = require('../session/drivers')
 
-const VERSION = '0.7.2'
 const DEFAULT_PORT = 8000
 
 class Application extends Container {
+  /**
+   * The base path for the Application installation.
+   *
+   * @var {string}
+   */
+  rootPath = '';
+
+  /**
+   * The Dazejs Framework Version
+   *
+   * @var {string}
+   */
+  VERSION = '0.7.2';
+
+  /**
+   * The koa application instance
+   *
+   * @var {object}
+   */
+  koaApplication = null;
+
+  /**
+   * The config instance
+   *
+   * @var {object}
+   */
+  config = null;
+
+  /**
+   * The CSRF middleware instance
+   *
+   * @var {object}
+   */
+  csrf = null;
+
+  /**
+   * application run port
+   *
+   * @var {number}
+   */
+  port = 0;
+
+  /**
+   * debug enabled?
+   *
+   * @var {boolean}
+   */
+  isDebug = false;
+
+  /**
+   * Create a Dazejs Application insstance
+   *
+   * @param {string} rootPath application root path
+   * @param {object} paths application usage paths
+   * @returns {void]}
+   */
   constructor(rootPath, paths = {}) {
     super()
     if (!rootPath) throw new Error('must pass the runPath parameter when you apply the instantiation!')
-    this.paths = paths
-    // application version
-    this.version = VERSION
-    // application run path
+
     this.rootPath = rootPath
-    // koa instance
-    this.koaApplication = this.make('koa')
-    // config instance
-    this.config = this.make('config', [this.configPath])
-    // application run port
-    this.port = this.config.get('app.port', DEFAULT_PORT)
-    // 调试模式
-    this.debug = this.config.get('app.debug', false)
-    // csrf tokens
-    this.csrf = new Tokens()
+
+    this.setPaths(paths)
+
+    this.registerDefaultBindings()
+
+    this.makeUsageDefaultBindings()
+
+    this.setPort()
+
+    this.setDebug()
   }
 
   /**
-   * getter for Configuration debug
+   *  Set the paths for the application.
+   * @param {object} paths paths
+   * @returns {Application} this
+   * @private
    */
-  get isDebug() {
-    return this.debug
+  setPaths(paths) {
+    /** app workspace path */
+    this.appPath = path.resolve(this.rootPath, paths.app || 'app')
+    /** config file path */
+    this.configPath = path.resolve(this.rootPath, paths.config || 'config')
+    /** views file path */
+    this.viewPath = path.resolve(this.rootPath, paths.view || '../views')
+    /** public file path */
+    this.publicPath = path.resolve(this.rootPath, paths.public || '../public')
+    /** log file path */
+    this.logPath = path.resolve(this.rootPath, paths.log || '../logs')
+    /** controller file path */
+    this.controllerPath = path.resolve(this.rootPath, this.appPath, paths.controller || 'controller')
+    /** middleware file path */
+    this.middlewarePath = path.resolve(this.rootPath, this.appPath, paths.middleware || 'middleware')
+    /** service file path */
+    this.servicePath = path.resolve(this.rootPath, this.appPath, paths.service || 'service')
+    /** validate file path */
+    this.validatePath = path.resolve(this.rootPath, this.appPath, paths.validate || 'validate')
+
+    return this
+  }
+
+  /**
+   * set the application run port
+   *
+   * @returns {Application} this
+   * @private
+   */
+  setPort() {
+    this.port = this.config.get('app.port', DEFAULT_PORT)
+
+    return this
+  }
+
+  /**
+   * set the application debug flag
+   *
+   * @returns {Application} this
+   * @private
+   */
+  setDebug() {
+    this.isDebug = this.config.get('app.debug', false)
+
+    return this
+  }
+
+  /**
+   * Register all of the base service
+   *
+   * @returns {void}
+   */
+  registerDefaultBindings() {
+    Container.setInstance(this)
+    this.bind('app', this)
+    this.singleton('config', require('../config'))
+    this.singleton('router', require('koa-router'))
+    this.singleton('koa', require('koa'))
+    this.singleton('csrf', require('csrf'))
+    this.singleton('messenger', require('../cluster/messenger'))
+    this.singleton('logger', require('../logger'))
+  }
+
+  /**
+   * make the usage service instance
+   *
+   * @returns {void}
+   */
+  makeUsageDefaultBindings() {
+    this.config = this.make('config')
+    this.koaApplication = this.make('koa')
+    this.csrf = this.make('csrf')
   }
 
   /**
@@ -66,73 +189,6 @@ class Application extends Container {
    */
   get isCluster() {
     return this.config.get('app.cluster.enabled')
-  }
-
-  get appPath() {
-    return path.resolve(this.rootPath, this.paths.app || 'app')
-  }
-
-  /**
-   * getter for Configuration file path getter
-   */
-  get configPath() {
-    return path.resolve(this.rootPath, this.paths.config || 'config')
-  }
-
-  /**
-   *  getter for View file path
-   */
-  get viewsPath() {
-    return path.resolve(this.rootPath, this.paths.views || '../views')
-  }
-
-  /**
-   *  getter for public path
-   */
-  get publicPath() {
-    return path.resolve(this.rootPath, this.paths.public || '../public')
-  }
-
-  /**
-   *  getter for Controller file path
-   */
-  get controllerPath() {
-    return path.resolve(this.rootPath, this.appPath, this.paths.controller || 'controller')
-  }
-
-  /**
-   *  getter for Middleware file path
-   */
-  get middlewarePath() {
-    return path.resolve(this.rootPath, this.appPath, this.paths.middleware || 'middleware')
-  }
-
-  /**
-   *  getter for service file path
-   */
-  get servicePath() {
-    return path.resolve(this.rootPath, this.appPath, this.paths.service || 'service')
-  }
-
-  /**
-   *  getter for transformer file path
-   */
-  get transformerPath() {
-    return path.resolve(this.rootPath, this.appPath, this.paths.transformer || 'transformer')
-  }
-
-  /**
-   *  getter for validator file path
-   */
-  get validatePath() {
-    return path.resolve(this.rootPath, this.appPath, this.paths.validate || 'validate')
-  }
-
-  /**
-   *  getter for log file path
-   */
-  get logPath() {
-    return path.resolve(this.rootPath, this.paths.log || '../logs')
   }
 
   // 获取集群主进程实例
@@ -168,6 +224,16 @@ class Application extends Container {
     }
     return null
   }
+
+  register() {
+    //
+  }
+
+  use(...params) {
+    if (!this.koaApplication) throw new Error('Can not use middleware when koa unload')
+    this.koaApplication.use(...params)
+  }
+
 
   loadProviders() {
     const providers = this.config.get('provider', [])
@@ -333,7 +399,7 @@ class Application extends Container {
    * 注册模板引擎
    */
   registerTemplate() {
-    const templateEnv = new nunjucks.Environment([new nunjucks.FileSystemLoader(this.viewsPath, {
+    const templateEnv = new nunjucks.Environment([new nunjucks.FileSystemLoader(this.viewPath, {
       noCache: this.isDebug,
       watch: this.isDebug,
     }), new nunjucks.FileSystemLoader(path.resolve(__dirname, '../errors/views'), {
@@ -521,15 +587,6 @@ class Application extends Container {
   }
 
   /**
-   * Load global variable
-   * 加载全局变量
-   */
-  setGlobals() {
-    const daze = new Daze()
-    global.daze = global.DAZE = daze
-  }
-
-  /**
    * load koa application router module
    * 加载路由模块
    */
@@ -544,15 +601,6 @@ class Application extends Container {
         this.koaApplication.emit('error', err, ctx)
       })
     })
-  }
-
-  /**
-   * Load the underlying container
-   * 加载底层容器
-   */
-  loadContainer() {
-    Container.setInstance(this)
-    this.bind('app', this)
   }
 
   /**
@@ -600,15 +648,11 @@ class Application extends Container {
   initialize() {
     // 加载运行环境
     this.loadEnv()
-    // 注册容器
-    this.loadContainer()
 
     const clusterConfig = this.config.get('app.cluster')
 
     // 在集群模式下，主进程不运行业务代码
     if (!clusterConfig.enable || !cluster.isMaster) {
-      // 注册全局变量
-      // this.setGlobals()
       // 注册自定义服务
       this.loadProviders()
       // 注册 koa 服务
