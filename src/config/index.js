@@ -160,12 +160,12 @@ const configProxy = new Proxy(Config, {
         if (Reflect.has(t, prop) || typeof prop === 'symbol') {
           return t[prop]
         }
-        if (typeof t[prop] === 'function') return t[name].bind(Config)
         return t.get(prop)
       },
     })
   },
 })
 
+configProxy.toString = Function.prototype.toString.bind(Config)
 
 module.exports = configProxy
