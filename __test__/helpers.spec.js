@@ -5,10 +5,12 @@ const Container = require('../src/container')
 const Redirect = require('../src/response/redirect')
 const App = require('../src/foundation/application')
 const Config = require('../src/config')
+const Application = require('../src/foundation/application')
+
+const _app = new Application(__dirname)
 
 describe('helpers', () => {
   Container.get('app', [__dirname])
-  const configPath = path.resolve(__dirname, './config')
   it('res', () => {
     expect(res()).toBeInstanceOf(Response)
   })
@@ -22,7 +24,7 @@ describe('helpers', () => {
   })
 
   it('config', () => {
-    expect(app('config', [configPath])).toBeInstanceOf(Config)
+    expect(app('config')).toBeInstanceOf(Config)
   })
   it('global overflow', () => {
     global.res = () => true

@@ -2,11 +2,13 @@ const path = require('path')
 const Config = require('../src/config')
 const app = require('./config/app')
 const custom = require('./config/custom')
+const Application = require('../src/foundation/application')
 
-const configPath = path.resolve(__dirname, './config')
+const _app = new Application(__dirname)
+
 describe('Config', () => {
   it('Config#get', () => {
-    const configInstance = new Config(configPath)
+    const configInstance = new Config()
     expect(configInstance.get('app')).toBe(app)
     expect(configInstance.get('custom')).toBe(custom)
     expect(configInstance.get('app.port')).toBe(8888)
@@ -17,7 +19,7 @@ describe('Config', () => {
   })
 
   it('Config#has', () => {
-    const configInstance = new Config(configPath)
+    const configInstance = new Config()
     expect(configInstance.has('app')).toBeTruthy()
     expect(configInstance.has('app.cluster.workers')).toBeTruthy()
     expect(configInstance.has('app.cluster.undefineProp')).toBeFalsy()
@@ -26,7 +28,7 @@ describe('Config', () => {
   })
 
   it('Config#set', () => {
-    const configInstance = new Config(configPath)
+    const configInstance = new Config()
     configInstance.set('app.port', 9999)
     configInstance.set('custom.a.b.d', 'd')
     expect(configInstance.get('custom.a.b.d')).toBe('d')
@@ -34,7 +36,7 @@ describe('Config', () => {
   })
 
   it('Config#prop', () => {
-    const configInstance = new Config(configPath)
+    const configInstance = new Config()
     expect(configInstance.app.port).toBe(8888)
   })
 })
