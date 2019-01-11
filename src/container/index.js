@@ -5,7 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 const is = require('is-type-of')
-const typechecker = require('typechecker')
 const { MULTITON } = require('../symbol')
 
 const BIND = Symbol('Container#bind')
@@ -98,7 +97,7 @@ class Container {
     // console.log(concrete)
     if (typeof concrete === 'function') {
       // class 和首字母大写的函数，则视为构造函数
-      if (typechecker.isClass(concrete) || /^[A-Z]+/.test(concrete.name)) {
+      if (is.class(concrete) || /^[A-Z]+/.test(concrete.name)) {
         // If it's a constructor
         this.binds.set(abstract, {
           concrete,
