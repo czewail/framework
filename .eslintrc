@@ -20,6 +20,7 @@
     "view": true
   },
   "rules": {
+    "no-loop-func": [0],
     "no-lonely-if": [0],
     "no-mixed-operators": [0],
     "prefer-destructuring": [0],

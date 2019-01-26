@@ -5,6 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 const is = require('is-type-of')
+const isClass = require('node-is-class')
 const { MULTITON } = require('../symbol')
 
 const BIND = Symbol('Container#bind')
@@ -97,7 +98,7 @@ class Container {
     // console.log(concrete)
     if (typeof concrete === 'function') {
       // class 和首字母大写的函数，则视为构造函数
-      if (is.class(concrete) || /^[A-Z]+/.test(concrete.name)) {
+      if (isClass(concrete) || (concrete.name && /^[A-Z]+/.test(concrete.name))) {
         // If it's a constructor
         this.binds.set(abstract, {
           concrete,
@@ -106,14 +107,14 @@ class Container {
       } else {
         this.instances.set(abstract, {
           concrete,
-          shared,
+          shared: true,
         })
       }
     } else {
       // others
       this.instances.set(abstract, {
         concrete,
-        shared,
+        shared: true,
       })
     }
     return this
@@ -150,7 +151,11 @@ class Container {
     // returns directly if an object instance already exists in the container
     // instance shared
     if (this.instances.has(abstract) && shared && !force) {
-      return this.instances.get(abstract).concrete
+      const concrete = this.instances.get(abstract).concrete
+      if (typeof concrete === 'function') {
+        return concrete(...args)
+      }
+      return concrete
     }
     // if a binding object exists, the binding object is instantiated
     if (this.binds.has(abstract)) {

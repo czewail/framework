@@ -2,7 +2,8 @@
 const is = require('is-type-of')
 const Response = require('./')
 const Validate = require('../validate')
-const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL, INJECTOR_CONETXT } = require('../symbol')
+const Container = require('../container')
+const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol')
 
 class Redirect extends Response {
   /**
@@ -14,6 +15,11 @@ class Redirect extends Response {
    *  @var {mixed} errors in session
    */
   errors = null;
+
+  /**
+   *  @var {mixed} sessions in session
+   */
+  flashSessions = null;
 
   /**
    * @var {string} alt
@@ -82,13 +88,13 @@ class Redirect extends Response {
    */
   with(name, value) {
     if (!name || !value) return this
-    const session = this.context.get('session', [this.ctx])
+    if (!this.flashSessions) this.flashSessions = {}
     if (is.object(name)) {
       Object.keys(name).forEach(key => {
-        session.flash(key, name[key])
+        this.flashSessions[key] = name[key]
       })
     } else {
-      session.flash(name, value)
+      this.flashSessions[name] = value
     }
     return this
   }
@@ -104,8 +110,7 @@ class Redirect extends Response {
   }
 
   send(ctx) {
-    const injectorContext = ctx.injectorContext
-    const session = injectorContext[INJECTOR_CONETXT.SESSION]
+    const session = Container.get('session', [ctx])
     if (this.forceBack) {
       const url = session.get(SESSION_PREVIOUS_URL) || this.ctx.get('Referrer') || this.alt || '/'
       this.setUrl(url)
@@ -113,6 +118,9 @@ class Redirect extends Response {
     if (this.needWithInput) {
       const old = ctx.params
       session.flash(SESSION_OLD_INPUT, old)
+    }
+    if (this.flashSessions) {
+      session.flash(this.flashSessions)
     }
     if (this.errors) {
       if (this.errors instanceof Validate) {

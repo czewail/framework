@@ -62,6 +62,7 @@ class Master {
       if (worker[WORKER_DYING]) return
       debug(`worker disconnect: ${worker.process.pid}`)
       worker[WORKER_DYING] = true
+      debug('worker will fork')
       this[FORK_WORKER](env)
     })
     // The cluster module will trigger an 'exit' event when any worker process is closed
@@ -73,6 +74,7 @@ class Master {
     })
     // listening event
     worker.once('listening', address => {
+      debug(`listening, address: ${JSON.stringify(address)}`)
       deferred.resolve({ worker, address })
     })
 
@@ -142,7 +144,7 @@ class Master {
     // After the master process receives the reload signal
     // it traverses the surviving worker processes and sends the reload instruction to each worker process
     // 主进程接收到 reload 信号后，遍历存活的工作进程，给每个工作进程发送 reload 指令
-    process.on(RELOAD_SIGNAL, () => {
+    process.once(RELOAD_SIGNAL, () => {
       debug(`Start smooth restart, signal: ${RELOAD_SIGNAL}`)
       this.reloadWorkers()
     })

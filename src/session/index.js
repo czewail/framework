@@ -4,7 +4,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const coreUtil = require('core-util-is')
+const is = require('is-type-of')
 const { SESSION_FLASHS, SESSION_FLASHED, SESSION_OLD_INPUT, SESSION_ERRORS } = require('../symbol')
 
 const SET_VALUE = Symbol('Session#setValue')
@@ -32,7 +32,7 @@ class Session {
     }
     const names = name.split('.')
     for (const n of names) {
-      if (!coreUtil.isObject(value) || !Reflect.has(value, n)) {
+      if (!is.object(value) || !Reflect.has(value, n)) {
         value = null
         break
       }
@@ -60,7 +60,7 @@ class Session {
       const nameValue = this[SET_VALUE](names, value)
       // Merge configuration attributes
       this.session = Object.assign(this.session, nameValue)
-    } else if (coreUtil.isObject(name)) {
+    } else if (is.object(name)) {
       const keys = Object.keys(name)
       for (const key of keys) {
         const nameValue = this[SET_VALUE]([key], name[key])
@@ -97,12 +97,20 @@ class Session {
    * @param {mixed} value value
    */
   flash(name, value) {
-    if (!name || !value) return this
-    this.session[name] = value
-    if (!coreUtil.isArray(this.session[SESSION_FLASHS])) {
+    if (!name) return this
+    if (!is.array(this.session[SESSION_FLASHS])) {
       this.session[SESSION_FLASHS] = []
     }
-    this.session[SESSION_FLASHS].push(name)
+    if (is.object(name)) {
+      Object.keys(name).forEach(key => {
+        this.session[key] = name[key]
+        this.session[SESSION_FLASHS].push(key)
+      })
+    } else {
+      if (!value) return this
+      this.session[name] = value
+      this.session[SESSION_FLASHS].push(name)
+    }
     this.session[SESSION_FLASHED] = false
   }
 

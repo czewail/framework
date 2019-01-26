@@ -7,7 +7,7 @@ const Container = require('../container')
 const HttpError = require('./http-error')
 const ValidateError = require('./validate-error')
 const ResponseFactory = require('../response/factory')
-const { INJECTOR_CONETXT, SESSION_PREVIOUS_URL } = require('../symbol')
+const { SESSION_PREVIOUS_URL } = require('../symbol')
 
 const defaultHttpErrorTemplate = {
   401: 'errors/401.njk',
@@ -20,14 +20,14 @@ class Handle {
   constructor(ctx) {
     this.ctx = ctx
     this.app = Container.get('app')
-    this.injectorContext = ctx.injectorContext
-    this.request = this.injectorContext[INJECTOR_CONETXT.REQUEST]
-    this.response = this.injectorContext[INJECTOR_CONETXT.RESPONSE]
-    this.redirect = this.injectorContext[INJECTOR_CONETXT.REDIRECT]
-    this.view = this.injectorContext[INJECTOR_CONETXT.VIEW]
+    this.request = Container.get('request', [ctx])
+    this.response = Container.get('response', [ctx])
+    this.redirect = Container.get('redirect', [ctx])
+    this.view = Container.get('view', [ctx])
   }
 
   render(err) {
+    console.log(err)
     let httpCode = 500
     if (err instanceof HttpError) {
       httpCode = err.statusCode

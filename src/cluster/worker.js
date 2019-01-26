@@ -28,7 +28,7 @@ class Worker {
     const { worker } = cluster
     if (worker[WORKER_DYING]) return
     worker[WORKER_DYING] = true
-
+    debug('worker disconnect')
     if (refork) {
       // You need to refork the new work process
       // 需要重新 fork 新的工作进程

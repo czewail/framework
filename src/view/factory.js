@@ -1,5 +1,4 @@
 const Container = require('../container')
-const getContext = require('../foundation/injector/get-context')
 
 class Factory {
   app = Container.get('app');
@@ -9,7 +8,7 @@ class Factory {
   }
 
   combineVars(ctx) {
-    const session = getContext.bind(ctx)('session')
+    const session = Container.get('session', [ctx])
     const token = ctx._csrf
     const defaultVars = {
       get session() {

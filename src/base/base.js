@@ -4,42 +4,44 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const { INJECTOR_CONETXT } = require('../symbol')
+
+const Container = require('../container')
+
+const CTX = Symbol('Base#ctx')
 
 class Base {
-  constructor(ctx) {
-    if (!ctx) {
-      throw new Error('Base constructor must param ctx!')
-    }
-    this.context = ctx.injectorContext || {}
+  [CTX] = null;
+
+  setCtx(ctx) {
+    this[CTX] = ctx
   }
 
   get app() {
-    return this.context[INJECTOR_CONETXT.APP]
+    return Container.get('app')
   }
 
   get config() {
-    return this.context[INJECTOR_CONETXT.CONFIG]
+    return Container.get('config')
   }
 
   get messenger() {
-    return this.context[INJECTOR_CONETXT.MESSENGER]
+    return Container.get('messenger')
   }
 
   get request() {
-    return this.context[INJECTOR_CONETXT.REQUEST]
+    return Container.get('request', [this[CTX]])
   }
 
   get ctx() {
-    return this.context[INJECTOR_CONETXT.CTX]
+    return this[CTX]
   }
 
   get response() {
-    return this.context[INJECTOR_CONETXT.RESPONSE]
+    return Container.get('response')
   }
 
   get redirect() {
-    return this.context[INJECTOR_CONETXT.REDIRECT]
+    return Container.get('redirect')
   }
 
   get cookies() {
@@ -47,38 +49,35 @@ class Base {
   }
 
   get cookie() {
-    return this.context[INJECTOR_CONETXT.COOKIE]
+    return Container.get('cookie')
   }
 
   get session() {
-    return this.context[INJECTOR_CONETXT.SESSION]
+    return Container.get('session', [this[CTX]])
   }
 
   get view() {
-    if (!this.viewInstance) {
-      this.viewInstance = this.context[INJECTOR_CONETXT.VIEW]
-    }
-    return this.viewInstance
+    return Container.get('view')
   }
 
   get body() {
-    return this.context[INJECTOR_CONETXT.BODY]
+    return this.request.body
   }
 
   get params() {
-    return this.context[INJECTOR_CONETXT.PARAMS]
+    return this.request.params
   }
 
   get query() {
-    return this.context[INJECTOR_CONETXT.QUERY]
+    return this.request.query
   }
 
   get headers() {
-    return this.context[INJECTOR_CONETXT.HEADERS]
+    return this.request.headers
   }
 
   get $http() {
-    return this.context[INJECTOR_CONETXT.AXIOS]
+    return Container.get('axios')
   }
 }
 
