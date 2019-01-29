@@ -9,18 +9,15 @@ const { patchClass, patchProperty, patchMethod } = require('./patch-controller-d
 
 function injectClass(target, params, type) {
   patchClass(type, params, target)
-  // console.log(Object.getOwnPropertyNames(target.prototype))
-  // console.log(target.prototype.__DAZE_CONSTRUCTOR__INJECTORS__)
   return target
 }
 
 function injectPropertyAndMethod(target, name, descriptor, params, type) {
-  // patchControllerDecorator(type, params, target, name)
-  if (Reflect.has(descriptor, 'value')) {
+  if (Reflect.has(descriptor, 'value') && typeof descriptor.value === 'function') {
     patchMethod(type, params, target, name)
   }
 
-  if (Reflect.has(descriptor, 'initializer')) {
+  if (Reflect.has(descriptor, 'initializer') || Reflect.has(descriptor, 'get')) {
     patchProperty(type, params, target, name)
   }
   return descriptor

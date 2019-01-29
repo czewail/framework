@@ -65,7 +65,7 @@ class Base {
   }
 
   get params() {
-    return this.request.params
+    return this.ctx.params
   }
 
   get query() {
