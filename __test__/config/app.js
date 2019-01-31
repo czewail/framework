@@ -5,4 +5,5 @@ module.exports = {
     workers: 0, /* Number of work processes, set to 0 by default using CPU cores */
     sticky: false, /* sticky session */
   },
+  view_extension: 'html'
 }
