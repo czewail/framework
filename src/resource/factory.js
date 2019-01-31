@@ -11,9 +11,13 @@ const Collection = require('./collection')
 const Item = require('./item')
 
 class Factory {
+  /**
+   * @var {Application} app Application instance
+   */
+  app = Container.get('app');
+
   constructor(resource) {
     this.resource = resource
-    this.app = Container.get('app')
   }
 
   /**

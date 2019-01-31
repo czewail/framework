@@ -61,7 +61,7 @@ class VerifyCsrfToken extends Middleware {
     if (!token) {
       return false
     }
-    if (!this.app.csrf.verify(ctx.session.secret, token)) {
+    if (!this.app.get('csrf').verify(ctx.session.secret, token)) {
       return false
     }
     return true

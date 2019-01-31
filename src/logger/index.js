@@ -109,7 +109,7 @@ class Logger {
    */
   getTransports(channelName) {
     const config = this.getChannelConfigure(channelName)
-    if (!config) throw new IllegalArgumentError(`logger [${channelName}] is not defined.`)
+    if (!config) throw new IllegalArgumentError(`Logger channel [${channelName}] is not defined.`)
     const { driver: driverName } = config
 
     if (this.isComposeChannel(config)) {
@@ -125,7 +125,7 @@ class Logger {
       return driverCreator(config)
     }
 
-    throw new IllegalArgumentError(`Driver [${driverName}] is not supported.`)
+    throw new IllegalArgumentError(`Logger Driver [${driverName}] is not supported.`)
   }
 
   getFormat(channelName) {
@@ -155,7 +155,7 @@ class Logger {
    * get the default channel name
    */
   getDefaultChannelName() {
-    return this.app.get('config').get('logger.default')
+    return this.app.get('config').get('logger.default', 'console')
   }
 
   /**

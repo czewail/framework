@@ -27,7 +27,6 @@ class Handle {
   }
 
   render(err) {
-    console.log(err)
     let httpCode = 500
     if (err instanceof HttpError) {
       httpCode = err.statusCode

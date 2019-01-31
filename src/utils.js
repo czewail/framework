@@ -12,12 +12,8 @@
 exports.defer = function () {
   const result = {}
   result.promise = new Promise((resolve, reject) => {
-    result.resolve = function (value) {
-      resolve(value)
-    }
-    result.reject = function (value) {
-      reject(value)
-    }
+    result.resolve = resolve
+    result.reject = reject
   })
   return result
 }

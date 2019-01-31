@@ -34,7 +34,7 @@ class MiddlewareProvider {
               const injectedMiddleware = injectorFactory(currentMiddleware, ctx)
               return injectedMiddleware.handle(ctx, next)
             } catch (err) {
-              this.app.koa.emit('error', err, ctx)
+              this.app.get('koa').emit('error', err, ctx)
             }
           })
         } else {

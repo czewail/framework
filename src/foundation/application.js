@@ -103,6 +103,8 @@ class Application extends Container {
     this.servicePath = path.resolve(this.rootPath, this.appPath, paths.service || 'service')
     /** validate file path */
     this.validatePath = path.resolve(this.rootPath, this.appPath, paths.validate || 'validate')
+    /** transformer file path */
+    this.transformerPath = path.resolve(this.rootPath, this.appPath, paths.validate || 'transformer')
 
     return this
   }

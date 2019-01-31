@@ -34,7 +34,7 @@ class View {
    */
   assign(name, value) {
     if (is.object(name)) {
-      this.assigns = Object.assign(this.vars, name)
+      this.vars = Object.assign(this.vars, name)
     } else if (typeof name === 'string') {
       this.vars[name] = value
     }

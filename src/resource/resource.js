@@ -8,114 +8,132 @@
 const is = require('is-type-of')
 const Container = require('../container')
 
-const DATA = Symbol('Resource#data')
-const KEY = Symbol('Resource#key')
-const META = Symbol('Resource#meta')
-const FORMATTER = Symbol('Resource#formatter')
-const META_FORMATTER = Symbol('Resource#metaFormatter')
 const DEFAULT_KEY = 'data'
 
 class Resource {
-  constructor(data, formatter = null, key = DEFAULT_KEY) {
-    this[DATA] = data
-    this[KEY] = key
-    this[META] = null
-    this[FORMATTER] = formatter
-    this[META_FORMATTER] = null
-    this.app = Container.get('app')
+  /**
+   * @var {Application} app Application instance
+   */
+  app = Container.get('app');
+
+  /**
+   * @var {string} key resource data key
+   */
+  key = DEFAULT_KEY;
+
+  /**
+   * @var {mixed} data resource data
+   */
+  data = null;
+
+  /**
+   * @var {function} formatter resource data formatter
+   */
+  formatter = null;
+
+  /**
+   * @var {function} formatter resource meta data formatter
+   */
+  metaFormatter = null;
+
+  /**
+   * @var {mixed} meta resource meta data
+   */
+  meta = null;
+
+  /**
+   * Create Resource
+   * @param {mixed} data resource data
+   * @param {?function} formatter resource data formatter
+   * @param {?string} key resource data key
+   */
+  constructor(data, formatter = null, key = null) {
+    this.data = data
+    if (key) this.key = key
+    if (formatter) this.formatter = formatter
   }
 
+  /**
+   * set resource data formatter
+   * @param {function} formatter resource data formatter
+   */
   setFormatter(formatter) {
-    this[FORMATTER] = formatter
+    this.formatter = formatter
     return this
+  }
+
+  /**
+   * get resource data formatter
+   */
+  getFormatter() {
+    return this.formatter
   }
 
   /**
    * Resource Key getter
    * @var {string} resource key
    */
-  get key() {
-    return this[KEY]
+  getKey() {
+    return this.key
   }
 
   /**
    * Resource Key Setter
    * @var {string} resource key
    */
-  set key(val) {
-    this[KEY] = val
+  setKey(val) {
+    this.key = val
+    return this
   }
 
   /**
    * Resource data getter
    * @var {string} resource data
    */
-  get data() {
-    return this[DATA]
+  getData() {
+    return this.data
   }
 
   /**
    * Resource data Setter
    * @var {string} resource data
    */
-  set data(val) {
-    this[DATA] = val
+  setData(val) {
+    this.data = val
+    return this
   }
 
   /**
    * Resource meta getter
    * @var {string} resource meta
    */
-  get meta() {
-    return this[META]
+  getMeta() {
+    return this.meta
   }
 
   /**
    * Resource meta Setter
    * @var {string} resource meta
    */
-  set meta(val) {
-    this[META] = val
-  }
-
-  /**
-   * Resource formatter getter
-   * @var {string} resource formatter
-   */
-  get formatter() {
-    return this[FORMATTER]
-  }
-
-  /**
-   * Resource formatter Setter
-   * @var {string} resource formatter
-   */
-  set formatter(val) {
-    this[FORMATTER] = val
+  setMeta(val) {
+    this.meta = val
+    return this
   }
 
   /**
    * meta formatter formatter getter
    * @var {string} meta formatter
    */
-  get metaFormatter() {
-    return this[META_FORMATTER]
+  getMetaFormatter() {
+    return this.metaFormatter
   }
 
   /**
    * meta formatter formatter setter
    * @var {string} meta formatter
    */
-  set metaFormatter(val) {
-    this[META_FORMATTER] = val
-  }
-
-  /**
-   * setKey
-   * @param {*} key resource key
-   */
-  setKey(key) {
-    this.key = key
+  setMetaFormatter(val) {
+    this.metaFormatter = val
     return this
   }
 
@@ -128,10 +146,10 @@ class Resource {
   addMeta(name, value, formatter = null) {
     if (!this.meta) this.meta = {}
     if (is.object(name)) {
-      this[META_FORMATTER] = value
+      if (value) this.metaFormatter = value
       this.meta = Object.assign({}, this.meta, name)
     } else if (is.string(name)) {
-      this[META_FORMATTER] = formatter
+      this.metaFormatter = formatter
       this.meta[name] = value
     }
     return this

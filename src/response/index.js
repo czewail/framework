@@ -164,7 +164,8 @@ class Response {
   /**
    * get http header
    */
-  getHeader() {
+  getHeader(name = null) {
+    if (name) return this.header[name] || null
     return this.header
   }
 

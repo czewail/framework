@@ -32,5 +32,5 @@ module.exports = {
   Response,
   Redirect,
   View,
-  Cookie
+  Cookie,
 }

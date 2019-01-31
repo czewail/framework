@@ -4,7 +4,6 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const is = require('is-type-of')
 const isClass = require('node-is-class')
 const { MULTITON } = require('../symbol')
 
