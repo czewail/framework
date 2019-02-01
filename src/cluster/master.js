@@ -19,9 +19,6 @@ const defaultOptions = {
   sticky: false,
 }
 
-const FORK_WORKER = Symbol('Cluster#Master#forkWorker')
-const FORK_WORKERS = Symbol('Cluster#Master#forkWorkers')
-const CREATE_STICKY_SERVER = Symbol('Cluster#Master#cteateStickyServer')
 
 class Master {
   constructor(opts) {
@@ -39,7 +36,7 @@ class Master {
   /**
    * Fork a work process
    */
-  [FORK_WORKER](env = {}) {
+  forkWorker(env = {}) {
     const worker = cluster.fork(env)
     debug(`worker is forked, use pid: ${worker.process.pid}`)
     const deferred = defer()
@@ -53,7 +50,7 @@ class Master {
         worker[WORKER_DYING] = true
         // The signal that tells the worker process that it has fork after fork, and lets it end the service
         // fork 完毕后通知工作进程已 fork 的信号，让其结束服务
-        this[FORK_WORKER](env).then(() => worker.send(WORKER_DID_FORKED)).catch(() => {})
+        this.forkWorker(env).then(() => worker.send(WORKER_DID_FORKED)).catch(() => {})
       }
     })
     // Emitted after the worker IPC channel has disconnected
@@ -63,14 +60,14 @@ class Master {
       debug(`worker disconnect: ${worker.process.pid}`)
       worker[WORKER_DYING] = true
       debug('worker will fork')
-      this[FORK_WORKER](env)
+      this.forkWorker(env)
     })
     // The cluster module will trigger an 'exit' event when any worker process is closed
     worker.once('exit', (code, signal) => {
       if (worker[WORKER_DYING]) return
       debug(`worker exit, code: ${code}, signal: ${signal}`)
       worker[WORKER_DYING] = true
-      this[FORK_WORKER](env)
+      this.forkWorker(env)
     })
     // listening event
     worker.once('listening', address => {
@@ -85,12 +82,12 @@ class Master {
    * Work processes corresponding to the fork, depending on the configuration or number of cpus
    * fork 对应的工作进程，取决于cpu的数量或配置参数
    */
-  [FORK_WORKERS]() {
+  forkWorkers() {
     const { workers } = this.options
     const promises = []
     const env = Object.assign({}, this.env)
     for (let i = 0; i < workers; i++) {
-      promises.push(this[FORK_WORKER](env))
+      promises.push(this.forkWorker(env))
     }
     return Promise.all(promises)
   }
@@ -100,7 +97,7 @@ class Master {
    * 创建粘性会话，适用于 websocket 通信
    * reference https://github.com/uqee/sticky-cluster
    */
-  [CREATE_STICKY_SERVER]() {
+  cteateStickyServer() {
     const deferred = defer()
     const server = net.createServer({ pauseOnConnect: true }, connection => {
       const signature = `${connection.remoteAddress}:${connection.remotePort}`
@@ -119,7 +116,7 @@ class Master {
       })
     })
     server.listen(this.options.port, () => {
-      this[FORK_WORKERS]().then(data => {
+      this.forkWorkers().then(data => {
         deferred.resolve(data)
       })
     })
@@ -162,7 +159,7 @@ class Master {
    * 启动服务
    */
   run() {
-    const serverPromise = this.options.sticky ? this[CREATE_STICKY_SERVER]() : this[FORK_WORKERS]()
+    const serverPromise = this.options.sticky ? this.cteateStickyServer() : this.forkWorkers()
     return serverPromise.then(res => {
       // do something
       this.catchSignalToReload()

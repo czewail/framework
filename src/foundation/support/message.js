@@ -41,7 +41,7 @@ class Message {
    */
   format() {
     const res = {}
-    for (const msg of this) {
+    for (const msg of this.messages) {
       if (!res[msg.field]) {
         res[msg.field] = []
       }
@@ -89,17 +89,6 @@ class Message {
       }
     }
     return { done: true, value: void 0 }
-  }
-
-  /**
-   * json message
-   */
-  toJSON() {
-    const res = []
-    for (const msg of this) {
-      res.push(msg)
-    }
-    return res
   }
 
   [Symbol.iterator]() { return this }
