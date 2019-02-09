@@ -20,3 +20,4 @@ exports.maxLength = require('./max-length')
 
 exports.after = require('./after')
 exports.before = require('./before')
+exports.pattern = require('./pattern')
