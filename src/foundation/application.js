@@ -26,7 +26,7 @@ class Application extends Container {
    *
    * @var {string}
    */
-  VERSION = '0.7.2';
+  VERSION = '0.8.1';
 
   /**
    * The config instance
@@ -132,23 +132,23 @@ class Application extends Container {
    * @private
    */
   registerDefaultProviders() {
-    this.register(new providers.Request(this))
+    // this.register(new providers.Request(this))
 
-    this.register(new providers.Response(this))
+    // this.register(new providers.Response(this))
 
-    this.register(new providers.View(this))
+    // this.register(new providers.View(this))
 
-    this.register(new providers.Session(this))
+    // this.register(new providers.Session(this))
 
-    this.register(new providers.Cookie(this))
+    // this.register(new providers.Cookie(this))
 
-    this.register(new providers.Logger(this))
+    // this.register(new providers.Logger(this))
 
-    this.register(new providers.KoaServices(this))
+    // this.register(new providers.KoaServices(this))
 
-    this.register(new providers.Template(this))
+    // this.register(new providers.Template(this))
 
-    this.register(new providers.Middleware(this))
+    // this.register(new providers.Middleware(this))
   }
 
   /**
@@ -169,15 +169,15 @@ class Application extends Container {
     }
 
     if (Reflect.has(Provider, 'launch') && typeof Provider.launch === 'function') {
-      this.launchCalls.push((app) => {
-        return Provider.launch(app)
+      this.launchCalls.push((...args) => {
+        return Provider.launch(...args)
       })
     }
   }
 
-  fireLaunchCalls() {
+  fireLaunchCalls(...args) {
     for (const launch of this.launchCalls) {
-      launch(this)
+      launch(...args, this)
     }
   }
 
@@ -258,10 +258,18 @@ class Application extends Container {
     if (!clusterConfig.enable || !cluster.isMaster) {
       this.registerDefaultProviders()
 
-      this.registerAppProvider()
+      this.register(new providers.Module(this))
+      this.register(new providers.Router(this))
+
+      // this.registerAppProvider()
+      this.registerHttpServerProvider()
 
       this.fireLaunchCalls()
     }
+  }
+
+  registerHttpServerProvider() {
+    this.register(new providers.HttpServer(this))
   }
 
   /**
@@ -289,7 +297,19 @@ class Application extends Container {
    * Start the HTTP service
    */
   startServer(...args) {
-    return this.get('koa').listen(...args)
+    return this.listen(...args)
+  }
+
+  listen(...args) {
+    const server = this.get('httpServer')
+    // server.use((req, res, next) => {
+    //   this.fireLaunchCalls(req, res)
+    //   next()
+    // })
+    server.use((req, res) => {
+      res.end('1111')
+    })
+    return server.listen(...args)
   }
 
   /**

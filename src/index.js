@@ -7,6 +7,7 @@
 require('./helpers')
 const Application = require('./foundation/application')
 const Container = require('./container')
+const Module = require('./base/module')
 const Controller = require('./base/controller')
 const Service = require('./base/service')
 const Decorators = require('./decorators')
@@ -22,6 +23,7 @@ const Cookie = require('./cookie')
 module.exports = {
   Application,
   Container,
+  Module,
   Controller,
   Service,
   Decorators,

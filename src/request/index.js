@@ -15,7 +15,6 @@ class Request {
 
   constructor(ctx, req) {
     this.ctx = ctx
-    console.log(req)
     this.request = this.ctx.request
     this.mergedParams = this[GET_MERGED_PARAMS]()
   }

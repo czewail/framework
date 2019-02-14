@@ -9,14 +9,22 @@ const { ROUTES } = require('../symbol')
 
 function decorateMethod(target, name, descriptor, verb, uri) {
   if (!target[ROUTES]) {
-    target[ROUTES] = {}
+    target[ROUTES] = []
   }
-  target[ROUTES] = Object.assign({}, target[ROUTES], {
-    [`${name}`]: {
-      uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
-      method: verb,
-    }
+  target[ROUTES].push({
+    uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
+    method: verb,
+    action: name
   })
+  // if (!target[ROUTES]) {
+  //   target[ROUTES] = {}
+  // }
+  // target[ROUTES] = Object.assign({}, target[ROUTES], {
+  //   [`${name}`]: {
+  //     uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
+  //     method: verb,
+  //   }
+  // })
 
   // if (!Reflect.hasMetadata(ROUTES, target)) {
   //   Reflect.defineMetadata(ROUTES, {}, target)
