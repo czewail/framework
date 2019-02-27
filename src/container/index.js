@@ -27,6 +27,11 @@ class Container {
   instances = new Map();
 
   /**
+   * abstract groups map
+   */
+  tags = {};
+
+  /**
    * Bind a singleton to the container
    *
    * @param {string} abstract Object identifier
@@ -36,6 +41,7 @@ class Container {
    */
   singleton(abstract, concrete = null) {
     this[BIND](abstract, concrete, true)
+    return this
   }
 
   /**
@@ -151,9 +157,9 @@ class Container {
     // instance shared
     if (this.instances.has(abstract) && shared && !force) {
       const concrete = this.instances.get(abstract).concrete
-      if (typeof concrete === 'function') {
-        return concrete(...args)
-      }
+      // if (typeof concrete === 'function') {
+      //   return concrete(...args)
+      // }
       return concrete
     }
     // if a binding object exists, the binding object is instantiated
@@ -168,6 +174,23 @@ class Container {
       })
     }
     return obj
+  }
+
+  call(abstract, args = []) {
+    const concrete = this.make(abstract)
+    if (typeof concrete !== 'function') return
+    return concrete(...args)
+  }
+
+  /**
+   * set abstract in groups
+   * @param {string} abstract Object identifier
+   * @param {string} group group name
+   */
+  static tag(abstract, tag) {
+    if (!abstract || !tag) return
+    if (!this.getInstance().tags[tag]) this.getInstance().tags[tag] = []
+    this.getInstance().tags[tag].push(abstract)
   }
 
   /**

@@ -6,7 +6,8 @@
  */
 
 // const Inject = require('./inject')
-const Router = require('./router')
+const Controller = require('./controller')
+const Module = require('./module')
 const Rest = require('./rest')
 const Multiton = require('./multiton')
 const Middleware = require('./middleware')
@@ -15,5 +16,5 @@ const Contexts = require('./contexts')
 const HttpCode = require('./http-code')
 
 module.exports = Object.assign({
-  Router, Rest, Multiton, Middleware, HttpCode,
+  Controller, Module, Rest, Multiton, Middleware, HttpCode,
 }, Verbs, Contexts)

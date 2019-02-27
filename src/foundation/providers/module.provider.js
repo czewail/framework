@@ -24,7 +24,7 @@ class ModuleProvider {
   }
 
   launch() {
-    this.app.make('module').loadModules()
+    this.app.make('module')
   }
 }
 

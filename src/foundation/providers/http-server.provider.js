@@ -1,3 +1,4 @@
+const http = require('http')
 const httpServer = require('../http-server')
 
 class HttpServerProvider {
@@ -19,11 +20,7 @@ class HttpServerProvider {
    */
   register() {
     // bind Logger in container
-    this.app.singleton('httpServer', httpServer)
-  }
-
-  launch(req, res) {
-    // console.log(req.method)
+    this.app.singleton('http.Server', http.Server)
   }
 }
 

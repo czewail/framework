@@ -4,7 +4,6 @@ const Container = require('../container')
 const IllegalArgumentError = require('../errors/illegal-argument-error')
 const symbols = require('../symbol')
 const Meta = require('../foundation/support/meta')
-const injectFactory = require('../foundation/injector/factory')
 
 /**
  * {
@@ -20,18 +19,25 @@ class Module {
 
   resolve = null;
 
+  items = [];
+
+  modules = [];
+
   constructor() {
     const realRootModulePath = path.resolve(this.app.appPath, this.root)
     const resolve = require.resolve(realRootModulePath)
     const Mod = require(resolve)
     this.loadModuleProperties(new Mod())
-    console.log(this.app.tagged('controller'))
     // console.log(this.app.tagged('modules').map(m => Meta.get('middlewares', m)))
   }
 
   loadModuleProperties(ModuleInstance) {
+    const controllers = this.getControllers(ModuleInstance)
     const middlewares = this.getMiddlewares(ModuleInstance)
-    this.loadControllers(ModuleInstance, middlewares)
+    Meta.set('controllers', controllers, ModuleInstance)
+    Meta.set('middlewares', middlewares, ModuleInstance)
+    this.app.bind(ModuleInstance, ModuleInstance)
+    this.app.tag(ModuleInstance, 'modules')
     this.loadSubModules(ModuleInstance)
   }
 
@@ -46,12 +52,56 @@ class Module {
     }
   }
 
+  // /**
+  //  * Load the controllers
+  //  *
+  //  * @param {array} controllers
+  //  * @param {array} middlewares
+  //  */
+  // loadControllers(controllers, middlewares) {
+  //   const mod = { controllers, middlewares }
+  //   this.app.bind(mod, mod)
+  //   this.app.tag(mod, 'modules')
+  //   for (const _controller of controllers) {
+  //     const mod = {
+  //       controller: _controller,
+  //       middlewares
+  //     }
+  //     this.items.push(mod)
+  //     // this.loadControllerMethods(_controller, middlewares)
+  //   }
+  // }
+
+  // /**
+  //  * Load the controller method
+  //  * @param {object} controller controller instance
+  //  */
+  // loadControllerMethods(Controller, moduleMiddlewares) {
+  //   console.log(Meta.get(Controller.prototype))
+
+  //   const isRoute = Controller.prototype[symbols.ISROUTE] || false
+  //   const prefix = Controller.prototype[symbols.PREFIX] || ''
+  //   const routes = Controller.prototype[symbols.ROUTES] || []
+  //   const middlewares = Controller.prototype[symbols.MIDDLEWARES] || []
+
+  //   if (isRoute === true) {
+  //     // const parsedControllerMiddlewares = this.parseMiddlewares(middlewares)
+  //     // const parsedModuleMiddlewares = this.parseMiddlewares(moduleMiddlewares)
+
+  //     // const combinedMidllewares = [...parsedModuleMiddlewares, ...parsedControllerMiddlewares]
+
+  //     console.log(routes)
+  //   }
+  // }
+
+
   /**
    * get module controllers use glob
    */
-  loadControllers(ModuleInstance, middlewares) {
+  getControllers(ModuleInstance) {
     const controllersProp = ModuleInstance.controllers || []
     if (!Array.isArray(controllersProp)) throw new Error('Module s controller prop must be an Array!')
+    const controllers = []
     for (const controllerProp of controllersProp) {
       // 如果是字符串，标识路径
       if (typeof controllerProp === 'string') {
@@ -59,22 +109,13 @@ class Module {
           nodir: true
         })
         for (const controller of klawControllers) {
-          const Ctrl = require(controller)
-          Meta.set('middlewares', middlewares, Ctrl.prototype)
-          this.bindControllerInContainer(Ctrl)
+          controllers.push(require(controller))
         }
       } else {
-        Meta.set('middlewares', middlewares, controllerProp.prototype)
-        this.bindControllerInContainer(controllerProp)
+        controllers.push(controllerProp)
       }
     }
-  }
-
-  bindControllerInContainer(Controller) {
-    this.app.bind(Controller, (ctx) => {
-      return injectFactory(Controller, ctx)
-    })
-    this.app.tag(Controller, 'controllerCallback')
+    return controllers
   }
 
   patchModule(Mod, parentModuleInstance) {
@@ -112,8 +153,15 @@ class Module {
     for (const middlewareProp of middlewaresProp) {
       // 如果是字符串，标识路径
       if (typeof middlewareProp === 'string') {
-        const mid = require(path.resolve(this.app.middlewarePath, middlewareProp))
-        middlewares.push(mid)
+        // 绝对路径
+        if (path.isAbsolute(middlewareProp)) {
+          const mid = require(middlewareProp)
+          middlewares.push(mid)
+        } else {
+          // 相对路径
+          const mid = require(path.resolve(this.app.middlewarePath, middlewareProp))
+          middlewares.push(mid)
+        }
       } else {
         middlewares.push(middlewareProp)
       }

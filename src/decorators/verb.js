@@ -5,36 +5,17 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { ROUTES } = require('../symbol')
+const Meta = require('../foundation/support/meta')
 
 function decorateMethod(target, name, descriptor, verb, uri) {
-  if (!target[ROUTES]) {
-    target[ROUTES] = []
+  if (!Meta.has('routes', target)) {
+    Meta.set('routes', [], target)
   }
-  target[ROUTES].push({
+  Meta.set('routes', [...Meta.get('routes', target), {
     uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
     method: verb,
     action: name
-  })
-  // if (!target[ROUTES]) {
-  //   target[ROUTES] = {}
-  // }
-  // target[ROUTES] = Object.assign({}, target[ROUTES], {
-  //   [`${name}`]: {
-  //     uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
-  //     method: verb,
-  //   }
-  // })
-
-  // if (!Reflect.hasMetadata(ROUTES, target)) {
-  //   Reflect.defineMetadata(ROUTES, {}, target)
-  // }
-  // Reflect.defineMetadata(ROUTES, Object.assign({}, Reflect.getMetadata(ROUTES, target), {
-  //   [`${name}`]: {
-  //     uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
-  //     method: verb,
-  //   }
-  // }), target)
+  }], target)
   return descriptor
 }
 

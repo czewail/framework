@@ -21,6 +21,10 @@ class RouterProvider {
     // bind config in container
     this.app.singleton('router', Router)
   }
+
+  launch() {
+    this.app.get('router')
+  }
 }
 
 module.exports = RouterProvider

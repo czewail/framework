@@ -10,6 +10,7 @@ const cluster = require('cluster')
 const Container = require('../container')
 const { Master, Worker } = require('../cluster')
 const providers = require('./providers')
+const Middleware = require('../middleware')
 
 const DEFAULT_PORT = 8000
 
@@ -301,15 +302,43 @@ class Application extends Container {
   }
 
   listen(...args) {
-    const server = this.get('httpServer')
-    // server.use((req, res, next) => {
-    //   this.fireLaunchCalls(req, res)
-    //   next()
-    // })
-    server.use((req, res) => {
-      res.end('1111')
+    const server = this.get('http.Server')
+    const middleware = new Middleware()
+    server.on('request', (req, res) => {
+      middleware.emit('start', req, res)
     })
     return server.listen(...args)
+    // const server = this.get('httpServer')
+    // // server.use((req, res, next) => {
+    // //   this.fireLaunchCalls(req, res)
+    // //   next()
+    // // })
+    // server.use((req, res) => {
+    //   res.end('1111')
+    // })
+    // return server.listen(...args)
+  }
+
+  /**
+   * Gets the binding dependency from the container
+   * @param {string} group group name
+   * @param {array} args Depends on instantiated parameters
+   */
+  tagged(tag) {
+    if (!this.tags[tag]) return []
+    return this.tags[tag]
+  }
+
+  /**
+   * set abstract in groups
+   * @param {string} abstract Object identifier
+   * @param {string} group group name
+   */
+  tag(abstract, tag) {
+    if (!abstract || !tag) return
+    if (!this.tags[tag]) this.tags[tag] = []
+    this.tags[tag].push(abstract)
+    return this
   }
 
   /**

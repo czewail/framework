@@ -8,10 +8,6 @@
 // 容器实例多例标识
 exports.MULTITON = Symbol('DAZE#multiton')
 
-// 标识控制器方法是否路由方法
-exports.ISROUTE = '__DAZE_CONTROLLER_ISROUTE__'
-exports.ROUTES = '__DAZE_CONTROLLER_ROUTES__'
-exports.PREFIX = '__DAZE_CONTROLLER_PREFIX__'
 exports.MIDDLEWARES = '__DAZE_CONTROLLER_MIDDLEWARES__'
 
 // 标识需要注入的

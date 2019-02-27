@@ -5,12 +5,12 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { PREFIX, ISROUTE } = require('../symbol')
 const { formatPrefix } = require('./helpers')
+const Meta = require('../foundation/support/meta')
 
 function injectClass(target, prefix) {
-  target.prototype[ISROUTE] = true
-  target.prototype[PREFIX] = formatPrefix(prefix)
+  Meta.set('isController', true, target.prototype)
+  Meta.set('prefix', formatPrefix(prefix), target.prototype)
   return target
 }
 
@@ -20,7 +20,7 @@ function handle(args, prefix) {
   }
 }
 
-module.exports = function Router(prefix = '') {
+module.exports = function Controller(prefix = '') {
   return function (...argsClass) {
     return handle(argsClass, prefix)
   }

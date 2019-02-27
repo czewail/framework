@@ -5,11 +5,23 @@ class Route {
 
   methods = [];
 
-  action = [];
+  controllerAction = null;
 
   keys = [];
 
   regexp = null;
+
+  controllerCallback = null;
+
+  setControllerCallback(controllerCallback) {
+    this.controllerCallback = controllerCallback
+    return this
+  }
+
+  setControllerAction(controllerAction) {
+    this.controllerAction = controllerAction
+    return this
+  }
 
   constructor(uri, methods = []) {
     this.uri = uri

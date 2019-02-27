@@ -13,9 +13,8 @@ const GET_MERGED_PARAMS = Symbol('Request#getMergedParams')
 class Request {
   sess = null;
 
-  constructor(ctx, req) {
-    this.ctx = ctx
-    this.request = this.ctx.request
+  constructor(req) {
+    this.request = req
     this.mergedParams = this[GET_MERGED_PARAMS]()
   }
 
