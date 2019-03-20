@@ -133,7 +133,7 @@ class Application extends Container {
    * @private
    */
   registerDefaultProviders() {
-    // this.register(new providers.Request(this))
+    this.register(new providers.Request(this))
 
     // this.register(new providers.Response(this))
 
@@ -261,6 +261,7 @@ class Application extends Container {
 
       this.register(new providers.Module(this))
       this.register(new providers.Router(this))
+      this.register(new providers.Middleware(this))
 
       // this.registerAppProvider()
       this.registerHttpServerProvider()
@@ -302,21 +303,15 @@ class Application extends Container {
   }
 
   listen(...args) {
-    const server = this.get('http.Server')
-    const middleware = new Middleware()
-    server.on('request', (req, res) => {
-      middleware.emit('start', req, res)
-    })
-    return server.listen(...args)
-    // const server = this.get('httpServer')
-    // // server.use((req, res, next) => {
-    // //   this.fireLaunchCalls(req, res)
-    // //   next()
-    // // })
+    const server = this.get('httpServer')
+    // server.use((req, res, next) => {
+    //   this.fireLaunchCalls(req, res)
+    //   next()
+    // })
     // server.use((req, res) => {
     //   res.end('1111')
     // })
-    // return server.listen(...args)
+    return server.listen(...args)
   }
 
   /**
@@ -324,9 +319,10 @@ class Application extends Container {
    * @param {string} group group name
    * @param {array} args Depends on instantiated parameters
    */
-  tagged(tag) {
+  tagged(tag, shouldMake = false) {
     if (!this.tags[tag]) return []
-    return this.tags[tag]
+    if (!shouldMake) return this.tags[tag]
+    return this.tags[tag].map(t => this.make(t))
   }
 
   /**

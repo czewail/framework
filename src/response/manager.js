@@ -1,7 +1,7 @@
 
 const Response = require('./index')
 
-class Factory {
+class Manager {
   response = null;
 
   constructor(data = null, code = null, headers = {}) {
@@ -16,4 +16,4 @@ class Factory {
   }
 }
 
-module.exports = Factory
+module.exports = Manager

@@ -5,7 +5,7 @@ const isClass = require('node-is-class')
 const { getModuleControllers, getModuleModules, getModuleMiddlewares } = require('../helpers')
 const symbols = require('../../symbol')
 const injectorFactory = require('../injector/factory')
-const ResponseFactory = require('../../response/factory')
+const ResponseFactory = require('../../response/manager')
 const HttpError = require('../../errors/http-error')
 
 class AppProvider {

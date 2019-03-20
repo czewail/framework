@@ -24,3 +24,17 @@ exports.defer = function () {
 exports.iterable = function (target) {
   return !!target[Symbol.iterator]
 }
+
+/**
+ * Checks if the class method exists
+ */
+exports.method_exists = function (obj, name) {
+  return Reflect.has(obj, name) && typeof Reflect.get(obj, name) === 'function'
+}
+
+/**
+ * Checks if the object or class has a property
+ */
+exports.property_exists = function (obj, name) {
+  return Reflect.has(obj, name) && typeof Reflect.get(obj, name) !== 'function'
+}

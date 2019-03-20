@@ -23,7 +23,10 @@ class RouterProvider {
   }
 
   launch() {
-    this.app.get('router')
+    const router = this.app.get('router')
+    const context = this.app.get('context')
+    context.pipe(router.getRouterMiddlewarePiper())
+    // this.app.get('httpServer').use(router.handle())
   }
 }
 

@@ -1,18 +1,20 @@
-
 const http = require('http')
+const Container = require('../../container')
 
-class HttpServer extends http.Server {
-  // listen(...args) {
-  //   // const server = http.createServer((req, res) => {
-  //   //   const middleware = this.compose()
-  //   //   return this.handleRequest(req, res, middleware)
-  //   // })
-  //   const server = 
-  //   return server.listen(...args)
-  // }
+class HttpServer {
+  app = Container.get('app');
 
-  handleRequest(req, res, middleware) {
-    return middleware(req, res)
+  listen(...args) {
+    const server = http.createServer((req, res) => {
+      // Simple Merge
+      const ctx = {
+        req, res
+      }
+      return this.app.get('context').process(ctx).catch(err => {
+        console.log(err, 'err')
+      })
+    })
+    return server.listen(...args)
   }
 }
 

@@ -19,11 +19,11 @@ class RequestProvider {
    */
   register() {
     // bind request in container
-    this.app.bind('request', (req, res, params = []) => {
-      if (!req.dazeRequest) {
-        req.dazeRequest = new Request(req)
+    this.app.bind('request', (ctx, params = []) => {
+      if (!ctx.request) {
+        ctx.request = new Request(ctx)
       }
-      return params.length > 0 ? req.dazeRequest.param(...params) : req.dazeRequest
+      return params.length > 0 ? ctx.request.param(...params) : ctx.request
     })
   }
 }

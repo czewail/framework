@@ -5,6 +5,8 @@
  * https://opensource.org/licenses/MIT
  */
 const isClass = require('node-is-class')
+const InjectMeta = require('../foundation/support/meta/inject-meta')
+const symbols = require('../symbol')
 const { MULTITON } = require('../symbol')
 
 const BIND = Symbol('Container#bind')
@@ -103,7 +105,8 @@ class Container {
     // console.log(concrete)
     if (typeof concrete === 'function') {
       // class 和首字母大写的函数，则视为构造函数
-      if (isClass(concrete) || (concrete.name && /^[A-Z]+/.test(concrete.name))) {
+      // if (isClass(concrete) || (concrete.name && /^[A-Z]+/.test(concrete.name))) {
+      if (concrete.name && /^[A-Z]+/.test(concrete.name)) {
         // If it's a constructor
         this.binds.set(abstract, {
           concrete,
@@ -164,6 +167,7 @@ class Container {
     }
     // if a binding object exists, the binding object is instantiated
     if (this.binds.has(abstract)) {
+      // obj = this.injectClass(abstract, args)
       obj = Reflect.construct(this.binds.get(abstract).concrete, args)
     }
     // 如果是单例，保存实例到容器
@@ -174,6 +178,19 @@ class Container {
       })
     }
     return obj
+  }
+
+  injectClass(abstract, args) {
+    const klass = this.binds.get(abstract).concrete
+    console.log(klass)
+    const bindParams = []
+    if (InjectMeta.has(symbols.CONSTRUCTOR_INJECTORS, klass.prototype)) {
+      const injectors = klass.prototype[symbols.CONSTRUCTOR_INJECTORS] || []
+      for (const [type, params] of injectors) {
+        bindParams.push(this.make(type, params))
+      }
+    }
+    return Reflect.construct(klass, [...bindParams, ...args])
   }
 
   call(abstract, args = []) {

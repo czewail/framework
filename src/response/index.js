@@ -7,6 +7,8 @@
 
 const toIdentifier = require('toidentifier')
 const statuses = require('statuses')
+const mime = require('mime')
+const Stream = require('stream')
 const extname = require('path').extname
 const is = require('is-type-of')
 const contentDisposition = require('content-disposition')
@@ -29,19 +31,31 @@ class Response {
    * status code
    * @var number
    */
-  code = 200;
+  _code = 200;
 
   /**
    * original data
    * @var mixed
    */
-  data = null;
+  _data = null;
 
   /**
    * http headers
    * @var object
    */
   header = {};
+
+  /**
+   * 默认字符集
+   * @var string
+   */
+  _charset = 'utf-8';
+
+  /**
+   * 默认 contentType
+   * @var string
+   */
+  _contentType = 'text/html';
 
   cookies = [];
 
@@ -50,6 +64,22 @@ class Response {
     this.setCode(code)
     this.setData(data)
     this.setHeader(header)
+  }
+
+  set code(code) {
+    this.setCode(code)
+  }
+
+  get code() {
+    return this._code
+  }
+
+  set data(data) {
+    this.setData(data)
+  }
+
+  get data() {
+    return this._data
   }
 
   /**
@@ -229,7 +259,7 @@ class Response {
    * @returns this
    */
   setCode(code = 200) {
-    if (code) this.code = code
+    if (code) this._code = code
     return this
   }
 
@@ -249,7 +279,7 @@ class Response {
    * @returns {mixed} data
    */
   getData() {
-    return this.data
+    return this._data
   }
 
   /**
@@ -259,7 +289,7 @@ class Response {
    * @returns this
    */
   setData(data) {
-    if (data) this.data = data
+    if (data) this._data = data
     return this
   }
 
@@ -383,18 +413,55 @@ class Response {
    * @public
    */
   send(ctx) {
-    if (!ctx.response.headerSent) {
-      // send code
-      ctx.status = this.getCode()
-      // send header
-      ctx.set(this.getHeader())
-      // send cookie
-      for (const cookie of this.cookies) {
-        ctx.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions())
-      }
+    const { res } = ctx
+    const data = this.getData()
+    if (Buffer.isBuffer(data) || typeof data === 'string') {
+      return res.end(data)
     }
-    // send data
-    ctx.body = this.handleData(ctx)
+    if (data instanceof Stream) {
+      return data.pipe(res)
+    }
+
+    // json
+    const jsonData = JSON.stringify(data)
+    if (!res.headersSent) {
+      res.setHeader('Content-Length', Buffer.byteLength(jsonData))
+    }
+    res.end(jsonData)
+
+    // if (!res.headersSent) {
+    //   // set code
+    //   res.statusCode = this.getCode()
+
+    //   // set headers
+    //   const headers = this.getHeader()
+    //   for (const key in headers) {
+    //     if (headers.hasOwnProperty(key)) {
+    //       res.setHeader(key, headers[key])
+    //     }
+    //   }
+
+    //   // set data
+    //   const data = this.getData()
+    //   // no content
+    //   if (data == null) {
+    //     res.removeHeader('Content-Type')
+    //     res.removeHeader('Content-Length')
+    //     res.removeHeader('Transfer-Encoding')
+    //   }
+    // }
+    // if (!ctx.response.headerSent) {
+    //   // send code
+    //   ctx.status = this.getCode()
+    //   // send header
+    //   ctx.set(this.getHeader())
+    //   // send cookie
+    //   for (const cookie of this.cookies) {
+    //     ctx.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions())
+    //   }
+    // }
+    // // send data
+    // ctx.body = this.handleData(ctx)
   }
 }
 

@@ -10,9 +10,9 @@ class Axios extends Middleware {
     return ax
   }
 
-  handle(ctx) {
+  async handle(ctx, next) {
     ctx.$http = ctx.axios = this.factory(axios)
-    return ctx
+    await next()
   }
 }
 

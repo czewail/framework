@@ -6,7 +6,10 @@ class Middleware extends EventEmitter {
   constructor() {
     super()
     this.on('start', (req, res) => {
-      res.end('11111111222222')
+      const middleware = this.handleMiddleware()
+      return middleware(req, res).then(() => {
+        res.end('111122222')
+      })
     })
   }
 
@@ -16,7 +19,7 @@ class Middleware extends EventEmitter {
     return this
   }
 
-  next(req, res, i) {
+  next(req, res, i = 0) {
     const middleware = this.middlewares[i]
     if (!middleware) return Promise.resolve()
     try {
@@ -26,7 +29,7 @@ class Middleware extends EventEmitter {
     }
   }
 
-  compose() {
+  handleMiddleware() {
     return (req, res) => {
       return this.next(req, res, 0)
     }

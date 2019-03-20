@@ -4,6 +4,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+const parse = require('parseurl')
 const Validate = require('../validate')
 const ValidateError = require('../errors/validate-error')
 const Session = require('../session')
@@ -13,9 +14,17 @@ const GET_MERGED_PARAMS = Symbol('Request#getMergedParams')
 class Request {
   sess = null;
 
-  constructor(req) {
-    this.request = req
-    this.mergedParams = this[GET_MERGED_PARAMS]()
+  constructor(ctx) {
+    this.request = this.req = ctx.req
+    // this.mergedParams = this[GET_MERGED_PARAMS]()
+  }
+
+  get path() {
+    return parse(this.req).pathname
+  }
+
+  get method() {
+    return this.req.method
   }
 
   /**

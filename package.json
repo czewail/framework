@@ -69,6 +69,7 @@
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
     "log4js": "^3.0.5",
+    "mime": "^2.4.0",
     "minimatch": "^3.0.4",
     "node-is-class": "^1.0.4",
     "nunjucks": "^3.1.3",

@@ -28,13 +28,13 @@ class VerifyCsrfToken extends Middleware {
     return defaultInvalidTokenMessage
   }
 
-  handle(ctx, next) {
+  handle(ctx) {
     if (
       this.isReadVerb(ctx)
       || this.inExcept(ctx)
       || this.tokenValidity(ctx)
     ) {
-      return next()
+      return ctx
     } else {
       this.message.add('token', this.invalidTokenMessage)
       // console.log(this.message.toJSON())

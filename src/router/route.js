@@ -13,6 +13,26 @@ class Route {
 
   controllerCallback = null;
 
+  middlewares = [];
+
+  constructor(uri, methods = []) {
+    this.uri = uri
+    this.methods = methods.map(method => method.toUpperCase())
+    this.regexp = pathToRegExp(uri, this.keys)
+
+    if (this.methods.includes('GET') && !this.methods.includes('HEAD')) {
+      this.methods.push('HEAD')
+    }
+  }
+
+  getParams(path) {
+    return path.match(this.regexp).slice(1)
+  }
+
+  getController(...args) {
+    return this.controllerCallback(...args)
+  }
+
   setControllerCallback(controllerCallback) {
     this.controllerCallback = controllerCallback
     return this
@@ -23,14 +43,9 @@ class Route {
     return this
   }
 
-  constructor(uri, methods = []) {
-    this.uri = uri
-    this.methods = methods.map(method => method.toUpperCase())
-    this.regexp = pathToRegExp(uri, this.keys)
-
-    if (this.methods.includes('GET') && !this.methods.includes('HEAD')) {
-      this.methods.push('HEAD')
-    }
+  setMiddlewares(middlewares) {
+    this.middlewares = middlewares
+    return this
   }
 
   match(path) {

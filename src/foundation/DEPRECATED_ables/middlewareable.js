@@ -1,5 +1,4 @@
 
-
 class Middlewareable {
   middlewares = [];
 
@@ -9,19 +8,21 @@ class Middlewareable {
     return this
   }
 
-  next(req, res, i) {
-    const middleware = this.middlewares[i]
+  dispatch(req, res, next, i) {
+    let middleware = this.middlewares[i]
+    if (i === this.middlewares.length) middleware = next
     if (!middleware) return Promise.resolve()
     try {
-      return Promise.resolve(middleware(req, res, this.next.bind(this, req, res, i + 1)))
+      console.log(i, 'i')
+      return Promise.resolve(middleware(req, res, this.dispatch.bind(this, req, res, i + 1)))
     } catch (err) {
       return Promise.reject(err)
     }
   }
 
-  compose() {
-    return (req, res) => {
-      return this.next(req, res, 0)
+  handleMiddleware() {
+    return (req, res, next) => {
+      return this.dispatch(req, res, next, 0)
     }
   }
 }

@@ -7,6 +7,7 @@
 
 // 容器实例多例标识
 exports.MULTITON = Symbol('DAZE#multiton')
+exports.RUNTIME = Symbol('DAZE#runtime')
 
 exports.MIDDLEWARES = '__DAZE_CONTROLLER_MIDDLEWARES__'
 

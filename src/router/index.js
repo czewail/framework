@@ -1,50 +1,72 @@
-const parse = require('parseurl')
 const Route = require('./route')
 const Collection = require('./collection')
 const Container = require('../container')
 const Meta = require('../foundation/support/meta')
-const Middlewareable = require('../foundation/ables/middlewareable')
+const Dispatcher = require('./dispatcher')
 
-class Router extends Middlewareable {
+class Router {
+  /**
+   * @var {Application} app Application instance
+   */
   app = Container.get('app');
 
+  /**
+   * @var {Collection} collection Router Collection instance
+   */
   collection = null;
 
+  /**
+   * @var {Array<controllerCallback>} controllerCallbacks controller callback in container
+   * controllerCallback:
+   * (ctx) => {
+   *  // ...
+   *  return new Controller()
+   * }
+   */
   controllerCallbacks = [];
 
+  /**
+   * Create Router
+   */
   constructor() {
-    super()
     this.collection = new Collection()
     this.controllerCallbacks = this.getControllerCallbacks()
-    this.loadRoutes()
-    console.log(this.collection.getMatchedRoutes('/', 'get'))
-    // console.log(this.collection.routes)
+    this.registerRoutes()
   }
 
-  loadRoutes() {
-    for (const controller of this.controllerCallbacks) {
-      const routes = Meta.get('routes', controller.prototype) || []
-      const prefix = Meta.get('prefix', controller.prototype) || ''
-      for (const route of routes) {
-        this.add(`${prefix}${route.uri}`, [route.method], this.app.get(controller), route.action)
-      }
+  getRouterMiddlewarePiper() {
+    return ctx => {
+      const request = this.app.call('request', [ctx])
+      const metchedRoute = this.collection.match(request)
+      const dispatcher = new Dispatcher(metchedRoute, ctx)
+      return dispatcher.dispatch()
     }
   }
 
-  middleware(httpServer) {
-    httpServer.use((req, res, next) => {
-      console.log(222222)
-      // const middleware = this.compose()
-      // const dispatch = (_req, _res, _next) => _next(_req, _res)
-      // return dispatch(req, res, middleware)
-      next()
-    })
+  registerRoutes() {
+    for (const controller of this.controllerCallbacks) {
+      this.parseController(controller)
+    }
   }
 
-  add(uri, methods, controllerCallback, controllerAction) {
+  /**
+   * parse controller
+   * @param {Controller} controller
+   */
+  parseController(controller) {
+    const routes = Meta.get('routes', controller.prototype) || []
+    const prefix = Meta.get('prefix', controller.prototype) || ''
+    const middlewares = Meta.get('middlewares', controller.prototype) || ''
+    for (const route of routes) {
+      this.register(`${prefix}${route.uri}`, [route.method], this.app.get(controller), route.action, middlewares)
+    }
+  }
+
+  register(uri, methods, controllerCallback, controllerAction, middlewares) {
     const route = (new Route(uri, methods))
       .setControllerCallback(controllerCallback)
       .setControllerAction(controllerAction)
+      .setMiddlewares(middlewares)
     this.collection.add(route)
   }
 

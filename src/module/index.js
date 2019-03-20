@@ -25,7 +25,7 @@ class Module {
     const resolve = require.resolve(realRootModulePath)
     const Mod = require(resolve)
     this.loadModuleProperties(new Mod())
-    console.log(this.app.tagged('controller'))
+    // console.log(this.app.tagged('controller'))
     // console.log(this.app.tagged('modules').map(m => Meta.get('middlewares', m)))
   }
 
@@ -73,6 +73,7 @@ class Module {
   bindControllerInContainer(Controller) {
     this.app.bind(Controller, (ctx) => {
       return injectFactory(Controller, ctx)
+      // return new Controller()
     })
     this.app.tag(Controller, 'controllerCallback')
   }
