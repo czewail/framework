@@ -1,17 +1,15 @@
-const Messenger = require('../../cluster/messenger')
+const Messenger = require('../../cluster/messenger');
 
 class MessengerProvider {
-  /**
-   * @var {object} app Application
-   */
-  app = null;
-
   /**
    * create Messenger Provider
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    /**
+     * @var {object} app Application
+     */
+    this.app = app;
   }
 
   /**
@@ -19,8 +17,8 @@ class MessengerProvider {
    */
   register() {
     // bind Messenger in container
-    this.app.singleton('messenger', Messenger)
+    this.app.singleton('messenger', Messenger);
   }
 }
 
-module.exports = MessengerProvider
+module.exports = MessengerProvider;

@@ -1,8 +1,8 @@
-const Route = require('./route')
-const Collection = require('./collection')
-const Container = require('../container')
-const Meta = require('../foundation/support/meta')
-const Dispatcher = require('./dispatcher')
+const Route = require('./route');
+const Collection = require('./collection');
+const Container = require('../container');
+const Meta = require('../foundation/support/meta');
+const Dispatcher = require('./dispatcher');
 
 class Router {
   /**
@@ -23,29 +23,29 @@ class Router {
    *  return new Controller()
    * }
    */
-  controllerCallbacks = [];
+  controllers = [];
 
   /**
    * Create Router
    */
   constructor() {
-    this.collection = new Collection()
-    this.controllerCallbacks = this.getControllerCallbacks()
-    this.registerRoutes()
+    this.collection = new Collection();
+    this.controllers = this.getControllers();
+    this.registerRoutes();
   }
 
   getRouterMiddlewarePiper() {
-    return ctx => {
-      const request = this.app.call('request', [ctx])
-      const metchedRoute = this.collection.match(request)
-      const dispatcher = new Dispatcher(metchedRoute, ctx)
-      return dispatcher.dispatch()
-    }
+    return (ctx) => {
+      const request = this.app.get('request', [ctx], true);
+      const metchedRoute = this.collection.match(request);
+      const dispatcher = new Dispatcher(request, metchedRoute, ctx);
+      return dispatcher.dispatch();
+    };
   }
 
   registerRoutes() {
-    for (const controller of this.controllerCallbacks) {
-      this.parseController(controller)
+    for (const controller of this.controllers) {
+      this.parseController(controller);
     }
   }
 
@@ -54,25 +54,25 @@ class Router {
    * @param {Controller} controller
    */
   parseController(controller) {
-    const routes = Meta.get('routes', controller.prototype) || []
-    const prefix = Meta.get('prefix', controller.prototype) || ''
-    const middlewares = Meta.get('middlewares', controller.prototype) || ''
+    const routes = Meta.get('routes', controller.prototype) || [];
+    const prefix = Meta.get('prefix', controller.prototype) || '';
+    const middlewares = Meta.get('middlewares', controller.prototype) || '';
     for (const route of routes) {
-      this.register(`${prefix}${route.uri}`, [route.method], this.app.get(controller), route.action, middlewares)
+      this.register(`${prefix}${route.uri}`, [route.method], controller, route.action, middlewares);
     }
   }
 
-  register(uri, methods, controllerCallback, controllerAction, middlewares) {
+  register(uri, methods, controller, controllerAction, middlewares) {
     const route = (new Route(uri, methods))
-      .setControllerCallback(controllerCallback)
+      .setController(controller)
       .setControllerAction(controllerAction)
-      .setMiddlewares(middlewares)
-    this.collection.add(route)
+      .setMiddlewares(middlewares);
+    this.collection.add(route);
   }
 
-  getControllerCallbacks() {
-    return this.app.tagged('controllerCallback')
+  getControllers() {
+    return this.app.tagged('controller');
   }
 }
 
-module.exports = Router
+module.exports = Router;

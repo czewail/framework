@@ -1,21 +1,35 @@
-
-
+/**
+ * Pipeline Processor
+ */
 class Processor {
-  process(payload, ...stages) {
+  /**
+   * run Pipeline Processor
+   * @param {mixed} payload pipe data payload
+   * @param  {...Function} stages pipe stage
+   * @returns {Promise} Processor result
+   */
+  static process(payload, ...stages) {
     try {
-      return Promise.resolve(this.dispatch(payload, stages))
+      return Promise.resolve(this.dispatch(payload, stages));
     } catch (err) {
-      return Promise.reject(err)
+      return Promise.reject(err);
     }
   }
 
-  dispatch(payload, stages) {
-    let _payload = payload
+  /**
+   * Processor dispatch
+   * @param {mixed} payload pipe data payload
+   * @param {...Function} stages pipe stage
+   * @returns {mixed} pipe data payload
+   */
+  static dispatch(payload, stages) {
+    let nextPayload = Promise.resolve(payload);
     for (const stage of stages) {
-      _payload = stage(_payload)
+      // nextPayload = stage(nextPayload);
+      nextPayload = nextPayload.then(res => stage(res));
     }
-    return _payload
+    return nextPayload;
   }
 }
 
-module.exports = Processor
+module.exports = Processor;

@@ -4,42 +4,136 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const parse = require('parseurl')
-const Validate = require('../validate')
-const ValidateError = require('../errors/validate-error')
-const Session = require('../session')
+const parse = require('parseurl');
+// const is = require('core-util-is');
+const qs = require('querystring');
+// const buddy = require('co-body');
+const Validate = require('../validate');
+const ValidateError = require('../errors/validate-error');
+const Session = require('../session');
 
-const GET_MERGED_PARAMS = Symbol('Request#getMergedParams')
+const GET_MERGED_PARAMS = Symbol('Request#getMergedParams');
 
 class Request {
-  sess = null;
-
   constructor(ctx) {
-    this.request = this.req = ctx.req
-    // this.mergedParams = this[GET_MERGED_PARAMS]()
+    this.ctx = ctx;
+    this.sess = null;
+    /**
+     * @var {http.ClinetRequest} req http.ClinetRequest
+     */
+    this.req = ctx.req;
+    this.body = {};
+    this.mergedParams = this[GET_MERGED_PARAMS]();
   }
 
+  // parseBodyPiper() {
+  //   return (ctx) => {
+  //     return ctx
+  //   }
+  // }
+
   get path() {
-    return parse(this.req).pathname
+    return parse(this.req).pathname;
+  }
+
+  get querystring() {
+    if (!this.req) return '';
+    return parse(this.req).query || '';
+  }
+
+  get query() {
+    const str = this.querystring;
+    return qs.parse(str);
+  }
+
+  getPath() {
+    return this.path;
   }
 
   get method() {
-    return this.req.method
+    return this.req.method;
+  }
+
+  getMethod() {
+    return this.method;
+  }
+
+  getHeader(name) {
+    return this.req.getHeader(name);
+  }
+
+  get headers() {
+    return this.req.headers;
+  }
+
+  set headers(val) {
+    this.req.headers = val;
+  }
+
+  setHeader(name, val) {
+    this.req.setHeader(name, val);
+    return this;
+  }
+
+  get url() {
+    return this.req.url;
+  }
+
+  getUrl() {
+    return this.url;
+  }
+
+  set url(val) {
+    this.req.url = val;
+  }
+
+  setUrl(val) {
+    this.url = val;
+  }
+
+  get socket() {
+    return this.req.socket;
+  }
+
+  get prot() {
+    return this.socket.remotePort;
+  }
+
+  get ip() {
+    return this.socket.remoteAddress;
+  }
+
+  get protocol() {
+    if (this.socket.encrypted) return 'https';
+    const xForwordedProto = this.getHeader('X-Forwarded-Proto');
+    return xForwordedProto ? xForwordedProto.split(/\s*,\s*/, 1)[0] : 'http';
+  }
+
+  getProtocol() {
+    return this.protocol;
+  }
+
+  get ssl() {
+    return this.protocol === 'https';
+  }
+
+  isSsl() {
+    return this.ssl;
   }
 
   /**
    * Determine if the request is the result of an AJAX call.
    */
   get isAjax() {
-    const x = this.request.headers['x-requested-with']
+    const x = this.request.headers['x-requested-with'];
     if (x && x.toLowerCase() === 'xmlhttprequest') {
-      return true
+      return true;
     }
-    return false
+    return false;
   }
 
   get expectsJson() {
-    return this.isAjax || !!this.ctx.accepts('json')
+    return this.isAjax || !!this.ctx.accepts('json');
   }
 
   /**
@@ -50,9 +144,9 @@ class Request {
    */
   param(name, defaultValue = null) {
     if (name) {
-      return this.has(name) ? this.mergedParams[name] : defaultValue
+      return this.has(name) ? this.mergedParams[name] : defaultValue;
     }
-    return this.mergedParams
+    return this.mergedParams;
   }
 
   /**
@@ -60,21 +154,21 @@ class Request {
    * @param {string} names An array of parameter names
    */
   only(...args) {
-    const res = {}
+    const res = {};
     for (const arg of args) {
       if (typeof arg === 'string') {
         if (this.has(arg)) {
-          res[arg] = this.param(arg)
+          res[arg] = this.param(arg);
         }
       } else if (Array.isArray(arg)) {
         for (const name of arg) {
           if (this.has(name)) {
-            res[name] = this.param(name)
+            res[name] = this.param(name);
           }
         }
       }
     }
-    return res
+    return res;
   }
 
 
@@ -83,17 +177,17 @@ class Request {
    * @param {string} names An array of parameter names
    */
   except(...args) {
-    let exceptKeys = []
-    let keys = Object.keys(this.param())
+    let exceptKeys = [];
+    let keys = Object.keys(this.param());
     for (const arg of args) {
       if (typeof arg === 'string') {
-        exceptKeys.push(arg)
+        exceptKeys.push(arg);
       } else if (Array.isArray(arg)) {
-        exceptKeys = exceptKeys.concat(arg)
+        exceptKeys = exceptKeys.concat(arg);
       }
     }
-    keys = keys.filter(key => !~exceptKeys.indexOf(key))
-    return this.only(keys)
+    keys = keys.filter(key => !~exceptKeys.indexOf(key));
+    return this.only(keys);
   }
 
   /**
@@ -101,14 +195,14 @@ class Request {
    * @param {string} name Parameter name
    */
   has(name) {
-    return Reflect.has(this.mergedParams, name)
+    return Reflect.has(this.mergedParams, name);
   }
 
   /**
    * Consolidation parameters
    */
   [GET_MERGED_PARAMS]() {
-    return Object.assign(this.ctx.params || {}, this.request.query, this.request.body)
+    return Object.assign({}, this.query);
   }
 
   /**
@@ -117,50 +211,28 @@ class Request {
    * @param {string} message message
    */
   validate(validator, message = 'Validation error') {
-    const validate = new Validate(this[GET_MERGED_PARAMS](), validator)
+    const validate = new Validate(this[GET_MERGED_PARAMS](), validator);
     if (validate.fails) {
-      throw new ValidateError(message, validate)
+      throw new ValidateError(message, validate);
     }
   }
 
   session() {
-    if (!this.sess) this.sess = new Session(this.ctx)
-    return this.sess
+    if (!this.sess) this.sess = new Session(this.ctx);
+    return this.sess;
   }
 
   cookie(...params) {
-    return this.getCookie(...params)
+    return this.getCookie(...params);
   }
 
   getCookie(key, options = {}) {
-    return this.ctx.cookies.get(key, options)
+    return this.ctx.cookies.get(key, options);
   }
 
-  getHeader(name) {
-    return this.request.header[name]
-  }
+  // getHeader(name) {
+  //   return this.request.header[name];
+  // }
 }
 
-/**
- * The agent Request class
- * Implement the attribute operator to get the parameter
- */
-const requestProxy = new Proxy(Request, {
-  construct(Target, args, extended) {
-    const instance = Reflect.construct(Target, args, extended)
-    return new Proxy(instance, {
-      get(t, prop) {
-        if (Reflect.has(t, prop) || typeof prop === 'symbol') {
-          return t[prop]
-        }
-        if (Reflect.has(t.request, prop)) {
-          return t.request[prop]
-        }
-        return t.param(prop)
-      },
-    })
-  },
-})
-
-
-module.exports = requestProxy
+module.exports = Request;

@@ -1,4 +1,4 @@
-const View = require('../../view')
+const View = require('../../view');
 
 class ViewProvider {
   /**
@@ -11,7 +11,7 @@ class ViewProvider {
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    this.app = app;
   }
 
   /**
@@ -19,8 +19,8 @@ class ViewProvider {
    */
   register() {
     // bind View in container
-    this.app.singleton('view', View)
+    this.app.singleton('view', View);
   }
 }
 
-module.exports = ViewProvider
+module.exports = ViewProvider;

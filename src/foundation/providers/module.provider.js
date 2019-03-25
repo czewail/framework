@@ -1,31 +1,34 @@
-const Module = require('../../module')
+const Module = require('../../module');
 
 class ModuleProvider {
   /**
-   * @var {object} app Application
+   * Create Module Provider
+   * @param {APplication} app Application
    */
-  app = null;
-
-  /**
-   * @var {string} root app root module filename
-   */
-
-  modules = [];
-
   constructor(app) {
-    this.app = app
+    /**
+     * @var {object} app Application
+     */
+    this.app = app;
+    /**
+     * @var {string} root app root module filename
+     */
+    this.modules = [];
   }
 
   /**
    * Provider register Hook
    */
   register() {
-    this.app.bind('module', Module)
+    this.app.bind('module', Module);
   }
 
+  /**
+   * Provider launch Hook
+   */
   launch() {
-    this.app.make('module')
+    this.app.make('module');
   }
 }
 
-module.exports = ModuleProvider
+module.exports = ModuleProvider;

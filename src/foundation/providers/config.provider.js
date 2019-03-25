@@ -1,17 +1,15 @@
-const Config = require('../../config')
+const Config = require('../../config');
 
 class ConfigProvider {
-  /**
-   * @var {object} app Application
-   */
-  app = null;
-
   /**
    * create Config Provider
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    /**
+     * @var {object} app Application
+     */
+    this.app = app;
   }
 
   /**
@@ -19,8 +17,8 @@ class ConfigProvider {
    */
   register() {
     // bind config in container
-    this.app.singleton('config', Config)
+    this.app.singleton('config', Config);
   }
 }
 
-module.exports = ConfigProvider
+module.exports = ConfigProvider;

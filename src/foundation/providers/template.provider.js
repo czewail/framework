@@ -1,5 +1,5 @@
-const nunjucks = require('nunjucks')
-const path = require('path')
+const nunjucks = require('nunjucks');
+const path = require('path');
 
 class TemplateProvider {
   /**
@@ -12,8 +12,8 @@ class TemplateProvider {
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
-    this.config = app.get('config')
+    this.app = app;
+    this.config = app.get('config');
   }
 
   /**
@@ -27,13 +27,13 @@ class TemplateProvider {
       noCache: this.app.isDebug,
       watch: this.app.isDebug,
     })], {
-      autoescape: false
-    })
-    templateEnv.addGlobal('app', this.app)
-    templateEnv.addGlobal('config', this.config)
-    templateEnv.addGlobal('__public__', this.config.get('app.public_prefix', ''))
-    this.app.singleton('template', templateEnv)
+      autoescape: false,
+    });
+    templateEnv.addGlobal('app', this.app);
+    templateEnv.addGlobal('config', this.config);
+    templateEnv.addGlobal('__public__', this.config.get('app.public_prefix', ''));
+    this.app.singleton('template', templateEnv);
   }
 }
 
-module.exports = TemplateProvider
+module.exports = TemplateProvider;

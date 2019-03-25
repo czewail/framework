@@ -1,17 +1,15 @@
-const Logger = require('../../logger')
+const Logger = require('../../logger');
 
 class LoggerProvider {
-  /**
-   * @var {object} app Application
-   */
-  app = null;
-
   /**
    * create Logger Provider
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    /**
+    * @var {object} app Application
+    */
+    this.app = app;
   }
 
   /**
@@ -19,8 +17,8 @@ class LoggerProvider {
    */
   register() {
     // bind Logger in container
-    this.app.singleton('logger', Logger)
+    this.app.singleton('logger', Logger);
   }
 }
 
-module.exports = LoggerProvider
+module.exports = LoggerProvider;

@@ -11,7 +11,7 @@ class Route {
 
   regexp = null;
 
-  controllerCallback = null;
+  controller = null;
 
   middlewares = [];
 
@@ -29,12 +29,12 @@ class Route {
     return path.match(this.regexp).slice(1)
   }
 
-  getController(...args) {
-    return this.controllerCallback(...args)
+  getController() {
+    return this.controller
   }
 
-  setControllerCallback(controllerCallback) {
-    this.controllerCallback = controllerCallback
+  setController(controller) {
+    this.controller = controller
     return this
   }
 

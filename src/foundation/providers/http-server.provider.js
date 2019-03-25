@@ -1,17 +1,15 @@
-const httpServer = require('../http-server')
+const httpServer = require('../http-server');
 
 class HttpServerProvider {
-  /**
-   * @var {object} app Application
-   */
-  app = null;
-
   /**
    * create Logger Provider
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    /**
+     * @var {object} app Application
+     */
+    this.app = app;
   }
 
   /**
@@ -19,8 +17,8 @@ class HttpServerProvider {
    */
   register() {
     // bind Logger in container
-    this.app.singleton('httpServer', httpServer)
+    this.app.singleton('httpServer', httpServer);
   }
 }
 
-module.exports = HttpServerProvider
+module.exports = HttpServerProvider;

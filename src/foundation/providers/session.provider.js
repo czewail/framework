@@ -1,6 +1,6 @@
-const is = require('is-type-of')
-const Session = require('../../session')
-const symbols = require('../../symbol')
+const is = require('is-type-of');
+const Session = require('../../session');
+const symbols = require('../../symbol');
 
 class SessionProvider {
   /**
@@ -13,7 +13,7 @@ class SessionProvider {
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    this.app = app;
   }
 
   /**
@@ -21,16 +21,14 @@ class SessionProvider {
    */
   register() {
     // bind session in container
-    this.app.singleton('session', (ctx) => {
-      return new Session(ctx)
-    })
+    this.app.singleton('session', (ctx) => new Session(ctx));
   }
 
   /**
    * Provider launch Hook
    */
   launch() {
-    this.flushSession()
+    this.flushSession();
   }
 
   /**
@@ -40,16 +38,16 @@ class SessionProvider {
     this.app.use(async (ctx, next) => {
       if (ctx.session[symbols.SESSION_FLASHED] === true && is.array(ctx.session[symbols.SESSION_FLASHS])) {
         for (const flash of ctx.session[symbols.SESSION_FLASHS]) {
-          delete ctx.session[flash]
+          delete ctx.session[flash];
         }
-        ctx.session[symbols.SESSION_FLASHS] = []
+        ctx.session[symbols.SESSION_FLASHS] = [];
       }
       if (ctx.session[symbols.SESSION_FLASHED] === false) {
-        ctx.session[symbols.SESSION_FLASHED] = true
+        ctx.session[symbols.SESSION_FLASHED] = true;
       }
-      await next()
-    })
+      await next();
+    });
   }
 }
 
-module.exports = SessionProvider
+module.exports = SessionProvider;

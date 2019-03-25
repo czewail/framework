@@ -5,20 +5,20 @@
  * https://opensource.org/licenses/MIT
  */
 
-const toIdentifier = require('toidentifier')
-const statuses = require('statuses')
-const mime = require('mime')
-const Stream = require('stream')
-const extname = require('path').extname
-const is = require('is-type-of')
-const contentDisposition = require('content-disposition')
-const Resource = require('../resource')
-const Container = require('../container')
-const ResourceFactory = require('../resource/factory')
-const ViewFactory = require('../view/factory')
-const HttpError = require('../errors/http-error')
-const View = require('../view')
-const Cookie = require('../cookie')
+const toIdentifier = require('toidentifier');
+const statuses = require('statuses');
+const mime = require('mime');
+const Stream = require('stream');
+const { extname } = require('path');
+const is = require('is-type-of');
+const contentDisposition = require('content-disposition');
+const Resource = require('../resource');
+const Container = require('../container');
+const ResourceFactory = require('../resource/factory');
+const ViewFactory = require('../view/factory');
+const HttpError = require('../errors/http-error');
+const View = require('../view');
+const Cookie = require('../cookie');
 
 class Response {
   /**
@@ -60,26 +60,26 @@ class Response {
   cookies = [];
 
   constructor(data = null, code = 200, header = {}) {
-    this.patchCodeMethods()
-    this.setCode(code)
-    this.setData(data)
-    this.setHeader(header)
+    this.patchCodeMethods();
+    this.setCode(code);
+    this.setData(data);
+    this.setHeader(header);
   }
 
   set code(code) {
-    this.setCode(code)
+    this.setCode(code);
   }
 
   get code() {
-    return this._code
+    return this._code;
   }
 
   set data(data) {
-    this.setData(data)
+    this.setData(data);
   }
 
   get data() {
-    return this._data
+    return this._data;
   }
 
   /**
@@ -157,19 +157,15 @@ class Response {
    * @private
    */
   patchCodeMethods() {
-    const { codes } = statuses
-    codes.forEach(code => {
-      const name = toIdentifier(statuses[code])
+    const { codes } = statuses;
+    codes.forEach((code) => {
+      const name = toIdentifier(statuses[code]);
       if (code >= 400) {
-        this[name] = message => {
-          return this.error(message || statuses[code], code)
-        }
+        this[name] = message => this.error(message || statuses[code], code);
       } else {
-        this[name] = message => {
-          return this.success(message || statuses[code], code)
-        }
+        this[name] = message => this.success(message || statuses[code], code);
       }
-    })
+    });
   }
 
   /**
@@ -178,7 +174,7 @@ class Response {
    * @param {number} code exception code
    */
   error(message, code) {
-    throw new HttpError(code, message)
+    throw new HttpError(code, message);
   }
 
   /**
@@ -186,17 +182,17 @@ class Response {
    * @param {mixed} data data
    */
   success(data, code = 200) {
-    this.setCode(code)
-    this.setData(data)
-    return this
+    this.setCode(code);
+    this.setData(data);
+    return this;
   }
 
   /**
    * get http header
    */
   getHeader(name = null) {
-    if (name) return this.header[name] || null
-    return this.header
+    if (name) return this.header[name] || null;
+    return this.header;
   }
 
   /**
@@ -209,11 +205,11 @@ class Response {
    */
   setHeader(name, value) {
     if (is.object(name)) {
-      this.header = Object.assign(this.header, name)
+      this.header = Object.assign(this.header, name);
     } else {
-      this.header[name] = value
+      this.header[name] = value;
     }
-    return this
+    return this;
   }
 
   /**
@@ -222,7 +218,7 @@ class Response {
    * @returns {object} http headers
    */
   getHeaders() {
-    return this.getHeader()
+    return this.getHeader();
   }
 
   /**
@@ -231,7 +227,7 @@ class Response {
    * @returns {object} http headers
    */
   setHeaders(...params) {
-    return this.setHeader(...params)
+    return this.setHeader(...params);
   }
 
   /**
@@ -240,7 +236,7 @@ class Response {
    * @returns {number} http code
    */
   getCode() {
-    return this.code
+    return this.code;
   }
 
   /**
@@ -249,7 +245,7 @@ class Response {
    * @returns {number} http code
    */
   getStatus() {
-    return this.getCode()
+    return this.getCode();
   }
 
   /**
@@ -259,8 +255,8 @@ class Response {
    * @returns this
    */
   setCode(code = 200) {
-    if (code) this._code = code
-    return this
+    if (code) this._code = code;
+    return this;
   }
 
   /**
@@ -270,7 +266,7 @@ class Response {
    * @returns this
    */
   setStatus(code) {
-    return this.setCode(code)
+    return this.setCode(code);
   }
 
   /**
@@ -279,7 +275,7 @@ class Response {
    * @returns {mixed} data
    */
   getData() {
-    return this._data
+    return this._data;
   }
 
   /**
@@ -289,8 +285,8 @@ class Response {
    * @returns this
    */
   setData(data) {
-    if (data) this._data = data
-    return this
+    if (data) this._data = data;
+    return this;
   }
 
   /**
@@ -300,8 +296,8 @@ class Response {
    * @returns this
    */
   lastModified(time) {
-    this.setHeader('Last-Modified', time)
-    return this
+    this.setHeader('Last-Modified', time);
+    return this;
   }
 
   /**
@@ -311,8 +307,8 @@ class Response {
    * @returns this
    */
   expires(time) {
-    this.setHeader('Expires', time)
-    return this
+    this.setHeader('Expires', time);
+    return this;
   }
 
   /**
@@ -322,8 +318,8 @@ class Response {
    * @returns this
    */
   eTag(eTag) {
-    this.setHeader('ETag', eTag)
-    return this
+    this.setHeader('ETag', eTag);
+    return this;
   }
 
   /**
@@ -333,8 +329,8 @@ class Response {
    * @returns this
    */
   cacheControl(cache) {
-    this.setHeader('Cache-Control', cache)
-    return this
+    this.setHeader('Cache-Control', cache);
+    return this;
   }
 
   /**
@@ -343,9 +339,9 @@ class Response {
    * @returns this
    */
   noCache() {
-    this.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
-    this.setHeader('Pragma', 'no-cache')
-    return this
+    this.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+    this.setHeader('Pragma', 'no-cache');
+    return this;
   }
 
   /**
@@ -355,8 +351,8 @@ class Response {
    * @param {string} charset The output of language
    */
   contentType(contentType, charset = 'utf-8') {
-    this.setHeader('Content-Type', `${contentType}; charset=${charset}`)
-    return this
+    this.setHeader('Content-Type', `${contentType}; charset=${charset}`);
+    return this;
   }
 
   /**
@@ -367,9 +363,9 @@ class Response {
    * @returns this
    */
   attachment(filename = null, options) {
-    if (filename) this.type = extname(filename)
-    this.setHeader('Content-Disposition', contentDisposition(filename, options))
-    return this
+    if (filename) this.type = extname(filename);
+    this.setHeader('Content-Disposition', contentDisposition(filename, options));
+    return this;
   }
 
   /**
@@ -378,33 +374,33 @@ class Response {
    * @param {string} filename
    */
   download(data, filename = null, options) {
-    return this.setData(data).attachment(filename, options)
+    return this.setData(data).attachment(filename, options);
   }
 
   /**
    * handle Resource data
    */
   handleData(ctx) {
-    const data = this.getData()
+    const data = this.getData();
     if (data instanceof Resource) {
-      return (new ResourceFactory(data)).output(ctx)
+      return (new ResourceFactory(data)).output(ctx);
     }
     if (data instanceof View) {
-      return (new ViewFactory(data)).output(ctx)
+      return (new ViewFactory(data)).output(ctx);
     }
-    return data
+    return data;
   }
 
   withCookie(cookie) {
     if (cookie instanceof Cookie) {
-      this.cookies.push(cookie)
+      this.cookies.push(cookie);
     }
-    return this
+    return this;
   }
 
   cookie(key, value, options = {}) {
-    this.withCookie(new Cookie(key, value, options))
-    return this
+    this.withCookie(new Cookie(key, value, options));
+    return this;
   }
 
   /**
@@ -413,21 +409,21 @@ class Response {
    * @public
    */
   send(ctx) {
-    const { res } = ctx
-    const data = this.getData()
+    const { res } = ctx;
+    const data = this.getData();
     if (Buffer.isBuffer(data) || typeof data === 'string') {
-      return res.end(data)
+      return res.end(data);
     }
     if (data instanceof Stream) {
-      return data.pipe(res)
+      return data.pipe(res);
     }
 
     // json
-    const jsonData = JSON.stringify(data)
+    const jsonData = JSON.stringify(data);
     if (!res.headersSent) {
-      res.setHeader('Content-Length', Buffer.byteLength(jsonData))
+      res.setHeader('Content-Length', Buffer.byteLength(jsonData));
     }
-    res.end(jsonData)
+    res.end(jsonData);
 
     // if (!res.headersSent) {
     //   // set code
@@ -465,4 +461,4 @@ class Response {
   }
 }
 
-module.exports = Response
+module.exports = Response;
