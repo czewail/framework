@@ -5,77 +5,81 @@
  * https://opensource.org/licenses/MIT
  */
 
-const cluster = require('cluster')
-const hash = require('string-hash')
-const debug = require('debug')('daze-framework:cluster')
-const net = require('net')
-const { defer } = require('../utils')
-const { parseOpts, getAlivedWorkers } = require('./helpers')
-const { RELOAD_SIGNAL, WORKER_DYING, WORKER_DID_FORKED, WORKER_DISCONNECT } = require('./const')
+const cluster = require('cluster');
+const hash = require('string-hash');
+const debug = require('debug')('daze-framework:cluster');
+const net = require('net');
+const { defer } = require('../utils');
+const { parseOpts, getAlivedWorkers } = require('./helpers');
+const {
+  RELOAD_SIGNAL, WORKER_DYING, WORKER_DID_FORKED, WORKER_DISCONNECT,
+} = require('./const');
 
 const defaultOptions = {
   port: 0,
   workers: 0,
   sticky: false,
-}
+};
 
 
 class Master {
   constructor(opts) {
-    this.options = Object.assign({}, defaultOptions, parseOpts(opts))
-    this.connections = {}
+    this.options = Object.assign({}, defaultOptions, parseOpts(opts));
+    this.connections = {};
   }
 
   // 工作进程的环境变量
   // 待定
   // Environment variables for the work process
   get env() {
-    return {}
+    return {};
   }
 
   /**
    * Fork a work process
    */
   forkWorker(env = {}) {
-    const worker = cluster.fork(env)
-    debug(`worker is forked, use pid: ${worker.process.pid}`)
-    const deferred = defer()
-    // Accepts the disconnection service signal sent by the work process, indicating that the work process is about to
+    const worker = cluster.fork(env);
+    debug(`worker is forked, use pid: ${worker.process.pid}`);
+    const deferred = defer();
+    // Accepts the disconnection service signal sent by the work process,
+    // indicating that the work process is about to
     // stop the service and needs to be replaced by a new work process
     // 接受工作进程发送的断开服务信号，表示该工作进程即将停止服务，需要 fork 一个新的工作进程来替代
-    worker.on('message', message => {
-      if (worker[WORKER_DYING]) return
+    worker.on('message', (message) => {
+      if (worker[WORKER_DYING]) return;
       if (message === WORKER_DISCONNECT) {
-        debug('refork worker, receive message \'daze-worker-disconnect\'')
-        worker[WORKER_DYING] = true
-        // The signal that tells the worker process that it has fork after fork, and lets it end the service
+        debug('refork worker, receive message \'daze-worker-disconnect\'');
+        worker[WORKER_DYING] = true;
+        // The signal that tells the worker process that it has fork after fork,
+        // and lets it end the service
         // fork 完毕后通知工作进程已 fork 的信号，让其结束服务
-        this.forkWorker(env).then(() => worker.send(WORKER_DID_FORKED)).catch(() => {})
+        this.forkWorker(env).then(() => worker.send(WORKER_DID_FORKED)).catch(() => {});
       }
-    })
+    });
     // Emitted after the worker IPC channel has disconnected
     // Automatically fork a new work process after the IPC pipeline is detected to be disconnected
     worker.once('disconnect', () => {
-      if (worker[WORKER_DYING]) return
-      debug(`worker disconnect: ${worker.process.pid}`)
-      worker[WORKER_DYING] = true
-      debug('worker will fork')
-      this.forkWorker(env)
-    })
+      if (worker[WORKER_DYING]) return;
+      debug(`worker disconnect: ${worker.process.pid}`);
+      worker[WORKER_DYING] = true;
+      debug('worker will fork');
+      this.forkWorker(env);
+    });
     // The cluster module will trigger an 'exit' event when any worker process is closed
     worker.once('exit', (code, signal) => {
-      if (worker[WORKER_DYING]) return
-      debug(`worker exit, code: ${code}, signal: ${signal}`)
-      worker[WORKER_DYING] = true
-      this.forkWorker(env)
-    })
+      if (worker[WORKER_DYING]) return;
+      debug(`worker exit, code: ${code}, signal: ${signal}`);
+      worker[WORKER_DYING] = true;
+      this.forkWorker(env);
+    });
     // listening event
-    worker.once('listening', address => {
-      debug(`listening, address: ${JSON.stringify(address)}`)
-      deferred.resolve({ worker, address })
-    })
+    worker.once('listening', (address) => {
+      debug(`listening, address: ${JSON.stringify(address)}`);
+      deferred.resolve({ worker, address });
+    });
 
-    return deferred.promise
+    return deferred.promise;
   }
 
   /**
@@ -83,13 +87,13 @@ class Master {
    * fork 对应的工作进程，取决于cpu的数量或配置参数
    */
   forkWorkers() {
-    const { workers } = this.options
-    const promises = []
-    const env = Object.assign({}, this.env)
+    const { workers } = this.options;
+    const promises = [];
+    const env = Object.assign({}, this.env);
     for (let i = 0; i < workers; i++) {
-      promises.push(this.forkWorker(env))
+      promises.push(this.forkWorker(env));
     }
-    return Promise.all(promises)
+    return Promise.all(promises);
   }
 
   /**
@@ -98,29 +102,29 @@ class Master {
    * reference https://github.com/uqee/sticky-cluster
    */
   cteateStickyServer() {
-    const deferred = defer()
-    const server = net.createServer({ pauseOnConnect: true }, connection => {
-      const signature = `${connection.remoteAddress}:${connection.remotePort}`
-      this.connections[signature] = connection
+    const deferred = defer();
+    const server = net.createServer({ pauseOnConnect: true }, (connection) => {
+      const signature = `${connection.remoteAddress}:${connection.remotePort}`;
+      this.connections[signature] = connection;
       this.connection.on('close', () => {
-        delete this.connections[signature]
-      })
-      const index = hash(connection.remoteAddress || '') % this.options.works
-      let current = -1
-      getAlivedWorkers().some(worker => {
+        delete this.connections[signature];
+      });
+      const index = hash(connection.remoteAddress || '') % this.options.works;
+      let current = -1;
+      getAlivedWorkers().some((worker) => {
         if (index === ++current) {
-          worker.send('daze-sticky-connection', connection)
-          return true
+          worker.send('daze-sticky-connection', connection);
+          return true;
         }
-        return false
-      })
-    })
+        return false;
+      });
+    });
     server.listen(this.options.port, () => {
-      this.forkWorkers().then(data => {
-        deferred.resolve(data)
-      })
-    })
-    return deferred.promise
+      this.forkWorkers().then((data) => {
+        deferred.resolve(data);
+      });
+    });
+    return deferred.promise;
   }
 
   /**
@@ -129,8 +133,9 @@ class Master {
    */
   reloadWorkers() {
     for (const worker of getAlivedWorkers()) {
-      worker.send(RELOAD_SIGNAL)
+      worker.send(RELOAD_SIGNAL);
     }
+    return this;
   }
 
   /**
@@ -139,19 +144,20 @@ class Master {
    */
   catchSignalToReload() {
     // After the master process receives the reload signal
-    // it traverses the surviving worker processes and sends the reload instruction to each worker process
+    // it traverses the surviving worker processes
+    // and sends the reload instruction to each worker process
     // 主进程接收到 reload 信号后，遍历存活的工作进程，给每个工作进程发送 reload 指令
     process.once(RELOAD_SIGNAL, () => {
-      debug(`Start smooth restart, signal: ${RELOAD_SIGNAL}`)
-      this.reloadWorkers()
-    })
+      debug(`Start smooth restart, signal: ${RELOAD_SIGNAL}`);
+      this.reloadWorkers();
+    });
     // Receives the daze-restart restart instruction
     // sent by the work process to restart all the work processes
     // 接收工作进程发送的 daze-restart 重启指令，重启所有工作进程
     cluster.on('message', (worker, message) => {
-      if (message !== 'daze-restart') return
-      this.reloadWorkers()
-    })
+      if (message !== 'daze-restart') return;
+      this.reloadWorkers();
+    });
   }
 
   /**
@@ -159,13 +165,13 @@ class Master {
    * 启动服务
    */
   run() {
-    const serverPromise = this.options.sticky ? this.cteateStickyServer() : this.forkWorkers()
-    return serverPromise.then(res => {
+    const serverPromise = this.options.sticky ? this.cteateStickyServer() : this.forkWorkers();
+    return serverPromise.then((res) => {
       // do something
-      this.catchSignalToReload()
-      return res
-    })
+      this.catchSignalToReload();
+      return res;
+    });
   }
 }
 
-module.exports = Master
+module.exports = Master;

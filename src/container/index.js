@@ -165,6 +165,11 @@ class Container {
     return obj;
   }
 
+  /**
+   * Performs dependency injection on the constructor
+   * @param {Mixed} abstract abstract
+   * @param {Array} args abstract
+   */
   injectClass(abstract, args) {
     const that = this;
     const klass = this.binds.get(abstract).concrete;
