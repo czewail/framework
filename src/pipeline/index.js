@@ -5,7 +5,7 @@ const Processor = require('./processor');
  */
 class Pipeline {
   constructor(processor = null, ...stages) {
-    this.processor = processor || Processor;
+    this.processor = processor || new Processor();
     this.stages = stages;
   }
 
@@ -15,7 +15,18 @@ class Pipeline {
    * @returns {Pipeline} this
    */
   pipe(stage) {
-    this.stages.push(stage);
+    if (typeof stage === 'function') {
+      this.stages.push(stage);
+    } else if (Array.isArray(stage)) {
+      for (const item of stage) {
+        this.pipe(item);
+      }
+    }
+    return this;
+  }
+
+  send(...payload) {
+    this.payload = payload;
     return this;
   }
 
@@ -24,8 +35,8 @@ class Pipeline {
    * @param {mixed} payload pipe data payload
    * @returns {mixed} result
    */
-  process(payload) {
-    return this.processor.process(payload, ...this.stages);
+  process(cb) {
+    return this.processor.process(this.stages, cb, ...this.payload);
   }
 }
 

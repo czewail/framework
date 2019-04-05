@@ -10,8 +10,8 @@ class Manager {
     this.response.setHeader(headers);
   }
 
-  output(ctx) {
-    this.response.send(ctx);
+  output(request) {
+    this.response.send(request);
     return this.response;
   }
 }

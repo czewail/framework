@@ -408,8 +408,8 @@ class Response {
    * @param {*} ctx
    * @public
    */
-  send(ctx) {
-    const { res } = ctx;
+  send(request) {
+    const { res } = request;
     const data = this.getData();
     if (Buffer.isBuffer(data) || typeof data === 'string') {
       return res.end(data);
@@ -424,6 +424,7 @@ class Response {
       res.setHeader('Content-Length', Buffer.byteLength(jsonData));
     }
     res.end(jsonData);
+    return undefined;
 
     // if (!res.headersSent) {
     //   // set code

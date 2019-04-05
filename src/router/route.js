@@ -1,56 +1,103 @@
-const pathToRegExp = require('path-to-regexp')
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
+const pathToRegExp = require('path-to-regexp');
+const Middleware = require('../middleware');
 
 class Route {
-  uri = '';
+  /**
+   * Create Route
+   * @param {String} uri route URI
+   * @param {Array} methods route methods
+   * @param {Controller} controller controller
+   * @param {String} action controller action
+   * @param {Array} middlewares route middlewares
+   */
+  constructor(uri, methods = [], controller = null, action = '', middlewares = []) {
+    /**
+     * @var {Array} keys route params keys
+     */
+    this.keys = [];
 
-  methods = [];
+    /**
+     * @var {String} uri URI
+     */
+    this.uri = uri;
 
-  controllerAction = null;
+    /**
+     * @var {Array} methods upper case method name
+     */
+    this.methods = methods.map(method => method.toUpperCase());
 
-  keys = [];
+    /**
+     * @var {RegExp} regexp path RegExp
+     */
+    this.regexp = pathToRegExp(uri, this.keys);
 
-  regexp = null;
+    /**
+     * @var {Controller} controller Controller
+     */
+    this.controller = controller;
 
-  controller = null;
+    /**
+     * @var {String} action controller action name
+     */
+    this.action = action;
 
-  middlewares = [];
+    /**
+     * @var {Middleware} middleware Middleware instance
+     */
+    this.middleware = new Middleware();
 
-  constructor(uri, methods = []) {
-    this.uri = uri
-    this.methods = methods.map(method => method.toUpperCase())
-    this.regexp = pathToRegExp(uri, this.keys)
+    /**
+     * register Middlewares in Middleware instance
+     */
+    this.setMiddlewares(middlewares);
 
+    /**
+     * patch HEAD method with GET method
+     */
     if (this.methods.includes('GET') && !this.methods.includes('HEAD')) {
-      this.methods.push('HEAD')
+      this.methods.push('HEAD');
     }
   }
 
+  /**
+   * get route params
+   * @param {String} path request path
+   */
   getParams(path) {
-    return path.match(this.regexp).slice(1)
+    return path.match(this.regexp).slice(1);
   }
 
+  /**
+   * get route controller
+   */
   getController() {
-    return this.controller
+    return this.controller;
   }
 
-  setController(controller) {
-    this.controller = controller
-    return this
-  }
-
-  setControllerAction(controllerAction) {
-    this.controllerAction = controllerAction
-    return this
-  }
-
+  /**
+   * register Middlewares in Middleware instance
+   */
   setMiddlewares(middlewares) {
-    this.middlewares = middlewares
-    return this
+    for (const middleware of middlewares) {
+      this.middleware.register(middleware);
+    }
+    return this;
   }
 
+  /**
+   * check the path is matched this route
+   * @param {String} path request path
+   */
   match(path) {
-    return this.regexp.test(path)
+    return this.regexp.test(path);
   }
 }
 
-module.exports = Route
+module.exports = Route;

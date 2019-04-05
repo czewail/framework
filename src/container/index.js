@@ -6,7 +6,7 @@
  */
 const InjectMeta = require('../foundation/support/meta/inject-meta');
 const symbols = require('../symbol');
-const { MULTITON } = require('../symbol');
+// const Injectable = require('../foundation/support/injectable');
 
 const BIND = Symbol('Container#bind');
 /**
@@ -106,13 +106,15 @@ class Container {
       // if (isClass(concrete) || (concrete.name && /^[A-Z]+/.test(concrete.name))) {
       this.binds.set(abstract, {
         concrete,
-        shared: concrete[MULTITON] === true ? false : shared,
+        shared: concrete[symbols.MULTITON] === true ? false : shared,
+        callable,
       });
       return this;
     }
     this.instances.set(abstract, {
       concrete,
       shared: true,
+      callable,
     });
     return this;
   }
@@ -142,17 +144,20 @@ class Container {
    * @returns {Container} this
    * @public
    */
-  make(abstract, args = [], force = false) {
+  make(abstract, args = [], context = null, force = false) {
     const shared = this.isShared(abstract);
     let obj = null;
     // returns directly if an object instance already exists in the container
     // instance shared
     if (this.instances.has(abstract) && shared && !force) {
+      if (this.instances.get(abstract).callable === true) {
+        return this.instances.get(abstract).concrete(...args);
+      }
       return this.instances.get(abstract).concrete;
     }
     // if a binding object exists, the binding object is instantiated
     if (this.binds.has(abstract)) {
-      obj = this.injectClass(abstract, args);
+      obj = this.injectClass(abstract, args, context);
       // obj = Reflect.construct(this.binds.get(abstract).concrete, args)
     }
     // 如果是单例，保存实例到容器
@@ -173,10 +178,13 @@ class Container {
   injectClass(abstract, args) {
     const that = this;
     const klass = this.binds.get(abstract).concrete;
+    if (!InjectMeta.has(symbols.NEED_INJECTOR, klass.prototype)) {
+      return Reflect.construct(klass, args);
+    }
     const bindParams = [];
     // 判断class原型是否需要构造函数注入
     if (InjectMeta.has(symbols.CONSTRUCTOR_INJECTORS, klass.prototype)) {
-      // 获取需要注入的标识
+      // 获取需要注入构造函数的标识
       // [ [ type, params ] ]
       const injectors = InjectMeta.get(symbols.CONSTRUCTOR_INJECTORS, klass.prototype) || [];
       for (const [type, params] of injectors) {
@@ -186,7 +194,6 @@ class Container {
     const klassProxy = new Proxy(klass, {
       construct(target, _args, ext) {
         const instance = Reflect.construct(target, _args, ext);
-        instance[symbols.INJECT_CONTAINER_ARGS] = args;
         return new Proxy(instance, {
           get(t, name, receiver) {
             if (name === 'constructor') return Reflect.get(t, name, receiver);
@@ -209,7 +216,9 @@ class Container {
             if (InjectMeta.has(symbols.PROPERTY_INJECTORS, t)) {
               const injectors = InjectMeta.get(symbols.PROPERTY_INJECTORS, t) || {};
               const [type, params] = injectors[name] || [];
-              return type ? that.make(type, [...params, ...args]) : Reflect.get(t, name, receiver);
+              return type
+                ? that.make(type, [...params, ...args])
+                : Reflect.get(t, name, receiver);
             }
             return Reflect.get(t, name, receiver);
           },

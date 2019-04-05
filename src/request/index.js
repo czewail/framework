@@ -7,6 +7,7 @@
 const parse = require('parseurl');
 // const is = require('core-util-is');
 const qs = require('querystring');
+const typeis = require('type-is');
 // const buddy = require('co-body');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
@@ -15,25 +16,36 @@ const Session = require('../session');
 const GET_MERGED_PARAMS = Symbol('Request#getMergedParams');
 
 class Request {
-  constructor(ctx) {
-    this.ctx = ctx;
+  constructor(req, res) {
+    // compatibility
+    this.ctx = { req, res };
     this.sess = null;
     /**
      * @var {http.ClinetRequest} req http.ClinetRequest
      */
-    this.req = ctx.req;
-    this.body = {};
+    this.req = req;
+
+    /**
+     * @var {http.ServerResponse} res http.ServerResponse
+     */
+    this.res = res;
+
+    /**
+     * @var {Object} request params
+     */
     this.mergedParams = this[GET_MERGED_PARAMS]();
   }
 
-  // parseBodyPiper() {
-  //   return (ctx) => {
-  //     return ctx
-  //   }
-  // }
+  get body() {
+    return this.req.body;
+  }
 
   get path() {
     return parse(this.req).pathname;
+  }
+
+  getPath() {
+    return this.path;
   }
 
   get querystring() {
@@ -46,10 +58,6 @@ class Request {
     return qs.parse(str);
   }
 
-  getPath() {
-    return this.path;
-  }
-
   get method() {
     return this.req.method;
   }
@@ -58,12 +66,12 @@ class Request {
     return this.method;
   }
 
-  getHeader(name) {
-    return this.req.getHeader(name);
-  }
-
   get headers() {
     return this.req.headers;
+  }
+
+  getHeader(name) {
+    return this.req.getHeader(name);
   }
 
   set headers(val) {
@@ -95,7 +103,7 @@ class Request {
     return this.req.socket;
   }
 
-  get prot() {
+  get port() {
     return this.socket.remotePort;
   }
 
@@ -119,6 +127,10 @@ class Request {
 
   isSsl() {
     return this.ssl;
+  }
+
+  is(...types) {
+    return typeis(this.req, types);
   }
 
   /**
@@ -186,7 +198,7 @@ class Request {
         exceptKeys = exceptKeys.concat(arg);
       }
     }
-    keys = keys.filter(key => !~exceptKeys.indexOf(key));
+    keys = keys.filter(key => !~exceptKeys.indexOf(key)); // eslint-disable-line
     return this.only(keys);
   }
 

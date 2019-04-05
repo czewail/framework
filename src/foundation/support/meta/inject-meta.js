@@ -1,12 +1,12 @@
 
-const Meta = require('./index')
+const Meta = require('./index');
 
-const INJECT_META = Symbol('inject-meta')
+const INJECT_META = Symbol('inject-meta');
 
 class InjectMeta extends Meta {
 
 }
 
-InjectMeta.meta = INJECT_META
+InjectMeta.meta = INJECT_META;
 
-module.exports = InjectMeta
+module.exports = InjectMeta;

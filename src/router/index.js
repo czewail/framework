@@ -6,40 +6,32 @@ const Dispatcher = require('./dispatcher');
 
 class Router {
   /**
-   * @var {Application} app Application instance
-   */
-  app = Container.get('app');
-
-  /**
-   * @var {Collection} collection Router Collection instance
-   */
-  collection = null;
-
-  /**
-   * @var {Array<controllerCallback>} controllerCallbacks controller callback in container
-   * controllerCallback:
-   * (ctx) => {
-   *  // ...
-   *  return new Controller()
-   * }
-   */
-  controllers = [];
-
-  /**
    * Create Router
    */
   constructor() {
+    /**
+     * @var {Application} app Application instance
+     */
+    this.app = Container.get('app');
+
+    /**
+     * @var {Collection} collection Router Collection instance
+     */
     this.collection = new Collection();
+
+    /**
+     * @var {Controller[]} controllers controllers in container
+     */
     this.controllers = this.getControllers();
+
     this.registerRoutes();
   }
 
-  getRouterMiddlewarePiper() {
-    return (ctx) => {
-      const request = this.app.get('request', [ctx], true);
+  getRouterPipe() {
+    return (request) => {
       const metchedRoute = this.collection.match(request);
-      const dispatcher = new Dispatcher(request, metchedRoute, ctx);
-      return dispatcher.dispatch();
+      const dispatcher = new Dispatcher(metchedRoute);
+      return dispatcher.resolve(request);
     };
   }
 
@@ -62,11 +54,8 @@ class Router {
     }
   }
 
-  register(uri, methods, controller, controllerAction, middlewares) {
-    const route = (new Route(uri, methods))
-      .setController(controller)
-      .setControllerAction(controllerAction)
-      .setMiddlewares(middlewares);
+  register(uri, methods, controller, action, middlewares) {
+    const route = new Route(uri, methods, controller, action, middlewares);
     this.collection.add(route);
   }
 

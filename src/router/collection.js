@@ -16,20 +16,20 @@ class RouteCollection {
    * @param {*} request
    */
   match(request) {
-    const methodRoutes = this.getMethodRoutes(request.method)
-    const machedRoutes = this.getMatchedRoutes(methodRoutes, request.path)
-    if (machedRoutes.length > 0) return machedRoutes[0]
-    throw new Error('not found')
+    const methodRoutes = this.getMethodRoutes(request.method);
+    const machedRoutes = this.getMatchedRoutes(methodRoutes, request.path);
+    if (machedRoutes.length > 0) return machedRoutes[0];
+    throw new Error('not found');
   }
 
   getMatchedRoutes(methodRoutes, pathname) {
-    const metched = []
+    const metched = [];
     for (const route of methodRoutes) {
       if (route.match(pathname)) {
-        metched.push(route)
+        metched.push(route);
       }
     }
-    return metched
+    return metched;
   }
 
   /**
@@ -37,18 +37,18 @@ class RouteCollection {
    * @param {*} method
    */
   getMethodRoutes(method = null) {
-    return method ? (this.routes[method] || []) : this.allRoutes
+    return method ? (this.routes[method] || []) : this.allRoutes;
   }
 
   add(route) {
     for (const method of route.methods) {
       if (!this.routes[method]) {
-        this.routes[method] = []
+        this.routes[method] = [];
       }
-      this.routes[method].push(route)
+      this.routes[method].push(route);
     }
-    this.allRoutes.push(route)
+    this.allRoutes.push(route);
   }
 }
 
-module.exports = RouteCollection
+module.exports = RouteCollection;

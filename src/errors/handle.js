@@ -89,12 +89,12 @@ class Handle {
         err,
       })
       return (new ResponseFactory(view)).output(this.ctx)
-    } else {
+    } 
       const view = this.view.render('errors/error.njk', {
         err,
       })
       return (new ResponseFactory(view)).output(this.ctx)
-    }
+    
   }
 }
 

@@ -6,15 +6,24 @@
  */
 
 // const Inject = require('./inject')
-const Controller = require('./controller')
-const Module = require('./module')
-const Rest = require('./rest')
-const Multiton = require('./multiton')
-const Middleware = require('./middleware')
-const Verbs = require('./verb')
-const Contexts = require('./contexts')
-const HttpCode = require('./http-code')
+const Controller = require('./controller');
+const Module = require('./module');
+const Rest = require('./rest');
+const Multiton = require('./multiton');
+const UseMiddleware = require('./use-middleware');
+const Verbs = require('./verb');
+const Contexts = require('./contexts');
+const HttpCode = require('./http-code');
+const Middleware = require('./middleware');
 
-module.exports = Object.assign({
-  Controller, Module, Rest, Multiton, Middleware, HttpCode,
-}, Verbs, Contexts)
+module.exports = {
+  Controller,
+  Module,
+  Rest,
+  Multiton,
+  UseMiddleware,
+  Middleware,
+  HttpCode,
+  ...Verbs,
+  ...Contexts,
+};

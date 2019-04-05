@@ -58,6 +58,13 @@ class Application extends Container {
   launchCalls = [];
 
   /**
+   * provider runtime calls
+   *
+   * @var {array}
+   */
+  runtimeCalls = [];
+
+  /**
    * Create a Dazejs Application insstance
    *
    * @param {string} rootPath application root path
@@ -73,10 +80,6 @@ class Application extends Container {
     this.setPaths(paths);
 
     this.initialContainer();
-
-    this.registerBaseProviders();
-
-    this.setProperties();
   }
 
   /**
@@ -122,18 +125,20 @@ class Application extends Container {
    * register base provider
    * @private
    */
-  registerBaseProviders() {
-    this.register(new providers.Config(this));
-
-    this.register(new providers.Messenger(this));
+  async registerBaseProviders() {
+    await this.register(new providers.Config(this));
+    await this.register(new providers.Messenger(this));
   }
 
   /**
    * register default provider
    * @private
    */
-  registerDefaultProviders() {
-    this.register(new providers.Request(this));
+  async registerDefaultProviders() {
+    await this.register(new providers.Module(this));
+    await this.register(new providers.Middleware(this));
+    await this.register(new providers.Router(this));
+    await this.register(new providers.Request(this));
 
     // this.register(new providers.Response(this))
 
@@ -152,32 +157,46 @@ class Application extends Container {
     // this.register(new providers.Middleware(this))
   }
 
-  /**
-   * register app provider
-   * @private
-   */
-  registerAppProvider() {
-    this.register(new providers.App(this));
-  }
+  // /**
+  //  * register app provider
+  //  * @private
+  //  */
+  // async registerAppProvider() {
+  //   await this.register(new providers.App(this));
+  // }
 
   /**
    * register provider in App
    * @param {class} Provider Provider
    */
-  register(Provider) {
+  async register(Provider) {
     if (Reflect.has(Provider, 'register') && typeof Provider.register === 'function') {
-      Provider.register(this);
+      await Provider.register(this);
     }
 
     if (Reflect.has(Provider, 'launch') && typeof Provider.launch === 'function') {
       this.launchCalls.push((...args) => Provider.launch(...args));
     }
+
+    if (Reflect.has(Provider, 'runtime') && typeof Provider.runtime === 'function') {
+      this.runtimeCalls.push((...args) => Provider.runtime(...args));
+    }
   }
 
-  fireLaunchCalls(...args) {
+  async fireLaunchCalls(...args) {
+    const results = [];
     for (const launch of this.launchCalls) {
-      launch(...args, this);
+      results.push(launch(...args, this));
     }
+    await Promise.all(results);
+  }
+
+  async fireRuntimeCalls(ctx) {
+    const results = [];
+    for (const runtime of this.runtimeCalls) {
+      results.push(runtime(ctx));
+    }
+    await Promise.all(results);
   }
 
   /**
@@ -246,37 +265,34 @@ class Application extends Container {
   /**
    * Initialization application
    */
-  initialize() {
+  async initialize() {
     // 加载运行环境
     this.loadEnv();
 
-    const clusterConfig = this.config.get('app.cluster');
+    await this.registerBaseProviders();
 
+    this.setProperties();
+
+    const clusterConfig = this.config.get('app.cluster');
     // 在集群模式下，主进程不运行业务代码
     if (!clusterConfig.enable || !cluster.isMaster) {
-      this.registerDefaultProviders();
+      await this.registerDefaultProviders();
+      await this.registerHttpServerProvider();
 
-      this.register(new providers.Module(this));
-      this.register(new providers.Router(this));
-      this.register(new providers.Middleware(this));
-
-      // this.registerAppProvider()
-      this.registerHttpServerProvider();
-
-      this.fireLaunchCalls();
+      await this.fireLaunchCalls();
     }
   }
 
-  registerHttpServerProvider() {
-    this.register(new providers.HttpServer(this));
+  async registerHttpServerProvider() {
+    await this.register(new providers.HttpServer(this));
   }
 
   /**
    * Start the application
    */
-  run() {
+  async run() {
     // Initialization application
-    this.initialize();
+    await this.initialize();
     // check app.cluster.enabled
     if (this.config.get('app.cluster.enable')) {
       // 以集群工作方式运行应用
@@ -301,13 +317,6 @@ class Application extends Container {
 
   listen(...args) {
     const server = this.get('httpServer');
-    // server.use((req, res, next) => {
-    //   this.fireLaunchCalls(req, res)
-    //   next()
-    // })
-    // server.use((req, res) => {
-    //   res.end('1111')
-    // })
     return server.listen(...args);
   }
 
@@ -316,10 +325,11 @@ class Application extends Container {
    * @param {string} group group name
    * @param {array} args Depends on instantiated parameters
    */
-  tagged(tag, shouldMake = false) {
+  tagged(tag) {
     if (!this.tags[tag]) return [];
-    if (!shouldMake) return this.tags[tag];
-    return this.tags[tag].map(t => this.make(t));
+    return this.tags[tag];
+    // if (!shouldMake) return this.tags[tag];
+    // return this.tags[tag].map(t => this.make(t, args));
   }
 
   /**
@@ -349,8 +359,10 @@ class Application extends Container {
    * @param {mixed} concrete Dependent
    * @param {*} shared singleton or multiton
    */
-  bind(abstract, concrete = null, shared = true) {
-    return shared ? this.singleton(abstract, concrete) : this.multiton(abstract, concrete);
+  bind(abstract, concrete = null, shared = true, callable = false) {
+    return shared
+      ? this.singleton(abstract, concrete, callable)
+      : this.multiton(abstract, concrete, callable);
   }
 
   /**
@@ -368,6 +380,7 @@ class Application extends Container {
   craft(abstract, shared = true) {
     if (typeof abstract === 'string') {
       if (require.resolve(abstract)) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
         const Res = require(abstract);
         if (!this.has(Res)) {
           this.bind(Res, Res, shared);

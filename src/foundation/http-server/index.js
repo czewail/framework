@@ -1,21 +1,18 @@
-const http = require('http')
-const Container = require('../../container')
+const http = require('http');
+const Container = require('../../container');
 
 class HttpServer {
-  app = Container.get('app');
+  constructor() {
+    this.app = Container.get('app');
+  }
 
   listen(...args) {
     const server = http.createServer((req, res) => {
-      // Simple Merge
-      const ctx = {
-        req, res
-      }
-      return this.app.get('context').process(ctx).catch(err => {
-        console.log(err, 'err')
-      })
-    })
-    return server.listen(...args)
+      const request = this.app.get('request', [req, res]);
+      return this.app.get('middleware').handle(request, this.app.get('router').getRouterPipe());
+    });
+    return server.listen(...args);
   }
 }
 
-module.exports = HttpServer
+module.exports = HttpServer;

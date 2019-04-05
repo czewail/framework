@@ -5,10 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Master = require('./master')
-const Worker = require('./worker')
+const Master = require('./master');
+const Worker = require('./worker');
 
 module.exports = {
   Master,
   Worker,
-}
+};

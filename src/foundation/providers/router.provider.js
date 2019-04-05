@@ -1,4 +1,5 @@
 const Router = require('../../router');
+const Middleware = require('../../middleware');
 
 class RouterProvider {
   /**
@@ -18,12 +19,11 @@ class RouterProvider {
   register() {
     // bind config in container
     this.app.singleton('router', Router);
+    this.app.singleton('routerMiddleware', Middleware);
   }
 
   launch() {
-    const router = this.app.get('router');
-    const context = this.app.get('context');
-    context.pipe(router.getRouterMiddlewarePiper());
+    this.app.make('router');
   }
 }
 

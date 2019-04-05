@@ -1,8 +1,8 @@
-const winston = require('winston')
-require('winston-mongodb')
-require('winston-daily-rotate-file')
-const Container = require('../container')
-const IllegalArgumentError = require('../errors/illegal-argument-error')
+const winston = require('winston');
+require('winston-mongodb');
+require('winston-daily-rotate-file');
+const Container = require('../container');
+const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Logger {
   /**
@@ -39,8 +39,7 @@ class Logger {
    */
   customDrivers = new Map();
 
-  defaultFormat = (format) => {
-    return format.combine(
+  defaultFormat = (format) => format.combine(
       format.timestamp({
         format: 'YYYY-MM-DD HH:mm:ss',
       }),
@@ -48,12 +47,11 @@ class Logger {
       format.printf(info => {
         return `[${info.timestamp}] [${info.level.toUpperCase()}] - ${info.message}`
       }),
-    )
-  };
+    );
 
   constructor() {
-    const defaultChannelName = this.getDefaultChannelName()
-    this.resolve(defaultChannelName)
+    const defaultChannelName = this.getDefaultChannelName();
+    this.resolve(defaultChannelName);
   }
 
   /**
@@ -62,7 +60,7 @@ class Logger {
    * @private
    */
   isDefaultDriverSupported(defaultDriverName) {
-    return this.defaultDrivers.has(defaultDriverName)
+    return this.defaultDrivers.has(defaultDriverName);
   }
 
   /**
@@ -71,7 +69,7 @@ class Logger {
    * @private
    */
   isCustomDriverSupported(customDriverName) {
-    return this.customDrivers.has(customDriverName)
+    return this.customDrivers.has(customDriverName);
   }
 
   /**
@@ -80,8 +78,8 @@ class Logger {
    * @public
    */
   channel(channelName) {
-    this.resolve(channelName)
-    return this
+    this.resolve(channelName);
+    return this;
   }
 
   /**
@@ -91,15 +89,15 @@ class Logger {
    */
   resolve(channelName) {
     if (!this.container.has(channelName)) {
-      const formatCall = this.getFormat(channelName)
+      const formatCall = this.getFormat(channelName);
       this.container.add(channelName, {
         transports: this.getTransports(channelName),
         format: formatCall(winston.format),
         levels: this.getLevels(),
         level: this.getLevel(),
-      })
+      });
     }
-    this.logger = this.container.get(channelName)
+    this.logger = this.container.get(channelName);
   }
 
   /**
@@ -108,38 +106,38 @@ class Logger {
    * @private
    */
   getTransports(channelName) {
-    const config = this.getChannelConfigure(channelName)
-    if (!config) throw new IllegalArgumentError(`Logger channel [${channelName}] is not defined.`)
-    const { driver: driverName } = config
+    const config = this.getChannelConfigure(channelName);
+    if (!config) throw new IllegalArgumentError(`Logger channel [${channelName}] is not defined.`);
+    const { driver: driverName } = config;
 
     if (this.isComposeChannel(config)) {
-      return this.composeDriverCreator(config)
+      return this.composeDriverCreator(config);
     }
 
     if (this.isCustomDriverSupported(driverName)) {
-      return this.callCustomDriverCreator(config)
+      return this.callCustomDriverCreator(config);
     }
 
     if (this.isDefaultDriverSupported(driverName)) {
-      const driverCreator = this[`${driverName}DriverCreator`]
-      return driverCreator(config)
+      const driverCreator = this[`${driverName}DriverCreator`];
+      return driverCreator(config);
     }
 
-    throw new IllegalArgumentError(`Logger Driver [${driverName}] is not supported.`)
+    throw new IllegalArgumentError(`Logger Driver [${driverName}] is not supported.`);
   }
 
   getFormat(channelName) {
-    const topFormat = this.app.get('config').get('logger.format')
-    const channelFormat = this.app.get('config').get(`logger.channels.${channelName}.format`)
-    return channelFormat || topFormat || this.defaultFormat
+    const topFormat = this.app.get('config').get('logger.format');
+    const channelFormat = this.app.get('config').get(`logger.channels.${channelName}.format`);
+    return channelFormat || topFormat || this.defaultFormat;
   }
 
   getLevels() {
-    return this.app.get('config').get('logger.levels')
+    return this.app.get('config').get('logger.levels');
   }
 
   getLevel() {
-    return this.app.get('config').get('logger.level', 'info')
+    return this.app.get('config').get('logger.level', 'info');
   }
 
   /**
@@ -148,14 +146,14 @@ class Logger {
    * @private
    */
   getChannelConfigure(channelName) {
-    return this.app.get('config').get(`logger.channels.${channelName}`)
+    return this.app.get('config').get(`logger.channels.${channelName}`);
   }
 
   /**
    * get the default channel name
    */
   getDefaultChannelName() {
-    return this.app.get('config').get('logger.default', 'console')
+    return this.app.get('config').get('logger.default', 'console');
   }
 
   /**
@@ -163,8 +161,8 @@ class Logger {
    * @param {object} channel channel config
    */
   isComposeChannel(channel) {
-    const { driver } = channel
-    return driver === 'compose'
+    const { driver } = channel;
+    return driver === 'compose';
   }
 
   callCustomDriverCreator() {
@@ -176,14 +174,14 @@ class Logger {
    * @param {object} channel channel configure
    */
   composeDriverCreator(channel) {
-    const { channels } = channel
-    if (!this.isComposeChannel(channel)) return
-    let res = []
+    const { channels } = channel;
+    if (!this.isComposeChannel(channel)) return;
+    let res = [];
     for (const _channel of channels) {
-      const transports = this.getTransports(_channel)
-      res = res.concat(transports)
+      const transports = this.getTransports(_channel);
+      res = res.concat(transports);
     }
-    return res
+    return res;
   }
 
   /**
@@ -191,8 +189,8 @@ class Logger {
    * @param {object} options channel configure
    */
   consoleDriverCreator(options) {
-    const { driver, ...restOpts } = options
-    return [new winston.transports.Console(restOpts)]
+    const { driver, ...restOpts } = options;
+    return [new winston.transports.Console(restOpts)];
   }
 
   /**
@@ -200,8 +198,8 @@ class Logger {
    * @param {object} options channel configure
    */
   dailyFileDriverCreator(options) {
-    const { driver, ...restOpts } = options
-    return [new winston.transports.DailyRotateFile(restOpts)]
+    const { driver, ...restOpts } = options;
+    return [new winston.transports.DailyRotateFile(restOpts)];
   }
 
   /**
@@ -209,8 +207,8 @@ class Logger {
    * @param {object} options channel configure
    */
   fileDriverCreator(options) {
-    const { driver, ...restOpts } = options
-    return [new winston.transports.File(restOpts)]
+    const { driver, ...restOpts } = options;
+    return [new winston.transports.File(restOpts)];
   }
 
   /**
@@ -218,8 +216,8 @@ class Logger {
    * @param {object} options channel configure
    */
   httpDriverCreator(options) {
-    const { driver, ...restOpts } = options
-    return [new winston.transports.Http(restOpts)]
+    const { driver, ...restOpts } = options;
+    return [new winston.transports.Http(restOpts)];
   }
 
   /**
@@ -227,8 +225,8 @@ class Logger {
    * @param {object} options channel configure
    */
   streamDriverCreator(options) {
-    const { driver, ...restOpts } = options
-    return [new winston.transports.Stream(restOpts)]
+    const { driver, ...restOpts } = options;
+    return [new winston.transports.Stream(restOpts)];
   }
 
   /**
@@ -236,23 +234,23 @@ class Logger {
    * @param {object} options channel configure
    */
   mongodbDriverCreator(options) {
-    const { driver, ...restOpts } = options
-    return [new winston.transports.MongoDB(restOpts)]
+    const { driver, ...restOpts } = options;
+    return [new winston.transports.MongoDB(restOpts)];
   }
 }
 
 const LoggerProxy = new Proxy(Logger, {
   construct(Target, args, extended) {
-    const instance = Reflect.construct(Target, args, extended)
+    const instance = Reflect.construct(Target, args, extended);
     return new Proxy(instance, {
       get(t, prop) {
         if (Reflect.has(t, prop) || typeof prop === 'symbol') {
-          return t[prop]
+          return t[prop];
         }
-        return t.logger[prop]
+        return t.logger[prop];
       },
-    })
-  }
-})
+    });
+  },
+});
 
-module.exports = LoggerProxy
+module.exports = LoggerProxy;

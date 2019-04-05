@@ -117,23 +117,23 @@ class Module {
    * @param {Object} ModuleInstance module instance
    */
   getMiddlewares(ModuleInstance) {
-    const middlewaresProp = [].concat(
+    return [].concat(
       ModuleInstance[symbols.MODULE_PARENT_MIDDLEWARES] || [],
       ModuleInstance.middlewares || [],
     );
-    if (!Array.isArray(middlewaresProp)) throw new Error('Module s middlewares prop must be an Array!');
-    const middlewares = [];
-    for (const middlewareProp of middlewaresProp) {
-      // 如果是字符串，标识路径
-      if (typeof middlewareProp === 'string') {
-        // eslint-disable-next-line global-require, import/no-dynamic-require
-        const mid = require(path.resolve(this.app.middlewarePath, middlewareProp));
-        middlewares.push(mid);
-      } else {
-        middlewares.push(middlewareProp);
-      }
-    }
-    return middlewares;
+    // if (!Array.isArray(middlewaresProp)) throw new Error('Module s middlewares prop must be an Array!');
+    // const middlewares = [];
+    // for (const middlewareProp of middlewaresProp) {
+    //   // 如果是字符串，标识路径
+    //   if (typeof middlewareProp === 'string') {
+    //     // eslint-disable-next-line global-require, import/no-dynamic-require
+    //     const mid = require(path.resolve(this.app.middlewarePath, middlewareProp));
+    //     middlewares.push(mid);
+    //   } else {
+    //     middlewares.push(middlewareProp);
+    //   }
+    // }
+    // return middlewares;
   }
 }
 
