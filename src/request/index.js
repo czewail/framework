@@ -21,7 +21,7 @@ class Request {
     this.ctx = { req, res };
     this.sess = null;
     /**
-     * @var {http.ClinetRequest} req http.ClinetRequest
+     * @var {http.IncomingMessage} req http.IncomingMessage
      */
     this.req = req;
 
@@ -31,77 +31,285 @@ class Request {
     this.res = res;
 
     /**
+     * @var {String} originalUrl http.ClinetRequest.url
+     */
+    this.originalUrl = req.url;
+
+    /**
      * @var {Object} request params
      */
     this.mergedParams = this[GET_MERGED_PARAMS]();
+  }
+
+  /**
+   * Return request header.
+   */
+  get headers() {
+    return this.req.headers;
+  }
+
+  /**
+   * Set request headers.
+   */
+  set headers(val) {
+    this.req.headers = val;
+  }
+
+  /**
+   * Return request header.
+   * @param {String} name headers key
+   */
+  getHeader(name) {
+    const field = name.toLowerCase();
+    switch (field) {
+      case 'referer':
+      case 'referrer':
+        return this.req.headers.referrer || this.req.headers.referer || '';
+      default:
+        return this.req.headers[field] || '';
+    }
+  }
+
+  /**
+   * Set request headers.
+   * @param {String} name headers key
+   * @param {Mixed} val headers value
+   */
+  setHeader(name, val) {
+    this.req.setHeader(name, val);
+    return this;
+  }
+
+  /**
+   * Return request header.
+   * @param {String} name
+   */
+  get(name) {
+    return this.getHeader(name);
+  }
+
+  /**
+   * Get request method.
+   */
+  get method() {
+    return this.req.method;
+  }
+
+  /**
+   * Get request method.
+   */
+  getMethod() {
+    return this.method;
+  }
+
+  /**
+   * Get parsed Content-Length when present.
+   * @return {Number}
+   */
+  get length() {
+    const len = this.getHeader('Content-Length');
+    if (!len) return undefined;
+    return ~~len; // eslint-disable-line no-bitwise
+  }
+
+  /**
+   * Get parsed Content-Length when present.
+   * @return {Number}
+   */
+  getLength() {
+    return this.length;
+  }
+
+  /**
+   * Get request URL.
+   */
+  get url() {
+    return this.req.url;
+  }
+
+  /**
+   * Get request URL.
+   */
+  getUrl() {
+    return this.url;
+  }
+
+  /**
+   * Set request URL.
+   */
+  set url(val) {
+    this.req.url = val;
+  }
+
+  /**
+   * Set request URL.
+   * @param {String} val URL
+   */
+  setUrl(val) {
+    this.url = val;
+  }
+
+  /**
+   * Get original Url
+   */
+  getOriginalUrl() {
+    return this.originalUrl;
+  }
+
+  /**
+   * Get request socket
+   */
+  get socket() {
+    return this.req.socket;
+  }
+
+  /**
+   * Get request socket
+   */
+  getSocket() {
+    return this.socket;
+  }
+
+  /**
+   * Get request protocol
+   * @returns {String: 'http' | 'https'}
+   */
+  get protocol() {
+    if (this.socket.encrypted) return 'https';
+    const xForwordedProto = this.getHeader('X-Forwarded-Proto');
+    return xForwordedProto ? xForwordedProto.split(/\s*,\s*/, 1)[0] : 'http';
+  }
+
+  /**
+   * Get request protocol
+   * @returns {String: 'http' | 'https'}
+   */
+  getProtocol() {
+    return this.protocol;
+  }
+
+  /**
+   * get request host
+   */
+  get host() {
+    let host = '';
+    if (this.isHttp2) {
+      host = this.getHeader(':authority');
+    } else {
+      host = this.getHeader('Host');
+    }
+    return host ? host.split(/\s*,\s*/, 1)[0] : '';
+  }
+
+  /**
+   * Get request origin
+   */
+  get origin() {
+    return `${this.protocol}://${this.host}`;
+  }
+
+  /**
+   * Get request origin
+   */
+  getOrigin() {
+    return this.origin;
+  }
+
+  /**
+   * Get request href
+   */
+  get href() {
+    if (/^https?:\/\//i.test(this.originalUrl)) return this.originalUrl;
+    return this.origin + this.originalUrl;
+  }
+
+  /**
+   * Get request href
+   */
+  getHref() {
+    return this.href;
+  }
+
+  /**
+   * Get request Path
+   */
+  get path() {
+    return parse(this.req).pathname;
+  }
+
+  /**
+   * Get request Path
+   */
+  getPath() {
+    return this.path;
+  }
+
+  /**
+   * 根据 ? 获取原始查询字符串（不包含 ？）
+   */
+  get querystring() {
+    if (!this.req) return '';
+    return parse(this.req).query || '';
+  }
+
+  /**
+   * 根据 ? 获取原始查询字符串
+   */
+  getQuerystring() {
+    return this.querystring;
+  }
+
+
+  /**
+   * 根据 ? 获取原始查询字符串（包含 ？）
+   */
+  get search() {
+    if (!this.querystring) return '';
+    return `?${this.querystring}`;
+  }
+
+  /**
+   * 根据 ? 获取原始查询字符串（包含 ？）
+   */
+  getSearch() {
+    return this.search;
+  }
+
+  /**
+   * 获取解析的查询字符串, 当没有查询字符串时，返回一个空对象
+   */
+  get query() {
+    const str = this.querystring;
+    return qs.parse(str);
+  }
+
+  /**
+   * 获取解析的查询字符串, 当没有查询字符串时，返回一个空对象
+   */
+  getQuery() {
+    return this.query;
+  }
+
+  /**
+   * Get the request mime type
+   */
+  get type() {
+    const type = this.getHeader('Content-Type');
+    if (!type) return '';
+    return type.split(';')[0];
+  }
+
+  /**
+   * Get the request mime type
+   */
+  getType() {
+    return this.type;
   }
 
   get body() {
     return this.req.body;
   }
 
-  get path() {
-    return parse(this.req).pathname;
-  }
-
-  getPath() {
-    return this.path;
-  }
-
-  get querystring() {
-    if (!this.req) return '';
-    return parse(this.req).query || '';
-  }
-
-  get query() {
-    const str = this.querystring;
-    return qs.parse(str);
-  }
-
-  get method() {
-    return this.req.method;
-  }
-
-  getMethod() {
-    return this.method;
-  }
-
-  get headers() {
-    return this.req.headers;
-  }
-
-  getHeader(name) {
-    return this.req.getHeader(name);
-  }
-
-  set headers(val) {
-    this.req.headers = val;
-  }
-
-  setHeader(name, val) {
-    this.req.setHeader(name, val);
-    return this;
-  }
-
-  get url() {
-    return this.req.url;
-  }
-
-  getUrl() {
-    return this.url;
-  }
-
-  set url(val) {
-    this.req.url = val;
-  }
-
-  setUrl(val) {
-    this.url = val;
-  }
-
-  get socket() {
-    return this.req.socket;
-  }
 
   get port() {
     return this.socket.remotePort;
@@ -111,26 +319,20 @@ class Request {
     return this.socket.remoteAddress;
   }
 
-  get protocol() {
-    if (this.socket.encrypted) return 'https';
-    const xForwordedProto = this.getHeader('X-Forwarded-Proto');
-    return xForwordedProto ? xForwordedProto.split(/\s*,\s*/, 1)[0] : 'http';
-  }
 
-  getProtocol() {
-    return this.protocol;
-  }
-
-  get ssl() {
+  get isSsl() {
     return this.protocol === 'https';
-  }
-
-  isSsl() {
-    return this.ssl;
   }
 
   is(...types) {
     return typeis(this.req, types);
+  }
+
+  /**
+   * Determine if the http Version is 2.0
+   */
+  get isHttp2() {
+    return this.req.httpVersionMajor >= 2;
   }
 
   /**

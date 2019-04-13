@@ -9,13 +9,16 @@ const Meta = require('../foundation/support/meta');
 
 function decorateMethod(target, name, descriptor, verb, uri) {
   if (!Meta.has('routes', target)) {
-    Meta.set('routes', [], target);
+    Meta.set('routes', {}, target);
   }
-  Meta.set('routes', [...Meta.get('routes', target), {
-    uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
-    method: verb,
-    action: name,
-  }], target);
+  Meta.set('routes', {
+    ...Meta.get('routes', target),
+    [`${name}`]: {
+      uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
+      method: verb,
+      action: name,
+    },
+  }, target);
   return descriptor;
 }
 

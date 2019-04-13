@@ -7,6 +7,7 @@
 
 const pathToRegExp = require('path-to-regexp');
 const Middleware = require('../middleware');
+const Meta = require('../foundation/support/meta');
 
 class Route {
   /**
@@ -17,7 +18,7 @@ class Route {
    * @param {String} action controller action
    * @param {Array} middlewares route middlewares
    */
-  constructor(uri, methods = [], controller = null, action = '', middlewares = []) {
+  constructor(uri, methods = [], controller = null, action = '') {
     /**
      * @var {Array} keys route params keys
      */
@@ -56,7 +57,7 @@ class Route {
     /**
      * register Middlewares in Middleware instance
      */
-    this.setMiddlewares(middlewares);
+    this.parseMiddleware();
 
     /**
      * patch HEAD method with GET method
@@ -64,6 +65,13 @@ class Route {
     if (this.methods.includes('GET') && !this.methods.includes('HEAD')) {
       this.methods.push('HEAD');
     }
+  }
+
+  parseMiddleware() {
+    const middlewares = Meta.get('middlewares', this.controller.prototype) || [];
+    const routeMiddlewares = Meta.get('route_middlewares', this.controller.prototype) || {};
+    this.registerMiddlewares(middlewares);
+    this.registerMiddlewares(routeMiddlewares[this.action]);
   }
 
   /**
@@ -84,7 +92,8 @@ class Route {
   /**
    * register Middlewares in Middleware instance
    */
-  setMiddlewares(middlewares) {
+  registerMiddlewares(middlewares) {
+    if (!Array.isArray(middlewares)) return this;
     for (const middleware of middlewares) {
       this.middleware.register(middleware);
     }

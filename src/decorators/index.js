@@ -8,7 +8,7 @@
 // const Inject = require('./inject')
 const Controller = require('./controller');
 const Module = require('./module');
-const Rest = require('./rest');
+const RestController = require('./rest-controller');
 const Multiton = require('./multiton');
 const UseMiddleware = require('./use-middleware');
 const Verbs = require('./verb');
@@ -16,14 +16,18 @@ const Contexts = require('./contexts');
 const HttpCode = require('./http-code');
 const Middleware = require('./middleware');
 
-module.exports = {
-  Controller,
-  Module,
-  Rest,
-  Multiton,
-  UseMiddleware,
-  Middleware,
-  HttpCode,
+const Http = {
+  Code: HttpCode,
   ...Verbs,
+};
+
+module.exports = {
+  Module,
+  Middleware,
+  Controller,
+  RestController,
+  Multiton,
+  Use: UseMiddleware,
+  Http,
   ...Contexts,
 };

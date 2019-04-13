@@ -31,8 +31,8 @@ class RequestProvider {
   }
 
   launch() {
-    // register body-parse middleware
-    this.app.get('middleware').register(BodyParse);
+    // // register body-parse middleware
+    // this.app.get('middleware').register(BodyParse);
   }
 }
 

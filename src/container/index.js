@@ -6,7 +6,6 @@
  */
 const InjectMeta = require('../foundation/support/meta/inject-meta');
 const symbols = require('../symbol');
-// const Injectable = require('../foundation/support/injectable');
 
 const BIND = Symbol('Container#bind');
 /**
@@ -188,7 +187,10 @@ class Container {
       // [ [ type, params ] ]
       const injectors = InjectMeta.get(symbols.CONSTRUCTOR_INJECTORS, klass.prototype) || [];
       for (const [type, params] of injectors) {
-        bindParams.push(this.make(type, [...params, ...args]));
+        const injectedParam = this.make(type, [...params, ...args]);
+        // eslint-disable-next-line
+        injectedParam.__context = args;
+        bindParams.push(injectedParam);
       }
     }
     const klassProxy = new Proxy(klass, {
@@ -205,7 +207,10 @@ class Container {
                     const injectors = InjectMeta.get(symbols.METHOD_INJECTORS, t) || {};
                     const methodInjectors = injectors[name] || [];
                     for (const [type, params] of methodInjectors) {
-                      bindMethodParams.push(that.make(type, [...params, ...args]));
+                      const injectedParam = that.make(type, [...params, ...args]);
+                      // eslint-disable-next-line
+                      injectedParam.__context = args;
+                      bindMethodParams.push(injectedParam);
                     }
                     return Reflect.apply(tar, thisBinding, [...bindMethodParams, ...instanceArgs]);
                   }
@@ -216,9 +221,13 @@ class Container {
             if (InjectMeta.has(symbols.PROPERTY_INJECTORS, t)) {
               const injectors = InjectMeta.get(symbols.PROPERTY_INJECTORS, t) || {};
               const [type, params] = injectors[name] || [];
-              return type
-                ? that.make(type, [...params, ...args])
-                : Reflect.get(t, name, receiver);
+              const injectedParam = that.make(type, [...params, ...args]);
+              // eslint-disable-next-line
+              injectedParam.__context = args;
+              return injectedParam;
+              // return type
+              //   ? that.make(type, [...params, ...args])
+              //   : Reflect.get(t, name, receiver);
             }
             return Reflect.get(t, name, receiver);
           },

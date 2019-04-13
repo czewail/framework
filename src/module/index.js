@@ -1,5 +1,6 @@
 const path = require('path');
 const glob = require('glob');
+const is = require('core-util-is');
 const Container = require('../container');
 const symbols = require('../symbol');
 const Meta = require('../foundation/support/meta');
@@ -12,21 +13,57 @@ const { patchModule } = require('./helpers');
  * }
  */
 class Module {
+  /**
+   * Create Module
+   */
   constructor() {
     this.app = Container.get('app');
-    this.root = 'app.module';
-    this.loadRootModule();
+
+    this.loadModules();
   }
 
   /**
-   * load root module
+   * load application modules
    */
-  loadRootModule() {
-    const realRootModulePath = path.resolve(this.app.appPath, this.root);
-    const resolve = require.resolve(realRootModulePath);
+  loadModules() {
+    for (const mdl of this.app.modules) {
+      this.register(mdl);
+    }
+  }
+
+  /**
+   * register a module
+   * @param {STring | Class} mdl
+   */
+  register(mdl) {
+    if (is.isString(mdl)) {
+      this.parseStringModule(mdl);
+    } else if (is.isFunction(mdl)) {
+      this.parseFunctionModule(mdl);
+    }
+  }
+
+  /**
+   * parse module if typeof string
+   * @param {String} mdl
+   */
+  parseStringModule(mdl) {
+    const modulePath = require.resolve(path.join(this.app.appPath, mdl));
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const Mod = require(resolve);
-    this.loadModuleProperties(new Mod());
+    this.parseFunctionModule(require(modulePath));
+  }
+
+  /**
+   * parse module if typeof function
+   * @param {Function} mdl
+   */
+  parseFunctionModule(Mdl) {
+    // 使用了 @module 装饰器
+    if (Mdl.prototype && Meta.has('isModule', Mdl.prototype) && Meta.get('isModule', Mdl.prototype) === true) {
+      this.loadModuleProperties(new Mdl());
+      return this;
+    }
+    throw new TypeError('unsupport module');
   }
 
   /**
@@ -35,17 +72,17 @@ class Module {
    */
   loadModuleProperties(ModuleInstance) {
     const middlewares = this.getMiddlewares(ModuleInstance);
-    this.loadControllers(ModuleInstance, middlewares);
-    this.loadSubModules(ModuleInstance);
+    this.parsePropertyControllers(ModuleInstance, middlewares);
+    this.parsePropertyModules(ModuleInstance);
   }
 
   /**
    * Load all sub-modules
    * @param {object} ModuleInstance
    */
-  loadSubModules(ModuleInstance) {
-    const modules = this.getModuleModules(ModuleInstance);
-    for (const Mod of modules) {
+  parsePropertyModules(ModuleInstance) {
+    const propertyModules = this.getModuleModules(ModuleInstance);
+    for (const Mod of propertyModules) {
       this.loadModuleProperties(new Mod());
     }
   }
@@ -55,7 +92,7 @@ class Module {
    * @param {Object} module instance
    * @param {Array} middlewares module middlewares
    */
-  loadControllers(ModuleInstance, middlewares) {
+  parsePropertyControllers(ModuleInstance, middlewares) {
     const controllersProp = ModuleInstance.controllers || [];
     if (!Array.isArray(controllersProp)) throw new Error('Module s controller prop must be an Array!');
     for (const controllerProp of controllersProp) {
@@ -67,11 +104,14 @@ class Module {
         for (const controller of klawControllers) {
           // eslint-disable-next-line global-require, import/no-dynamic-require
           const Ctrl = require(controller);
-          Meta.set('middlewares', middlewares, Ctrl.prototype);
+          const metaMiddlewares = Meta.get('middlewares', Ctrl.prototype) || [];
+          Meta.set('middlewares', [...middlewares, ...metaMiddlewares], Ctrl.prototype);
           this.bindControllerInContainer(Ctrl);
         }
       } else {
-        Meta.set('middlewares', middlewares, controllerProp.prototype);
+        const metaMiddlewares = Meta.get('middlewares', controllerProp.prototype) || [];
+        Meta.set('middlewares', [...middlewares, ...metaMiddlewares], controllerProp.prototype);
+        // Meta.set('middlewares', middlewares, controllerProp.prototype);
         this.bindControllerInContainer(controllerProp);
       }
     }
@@ -121,19 +161,6 @@ class Module {
       ModuleInstance[symbols.MODULE_PARENT_MIDDLEWARES] || [],
       ModuleInstance.middlewares || [],
     );
-    // if (!Array.isArray(middlewaresProp)) throw new Error('Module s middlewares prop must be an Array!');
-    // const middlewares = [];
-    // for (const middlewareProp of middlewaresProp) {
-    //   // 如果是字符串，标识路径
-    //   if (typeof middlewareProp === 'string') {
-    //     // eslint-disable-next-line global-require, import/no-dynamic-require
-    //     const mid = require(path.resolve(this.app.middlewarePath, middlewareProp));
-    //     middlewares.push(mid);
-    //   } else {
-    //     middlewares.push(middlewareProp);
-    //   }
-    // }
-    // return middlewares;
   }
 }
 

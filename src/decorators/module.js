@@ -5,24 +5,20 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Meta = require('../foundation/support/meta')
-const Container = require('../container')
+const Meta = require('../foundation/support/meta');
 
 function injectClass(target) {
-  Meta.set('isModule', true, target.prototype)
-  Container.bind(target, target)
-  Container.tag(target, 'modules')
-  return target
+  Meta.set('isModule', true, target.prototype);
+  return target;
 }
 
 function handle(args) {
   if (args.length === 1) {
-    return injectClass(...args)
+    return injectClass(...args);
   }
+  throw new TypeError('@Module must use on class');
 }
 
 module.exports = function Module() {
-  return function (...argsClass) {
-    return handle(argsClass)
-  }
-}
+  return (...argsClass) => handle(argsClass);
+};

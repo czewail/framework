@@ -4,26 +4,31 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+const Meta = require('../foundation/support/meta');
 
-const { MIDDLEWARES } = require('../symbol');
-
-function injectClass(target, middlewares) {
-  // Reflect.defineMetadata(MIDDLEWARES, middlewares, target.prototype)
-  target.prototype[MIDDLEWARES] = middlewares;
-
-  // Reflect.defineMetadata(ISROUTE, true, target.prototype)
-  // Reflect.defineMetadata(PREFIX, _prefix, target.prototype)
+function injectClass(target, middleware) {
+  const middlewares = Meta.get('middlewares', target.prototype) || [];
+  Meta.set('middlewares', [...middlewares, middleware], target.prototype);
   return target;
 }
 
-function handle(args, middlewares) {
-  if (args.length === 1) {
-    return injectClass(...args, middlewares);
+function injectMethod(target, name, descriptor, middleware) {
+  const routeMiddlewares = Meta.get('route_middlewares', target) || {};
+  if (!routeMiddlewares[name]) {
+    routeMiddlewares[name] = [];
   }
+  routeMiddlewares[name].push(middleware);
+  Meta.set('route_middlewares', routeMiddlewares, target);
+  return descriptor;
 }
 
-module.exports = function Middleware(...middlewares) {
-  return function (...argsClass) {
-    return handle(argsClass, middlewares);
-  };
+function handle(args, middleware) {
+  if (args.length === 1) {
+    return injectClass(...args, middleware);
+  }
+  return injectMethod(...args, middleware);
+}
+
+module.exports = function useMiddleware(middleware) {
+  return (...argsClass) => handle(argsClass, middleware);
 };

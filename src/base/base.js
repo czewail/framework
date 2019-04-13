@@ -5,80 +5,64 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Container = require('../container')
-
-const CTX = Symbol('Base#ctx')
+const Container = require('../container');
 
 class Base {
-  [CTX] = null;
-
-  setCtx(ctx) {
-    this[CTX] = ctx
+  constructor(request) {
+    this.request = request;
   }
 
   get app() {
-    return Container.get('app')
+    return Container.get('app');
   }
 
   get config() {
-    return Container.get('config')
+    return Container.get('config');
   }
 
   get messenger() {
-    return Container.get('messenger')
-  }
-
-  get request() {
-    return Container.get('request', [this[CTX]])
-  }
-
-  get ctx() {
-    return this[CTX]
+    return Container.get('messenger');
   }
 
   get response() {
-    return Container.get('response')
+    return Container.get('response');
   }
 
   get redirect() {
-    return Container.get('redirect')
+    return Container.get('redirect');
   }
 
   get cookies() {
-    return this.cookie
+    return this.cookie;
   }
 
   get cookie() {
-    return Container.get('cookie')
+    return Container.get('cookie');
   }
 
   get session() {
-    return Container.get('session', [this[CTX]])
+    return Container.get('session', [this.request]);
   }
 
   get view() {
-    return Container.get('view')
+    return Container.get('view');
   }
 
   get body() {
-    return this.request.body
+    return this.request.body;
   }
 
   get params() {
-    return this.ctx.params
+    return this.ctx.params;
   }
 
   get query() {
-    return this.request.query
+    return this.request.query;
   }
 
   get headers() {
-    return this.request.headers
-  }
-
-  get $http() {
-    return Container.get('axios')
+    return this.request.headers;
   }
 }
 
-module.exports = Base
+module.exports = Base;

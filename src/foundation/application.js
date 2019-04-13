@@ -27,7 +27,7 @@ class Application extends Container {
    *
    * @var {string}
    */
-  VERSION = '0.8.1';
+  VERSION = '0.9.0';
 
   /**
    * The config instance
@@ -63,6 +63,8 @@ class Application extends Container {
    * @var {array}
    */
   runtimeCalls = [];
+
+  modules = [];
 
   /**
    * Create a Dazejs Application insstance
@@ -119,6 +121,10 @@ class Application extends Container {
     this.isDebug = this.config.get('app.debug', false);
 
     return this;
+  }
+
+  loadModule(mdl) {
+    this.modules.push(mdl);
   }
 
   /**
@@ -225,6 +231,7 @@ class Application extends Container {
       sticky: clusterConfig.sticky || false,
     });
   }
+
 
   // 获取集群工作进程实例
   get clusterWorkerInstance() {

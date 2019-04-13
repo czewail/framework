@@ -46,11 +46,11 @@ class Router {
    * @param {Controller} controller
    */
   parseController(controller) {
-    const routes = Meta.get('routes', controller.prototype) || [];
+    const routes = Meta.get('routes', controller.prototype) || {};
     const prefix = Meta.get('prefix', controller.prototype) || '';
-    const middlewares = Meta.get('middlewares', controller.prototype) || '';
-    for (const route of routes) {
-      this.register(`${prefix}${route.uri}`, [route.method], controller, route.action, middlewares);
+    for (const key of Object.keys(routes)) {
+      const route = routes[key];
+      this.register(`${prefix}${route.uri}`, [route.method], controller, key);
     }
   }
 
