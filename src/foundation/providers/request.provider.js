@@ -1,5 +1,4 @@
 const Request = require('../../request');
-const BodyParse = require('../../request/middlewares/body-parse.middleware');
 
 class RequestProvider {
   /**
@@ -24,15 +23,6 @@ class RequestProvider {
       }
       return req.request;
     }, true);
-    // bind req callback
-    this.app.singleton('req', req => req, true);
-    // bind res callback
-    this.app.singleton('res', (req, res) => res, true);
-  }
-
-  launch() {
-    // // register body-parse middleware
-    // this.app.get('middleware').register(BodyParse);
   }
 }
 

@@ -411,6 +411,7 @@ class Response {
   send(request) {
     const { res } = request;
     const data = this.getData();
+
     if (Buffer.isBuffer(data) || typeof data === 'string') {
       return res.end(data);
     }

@@ -6,6 +6,7 @@
  */
 
 const Meta = require('../foundation/support/meta');
+const { formatPrefix } = require('./helpers');
 
 function decorateMethod(target, name, descriptor, verb, uri) {
   if (!Meta.has('routes', target)) {
@@ -14,7 +15,7 @@ function decorateMethod(target, name, descriptor, verb, uri) {
   Meta.set('routes', {
     ...Meta.get('routes', target),
     [`${name}`]: {
-      uri: uri.slice(0, 1) === '/' ? uri : `/${uri}`,
+      uri: formatPrefix(uri),
       method: verb,
       action: name,
     },

@@ -7,8 +7,8 @@
 
 const { formatPrefix } = require('./helpers');
 const Meta = require('../foundation/support/meta');
-const BaseController = require('../base/controller');
-const symbols = require('../symbol');
+// const BaseController = require('../base/controller');
+// const symbols = require('../symbol');
 
 // const constrollerGetterMap = {
 //   ctx: (t) => {
@@ -20,13 +20,21 @@ const symbols = require('../symbol');
 function injectClass(target, prefix) {
   Meta.set('isController', true, target.prototype);
   Meta.set('prefix', formatPrefix(prefix), target.prototype);
-  return new Proxy(target, {
-    construct(Target, newArgs, extended) {
-      const instance = Reflect.construct(Target, newArgs, extended);
-      console.log(instance, instance.__context, '__context');
-      return instance;
-    },
-  });
+  return target;
+  // return new Proxy(target, {
+  //   construct(Target, newArgs, extended) {
+  //     const instance = Reflect.construct(Target, newArgs, extended);
+  //     return new Proxy(instance, {
+  //       get(tar, property, receiver) {
+  //         // if (property === '__context__') {
+  //         //   console.log(Reflect.get(tar, '__context__', receiver));
+  //         //   return Reflect.get(tar, property, receiver);
+  //         // }
+  //         return Reflect.get(tar, property, receiver);
+  //       },
+  //     });
+  //   },
+  // });
 }
 
 function handle(args, prefix) {

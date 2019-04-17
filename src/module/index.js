@@ -106,25 +106,24 @@ class Module {
           const Ctrl = require(controller);
           const metaMiddlewares = Meta.get('middlewares', Ctrl.prototype) || [];
           Meta.set('middlewares', [...middlewares, ...metaMiddlewares], Ctrl.prototype);
-          this.bindControllerInContainer(Ctrl);
+          this.app.get('controller').register(Ctrl);
         }
       } else {
         const metaMiddlewares = Meta.get('middlewares', controllerProp.prototype) || [];
         Meta.set('middlewares', [...middlewares, ...metaMiddlewares], controllerProp.prototype);
-        // Meta.set('middlewares', middlewares, controllerProp.prototype);
-        this.bindControllerInContainer(controllerProp);
+        this.app.get('controller').register(controllerProp);
       }
     }
   }
 
-  /**
-   * bind controller in container
-   * @param {Class} Controller controller
-   */
-  bindControllerInContainer(Controller) {
-    this.app.bind(Controller, Controller);
-    this.app.tag(Controller, 'controller');
-  }
+  // /**
+  //  * bind controller in container
+  //  * @param {Class} Controller controller
+  //  */
+  // bindControllerInContainer(Controller) {
+  //   this.app.multiton(Controller, Controller);
+  //   this.app.tag(Controller, 'controller');
+  // }
 
   /**
    * get module subModules

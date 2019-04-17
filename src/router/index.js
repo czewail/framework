@@ -28,7 +28,7 @@ class Router {
   }
 
   getRouterPipe() {
-    return (request) => {
+    return async (request) => {
       const metchedRoute = this.collection.match(request);
       const dispatcher = new Dispatcher(metchedRoute);
       return dispatcher.resolve(request);
@@ -60,7 +60,8 @@ class Router {
   }
 
   getControllers() {
-    return this.app.tagged('controller');
+    // return this.app.tagged('controller');
+    return this.app.get('controller').controllers || [];
   }
 }
 

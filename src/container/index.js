@@ -186,7 +186,7 @@ class Container {
       // 获取需要注入构造函数的标识
       // [ [ type, params ] ]
       const injectors = InjectMeta.get(symbols.CONSTRUCTOR_INJECTORS, klass.prototype) || [];
-      for (const [type, params] of injectors) {
+      for (const [type, params = []] of injectors) {
         const injectedParam = this.make(type, [...params, ...args]);
         // eslint-disable-next-line
         injectedParam.__context = args;
@@ -206,7 +206,7 @@ class Container {
                   if (InjectMeta.has(symbols.METHOD_INJECTORS, t)) {
                     const injectors = InjectMeta.get(symbols.METHOD_INJECTORS, t) || {};
                     const methodInjectors = injectors[name] || [];
-                    for (const [type, params] of methodInjectors) {
+                    for (const [type, params = []] of methodInjectors) {
                       const injectedParam = that.make(type, [...params, ...args]);
                       // eslint-disable-next-line
                       injectedParam.__context = args;
@@ -220,11 +220,18 @@ class Container {
             }
             if (InjectMeta.has(symbols.PROPERTY_INJECTORS, t)) {
               const injectors = InjectMeta.get(symbols.PROPERTY_INJECTORS, t) || {};
-              const [type, params] = injectors[name] || [];
-              const injectedParam = that.make(type, [...params, ...args]);
+              const [type, params = []] = injectors[name] || [];
+
               // eslint-disable-next-line
-              injectedParam.__context = args;
-              return injectedParam;
+              // injectedParam.__context = args;
+              // return injectedParam;
+              if (type) {
+                const injectedParam = that.make(type, [...params, ...args]);
+                // eslint-disable-next-line
+                injectedParam.__context = args;
+                return that.make(type, [...params, ...args]);
+              }
+              return Reflect.get(t, name, receiver);
               // return type
               //   ? that.make(type, [...params, ...args])
               //   : Reflect.get(t, name, receiver);

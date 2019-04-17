@@ -13,3 +13,4 @@ exports.Middleware = require('./middleware.provider');
 exports.HttpServer = require('./http-server.provider');
 exports.Module = require('./module.provider');
 exports.Router = require('./router.provider');
+exports.Controller = require('./controller.provider');

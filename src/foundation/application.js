@@ -142,6 +142,7 @@ class Application extends Container {
    */
   async registerDefaultProviders() {
     await this.register(new providers.Module(this));
+    await this.register(new providers.Controller(this));
     await this.register(new providers.Middleware(this));
     await this.register(new providers.Router(this));
     await this.register(new providers.Request(this));
@@ -356,8 +357,8 @@ class Application extends Container {
    * @param {mixed} abstract Dependent identification
    * @param {array} args Depends on instantiated parameters
    */
-  get(abstract, args = [], force = false) {
-    return this.make(abstract, args, force);
+  get(abstract, args = [], context = null, force = false) {
+    return this.make(abstract, args, context, force);
   }
 
   /**
