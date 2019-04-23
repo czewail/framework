@@ -16,12 +16,11 @@ function injectClass(target, containers) {
             return null;
           }
           return Container.get(container[0], container[1] || []);
-        } else {
-          if (!Container.has(container)) {
-            return null;
-          }
-          return Container.get(container);
         }
+        if (!Container.has(container)) {
+          return null;
+        }
+        return Container.get(container);
       });
       return Reflect.construct(Target, [...containerArgs, ...newArgs], extended);
     },
@@ -61,14 +60,11 @@ function injectdMethod(target, name, descriptor, containers) {
 
 function handle(args, containers) {
   if (args.length === 1) {
-    return injectClass(...args, containers)
-  } 
-    return injectdMethod(...args, containers)
-  
+    return injectClass(...args, containers);
+  }
+  return injectdMethod(...args, containers);
 }
 
 module.exports = function Inject(...args) {
-  return function (...argsClass) {
-    return handle(argsClass, args);
-  };
+  return (...argsClass) => handle(argsClass, args);
 };

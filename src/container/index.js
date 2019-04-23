@@ -189,7 +189,7 @@ class Container {
       for (const [type, params = []] of injectors) {
         const injectedParam = this.make(type, [...params, ...args]);
         // eslint-disable-next-line
-        injectedParam.__context = args;
+        // injectedParam.__context = args;
         bindParams.push(injectedParam);
       }
     }
@@ -209,7 +209,7 @@ class Container {
                     for (const [type, params = []] of methodInjectors) {
                       const injectedParam = that.make(type, [...params, ...args]);
                       // eslint-disable-next-line
-                      injectedParam.__context = args;
+                      // injectedParam.__context = args;
                       bindMethodParams.push(injectedParam);
                     }
                     return Reflect.apply(tar, thisBinding, [...bindMethodParams, ...instanceArgs]);
@@ -226,9 +226,9 @@ class Container {
               // injectedParam.__context = args;
               // return injectedParam;
               if (type) {
-                const injectedParam = that.make(type, [...params, ...args]);
+                // const injectedParam = that.make(type, [...params, ...args]);
                 // eslint-disable-next-line
-                injectedParam.__context = args;
+                // injectedParam.__context = args;
                 return that.make(type, [...params, ...args]);
               }
               return Reflect.get(t, name, receiver);

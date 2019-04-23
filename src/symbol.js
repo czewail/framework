@@ -34,3 +34,15 @@ exports.MODULE_PARENT_MIDDLEWARES = Symbol('Module#parentMiddleware');
 
 // 提供者
 exports.PROVIDERS = '__DAZE_PROVIDERS__';
+
+
+exports.INJECTORS = {
+  REQUEST: '__DAZE_INJECT_REQUEST__',
+  REQ: '__DAZE_INJECT_REQ__',
+  RES: '__DAZE_INJECT_RES__',
+  QUERY: '__DAZE_INJECT_QUERY__',
+  PARAMS: '__DAZE_INJECT_PARAMS__',
+  BODY: '__DAZE_INJECT_BODY__',
+  HEADERS: '__DAZE_INJECT_HEADERS__',
+  SERVICE: '__DAZE_INJECT_SERVICE__',
+};

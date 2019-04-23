@@ -2,12 +2,12 @@
  * Copyright (c) 2018 Chan Zewail
  *
  * This software is released under the MIT License.
- * https://opensource.org/licenses/MIT
+ * https: //opensource.org/licenses/MIT
  */
 
-const assert = require('assert')
-const Container = require('../container')
-const IllegalArgumentError = require('../errors/illegal-argument-error')
+const assert = require('assert');
+const Container = require('../container');
+const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Cookie {
   app = Container.get('app');
@@ -16,30 +16,41 @@ class Cookie {
     /** @var {number} a number representing the milliseconds from Date.now() for expiry */
     maxAge: 0,
 
-    /** @var {Date} a Date object indicating the cookie's expiration date (expires at the end of session by default). */
+    /**
+     * @var {Date} a Date object indicating the cookie's expiration date
+     * (expires at the end of session by default).
+     * */
     expires: '',
 
     /** @var {string} a string indicating the path of the cookie (/ by default). */
     path: '/',
 
-    /** @var {boolean} a boolean indicating whether the cookie is to be signed (false by default).
-     * If this is true, another cookie of the same name with the .sig suffix appended will also be sent,
-     * with a 27-byte url-safe base64 SHA1 value representing the hash of cookie-name=cookie-value against the first Keygrip key.
+    /** @var {boolean} a boolean indicating whether the cookie
+     * is to be signed (false by default).
+     * If this is true, another cookie of the same name with the .sig
+     * suffix appended will also be sent,
+     * with a 27-byte url-safe base64 SHA1 value representing the hash of
+     * cookie-name=cookie-value against the first Keygrip key.
      * This signature key is used to detect tampering the next time a cookie is received. */
     signed: true,
 
     /** @var {string} a string indicating the domain of the cookie (no default). */
     domain: '',
 
-    /** @var {boolean} a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (true by default). */
+    /** @var {boolean} a boolean indicating whether the cookie
+     * is only to be sent over HTTP(S), and not made available to client
+     * JavaScript (true by default). */
     httpOnly: true,
 
-    /** @var {boolean} a boolean indicating whether to overwrite previously set cookies of the same name (false by default).
-     * If this is true, all cookies set during the same request with the same name (regardless of path or domain)
+    /** @var {boolean} a boolean indicating whether to overwrite previously
+     * set cookies of the same name (false by default).
+     * If this is true, all cookies set during the same request with the
+     * same name (regardless of path or domain)
      * are filtered out of the Set-Cookie header when setting this cookie. */
     overwrite: false,
 
-    /** @var {boolean} a boolean indicating whether the cookie is only to be sent over HTTPS (false by default for HTTP, true by default for HTTPS) */
+    /** @var {boolean} a boolean indicating whether the cookie is only to
+     * be sent over HTTPS (false by default for HTTP, true by default for HTTPS) */
     secure: false,
   };
 
@@ -50,10 +61,10 @@ class Cookie {
   value = null;
 
   constructor(name, value, options = {}) {
-    assert(!(/\s|,|;/).test(name), new IllegalArgumentError('Cookie name is not valid!'))
-    this.name = name
-    this.value = value
-    this.options = Object.assign({}, this.options, this.app.get('config').get('cookie', {}), options)
+    assert(!(/\s|,|;/).test(name), new IllegalArgumentError('Cookie name is not valid!'));
+    this.name = name;
+    this.value = value;
+    this.options = Object.assign({}, this.options, this.app.get('config').get('cookie', {}), options);
   }
 
   /**
@@ -62,7 +73,7 @@ class Cookie {
    * @returns {object} this.options
    */
   getOptions() {
-    return this.options
+    return this.options;
   }
 
   /**
@@ -71,7 +82,7 @@ class Cookie {
    * @returns {string} cookie name
    */
   getName() {
-    return this.name
+    return this.name;
   }
 
   /**
@@ -81,8 +92,8 @@ class Cookie {
    * @returns {object} this
    */
   setValue(val = null) {
-    this.value = val
-    return this
+    this.value = val;
+    return this;
   }
 
   /**
@@ -91,7 +102,7 @@ class Cookie {
    * @returns {string} cookie value
    */
   getValue() {
-    return this.value
+    return this.value;
   }
 
   /**
@@ -101,8 +112,8 @@ class Cookie {
    * @returns {object} this
    */
   setHttpOnly(flag = true) {
-    this.options.httpOnly = flag
-    return this
+    this.options.httpOnly = flag;
+    return this;
   }
 
   /**
@@ -112,8 +123,8 @@ class Cookie {
    * @returns {object} this
    */
   setSigned(flag = true) {
-    this.options.signed = flag
-    return this
+    this.options.signed = flag;
+    return this;
   }
 
   /**
@@ -122,8 +133,8 @@ class Cookie {
    * @returns {object} this
    */
   shouldSigned() {
-    this.setSigned(true)
-    return this
+    this.setSigned(true);
+    return this;
   }
 
   /**
@@ -132,8 +143,8 @@ class Cookie {
    * @returns {object} this
    */
   doNotSigned() {
-    this.setSigned(false)
-    return this
+    this.setSigned(false);
+    return this;
   }
 
   /**
@@ -143,8 +154,8 @@ class Cookie {
    * @returns {object} this
    */
   setMaxAge(expiry = 0) {
-    this.options.maxAge = expiry
-    return this
+    this.options.maxAge = expiry;
+    return this;
   }
 
   /**
@@ -154,8 +165,8 @@ class Cookie {
    * @returns {object} this
    */
   setDomain(pattern = '') {
-    this.options.domain = pattern
-    return this
+    this.options.domain = pattern;
+    return this;
   }
 
   /**
@@ -165,8 +176,8 @@ class Cookie {
    * @returns {object} this
    */
   setPath(uri = '/') {
-    this.options.path = uri
-    return this
+    this.options.path = uri;
+    return this;
   }
 
   /**
@@ -176,8 +187,8 @@ class Cookie {
    * @returns {object} this
    */
   setSecure(flag = false) {
-    this.options.secure = flag
-    return this
+    this.options.secure = flag;
+    return this;
   }
 
   /**
@@ -187,9 +198,9 @@ class Cookie {
    * @returns {object} this
    */
   setExpires(expires) {
-    this.options.expires = expires
-    return this
+    this.options.expires = expires;
+    return this;
   }
 }
 
-module.exports = Cookie
+module.exports = Cookie;

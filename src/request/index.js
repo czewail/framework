@@ -5,21 +5,21 @@
  * https://opensource.org/licenses/MIT
  */
 const parse = require('parseurl');
-// const is = require('core-util-is');
 const qs = require('querystring');
 const typeis = require('type-is');
-// const buddy = require('co-body');
+const Cookies = require('cookies');
+const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
-const Session = require('../session');
-
-const GET_MERGED_PARAMS = Symbol('Request#getMergedParams');
+// const Session = require('../session');
 
 class Request {
   constructor(req, res) {
-    // compatibility
-    this.ctx = { req, res };
-    this.sess = null;
+    /**
+     * @var {object} app Application
+     */
+    this.app = Container.get('app');
+
     /**
      * @var {http.IncomingMessage} req http.IncomingMessage
      */
@@ -36,9 +36,9 @@ class Request {
     this.originalUrl = req.url;
 
     /**
-     * @var {Object} request params
+     * @var {Cookies} _cookies Cookies instance
      */
-    this.mergedParams = this[GET_MERGED_PARAMS]();
+    this._cookies = null;
   }
 
   /**
@@ -46,13 +46,6 @@ class Request {
    */
   get headers() {
     return this.req.headers;
-  }
-
-  /**
-   * Set request headers.
-   */
-  set headers(val) {
-    this.req.headers = val;
   }
 
   /**
@@ -68,16 +61,6 @@ class Request {
       default:
         return this.req.headers[field] || '';
     }
-  }
-
-  /**
-   * Set request headers.
-   * @param {String} name headers key
-   * @param {Mixed} val headers value
-   */
-  setHeader(name, val) {
-    this.req.setHeader(name, val);
-    return this;
   }
 
   /**
@@ -132,21 +115,6 @@ class Request {
    */
   getUrl() {
     return this.url;
-  }
-
-  /**
-   * Set request URL.
-   */
-  set url(val) {
-    this.req.url = val;
-  }
-
-  /**
-   * Set request URL.
-   * @param {String} val URL
-   */
-  setUrl(val) {
-    this.url = val;
   }
 
   /**
@@ -306,18 +274,46 @@ class Request {
     return this.type;
   }
 
-  get body() {
-    return this.req.body;
+  /**
+   * get the cookie instance
+   */
+  get cookies() {
+    if (!this._cookies) {
+      this._cookies = new Cookies(this.req, this.res, {
+        keys: this.app.keys,
+        secure: this.isSsl,
+      });
+    }
+    return this._cookies;
   }
 
-
-  get port() {
-    return this.socket.remotePort;
+  /**
+   * return cookie val by name
+   * @param {String} key cookie name
+   * @param {Object} options cookie opts
+   */
+  cookie(key, options = {}) {
+    return this.cookies.get(key, {
+      ...this.app.get('config').get('cookie', {}),
+      ...options,
+    });
   }
 
-  get ip() {
-    return this.socket.remoteAddress;
+  /**
+   * alias this.cookie
+   * @param  {...any} params this.cookie params
+   */
+  getCookie(...params) {
+    return this.cookie(...params);
   }
+
+  // get port() {
+  //   return this.socket.remotePort;
+  // }
+
+  // get ip() {
+  //   return this.socket.remoteAddress;
+  // }
 
 
   get isSsl() {
@@ -346,8 +342,19 @@ class Request {
     return false;
   }
 
-  get expectsJson() {
-    return this.isAjax || !!this.ctx.accepts('json');
+  // get expectsJson() {
+  //   return this.isAjax || !!this.ctx.accepts('json');
+  // }
+
+  get mergedParams() {
+    return {
+      ...this.query,
+      ...this.body || {},
+    };
+  }
+
+  get body() {
+    return this.req.body;
   }
 
   /**
@@ -413,40 +420,39 @@ class Request {
   }
 
   /**
-   * Consolidation parameters
-   */
-  [GET_MERGED_PARAMS]() {
-    return Object.assign({}, this.query);
-  }
-
-  /**
    * validate request
    * @param {object} validator validator
    * @param {string} message message
    */
   validate(validator, message = 'Validation error') {
-    const validate = new Validate(this[GET_MERGED_PARAMS](), validator);
+    const validate = new Validate(this.mergedParams, validator);
     if (validate.fails) {
       throw new ValidateError(message, validate);
     }
   }
 
-  session() {
-    if (!this.sess) this.sess = new Session(this.ctx);
-    return this.sess;
-  }
-
-  cookie(...params) {
-    return this.getCookie(...params);
-  }
-
-  getCookie(key, options = {}) {
-    return this.ctx.cookies.get(key, options);
-  }
-
-  // getHeader(name) {
-  //   return this.request.header[name];
+  // session() {
+  //   // if (!this.sess) this.sess = new Session(this.ctx);
+  //   // return this.sess;
   // }
 }
 
-module.exports = Request;
+/**
+ * The agent Request class
+ * Implement the attribute operator to get the parameter
+ */
+const requestProxy = new Proxy(Request, {
+  construct(Target, args, extended) {
+    const instance = Reflect.construct(Target, args, extended);
+    return new Proxy(instance, {
+      get(t, prop) {
+        if (Reflect.has(t, prop) || typeof prop === 'symbol') {
+          return t[prop];
+        }
+        return t.param(prop);
+      },
+    });
+  },
+});
+
+module.exports = requestProxy;

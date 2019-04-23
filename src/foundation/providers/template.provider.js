@@ -32,7 +32,7 @@ class TemplateProvider {
     templateEnv.addGlobal('app', this.app);
     templateEnv.addGlobal('config', this.config);
     templateEnv.addGlobal('__public__', this.config.get('app.public_prefix', ''));
-    this.app.singleton('template', templateEnv);
+    this.app.singleton('templateEngine', templateEnv);
   }
 }
 

@@ -7,6 +7,7 @@
 
 const path = require('path');
 const cluster = require('cluster');
+const Keygrip = require('keygrip');
 const Container = require('../container');
 const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
@@ -141,11 +142,27 @@ class Application extends Container {
    * @private
    */
   async registerDefaultProviders() {
+    // register module provioder
     await this.register(new providers.Module(this));
+
+    // register controller provider
     await this.register(new providers.Controller(this));
+
+    // register middleware provider
     await this.register(new providers.Middleware(this));
+
+    // register router provider
     await this.register(new providers.Router(this));
+
+    // register request provider
     await this.register(new providers.Request(this));
+
+    // register response provider
+    await this.register(new providers.Response(this));
+
+    // register template provider
+    await this.register(new providers.Template(this));
+    await this.register(new providers.Service(this));
 
     // this.register(new providers.Response(this))
 
@@ -270,6 +287,13 @@ class Application extends Container {
     return this;
   }
 
+  registerKeys() {
+    const keys = this.config.get('app.keys', ['DAZE_KEY_1']);
+    const algorithm = this.config.get('app.algorithm', 'sha1');
+    const encoding = this.config.get('app.encoding', 'base64');
+    this.keys = new Keygrip(keys, algorithm, encoding);
+  }
+
   /**
    * Initialization application
    */
@@ -280,6 +304,8 @@ class Application extends Container {
     await this.registerBaseProviders();
 
     this.setProperties();
+
+    this.registerKeys();
 
     const clusterConfig = this.config.get('app.cluster');
     // 在集群模式下，主进程不运行业务代码

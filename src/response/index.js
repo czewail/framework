@@ -7,7 +7,7 @@
 
 const toIdentifier = require('toidentifier');
 const statuses = require('statuses');
-const mime = require('mime');
+// const mime = require('mime');
 const Stream = require('stream');
 const { extname } = require('path');
 const is = require('is-type-of');
@@ -380,13 +380,13 @@ class Response {
   /**
    * handle Resource data
    */
-  handleData(ctx) {
+  handleData(request) {
     const data = this.getData();
     if (data instanceof Resource) {
-      return (new ResourceFactory(data)).output(ctx);
+      return (new ResourceFactory(data)).output(request);
     }
     if (data instanceof View) {
-      return (new ViewFactory(data)).output(ctx);
+      return (new ViewFactory(data)).output(request);
     }
     return data;
   }
@@ -403,15 +403,28 @@ class Response {
     return this;
   }
 
-  /**
-   * send data
-   * @param {*} ctx
-   * @public
-   */
-  send(request) {
-    const { res } = request;
-    const data = this.getData();
+  end(request, code, headers, data) {
+    const { req, res } = request;
+    // code
+    if (!res.headersSent) {
+      res.statusCode = code;
+      if (req.httpVersionMajor < 2) {
+        res.statusMessage = statuses[code];
+      }
+    }
 
+    // headers
+    if (!res.headerSent) {
+      for (const key of Object.keys(headers)) {
+        res.setHeader(key, headers[key]);
+      }
+      // send cookie
+      for (const cookie of this.cookies) {
+        request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
+      }
+    }
+
+    // data
     if (Buffer.isBuffer(data) || typeof data === 'string') {
       return res.end(data);
     }
@@ -426,40 +439,19 @@ class Response {
     }
     res.end(jsonData);
     return undefined;
+  }
 
-    // if (!res.headersSent) {
-    //   // set code
-    //   res.statusCode = this.getCode()
+  /**
+   * send data
+   * @param {*} ctx
+   * @public
+   */
+  send(request) {
+    const code = this.getCode();
+    const headers = this.getHeaders();
+    const data = this.handleData();
 
-    //   // set headers
-    //   const headers = this.getHeader()
-    //   for (const key in headers) {
-    //     if (headers.hasOwnProperty(key)) {
-    //       res.setHeader(key, headers[key])
-    //     }
-    //   }
-
-    //   // set data
-    //   const data = this.getData()
-    //   // no content
-    //   if (data == null) {
-    //     res.removeHeader('Content-Type')
-    //     res.removeHeader('Content-Length')
-    //     res.removeHeader('Transfer-Encoding')
-    //   }
-    // }
-    // if (!ctx.response.headerSent) {
-    //   // send code
-    //   ctx.status = this.getCode()
-    //   // send header
-    //   ctx.set(this.getHeader())
-    //   // send cookie
-    //   for (const cookie of this.cookies) {
-    //     ctx.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions())
-    //   }
-    // }
-    // // send data
-    // ctx.body = this.handleData(ctx)
+    this.end(request, code, headers, data);
   }
 }
 

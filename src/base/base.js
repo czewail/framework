@@ -44,10 +44,6 @@ class Base {
     return Container.get('session', [this.request]);
   }
 
-  get view() {
-    return Container.get('view');
-  }
-
   get body() {
     return this.request.body;
   }

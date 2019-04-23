@@ -4,11 +4,11 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const path = require('path')
-const is = require('is-type-of')
-const Container = require('../container')
+const path = require('path');
+const is = require('is-type-of');
+const Container = require('../container');
 
-const FINAL_VARS = Symbol('View#finalVars')
+const FINAL_VARS = Symbol('View#finalVars');
 
 class View {
   vars = {};
@@ -16,15 +16,15 @@ class View {
   template = '';
 
   constructor(template = '', vars = {}) {
-    this.app = Container.get('app')
-    this.render(template, vars)
+    this.app = Container.get('app');
+    this.render(template, vars);
   }
 
   /**
    * Generate template variables
    */
   [FINAL_VARS](vars = {}) {
-    return Object.assign({}, this.vars, vars)
+    return Object.assign({}, this.vars, vars);
   }
 
   /**
@@ -34,11 +34,11 @@ class View {
    */
   assign(name, value) {
     if (is.object(name)) {
-      this.vars = Object.assign(this.vars, name)
+      this.vars = Object.assign(this.vars, name);
     } else if (typeof name === 'string') {
-      this.vars[name] = value
+      this.vars[name] = value;
     }
-    return this
+    return this;
   }
 
   /**
@@ -49,33 +49,35 @@ class View {
   render(template = '', vars = null) {
     // When parsing the controller, return it if you take this parameter
     // 解析控制器时，如果带此参数则直接 return 出去
-    if (is.object(template)) {
-      vars = template
-      template = null
+    let newTemplate = template;
+    let newVars = vars;
+    if (is.object(newTemplate)) {
+      newVars = newTemplate;
+      newTemplate = null;
     }
-    if (template) this.template = template
-    if (vars) this.vars = this[FINAL_VARS](vars)
-    return this
+    if (newTemplate) this.template = newTemplate;
+    if (newVars) this.vars = this[FINAL_VARS](newVars);
+    return this;
   }
 
   /**
    * getTemplate
    */
   getTemplate() {
-    const config = this.app.get('config')
-    const ext = config.get('app.view_extension')
+    const config = this.app.get('config');
+    const ext = config.get('app.view_extension');
     if (path.extname(this.template) === '') {
-      return `${this.template}.${ext}`
+      return `${this.template}.${ext}`;
     }
-    return this.template
+    return this.template;
   }
 
   /**
    * getVars
    */
   getVars() {
-    return this.vars
+    return this.vars;
   }
 }
 
-module.exports = View
+module.exports = View;

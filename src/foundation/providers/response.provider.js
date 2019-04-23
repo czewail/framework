@@ -1,4 +1,4 @@
-// const Response = require('../../response');
+const Response = require('../../response');
 const ResponseManager = require('../../response/manager');
 // const Redirect = require('../../response/redirect');
 
@@ -19,6 +19,7 @@ class ResponseProvider {
    */
   register() {
     this.app.singleton('responseManager', ResponseManager);
+    this.app.multiton('response', Response);
   }
 }
 
