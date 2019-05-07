@@ -21,7 +21,7 @@ class SessionProvider {
    */
   register() {
     // bind session in container
-    this.app.singleton('session', (ctx) => new Session(ctx));
+    this.app.singleton('session', ctx => new Session(ctx));
   }
 
   /**
@@ -36,7 +36,8 @@ class SessionProvider {
   */
   flushSession() {
     this.app.use(async (ctx, next) => {
-      if (ctx.session[symbols.SESSION_FLASHED] === true && is.array(ctx.session[symbols.SESSION_FLASHS])) {
+      if (ctx.session[symbols.SESSION_FLASHED] === true
+        && is.array(ctx.session[symbols.SESSION_FLASHS])) {
         for (const flash of ctx.session[symbols.SESSION_FLASHS]) {
           delete ctx.session[flash];
         }

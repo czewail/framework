@@ -5,32 +5,22 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { patchClass, patchProperty, patchMethod } = require('./patch-controller-decorator');
+const { patchClass, patchProperty, patchMethod } = require('./patch-decorator');
 
-function injectClass(target, params, type) {
-  patchClass(type, params, target);
-  return target;
-}
-
-function injectPropertyAndMethod(target, name, descriptor, params, type) {
-  if (Reflect.has(descriptor, 'value') && typeof descriptor.value === 'function') {
-    patchMethod(type, params, target, name);
+function handle(elementDescriptor, params, type) {
+  const { kind } = elementDescriptor;
+  if (kind === 'class') {
+    return patchClass(type, params, elementDescriptor);
   }
-
-  if (Reflect.has(descriptor, 'initializer') || Reflect.has(descriptor, 'get')) {
-    patchProperty(type, params, target, name);
+  if (kind === 'field') {
+    return patchProperty(type, params, elementDescriptor);
   }
-  return descriptor;
-}
-
-
-function handle(args, params, type) {
-  if (args.length === 1) {
-    return injectClass(...args, params, type);
+  if (kind === 'method') {
+    return patchMethod(type, params, elementDescriptor);
   }
-  return injectPropertyAndMethod(...args, params, type);
+  return elementDescriptor;
 }
 
 module.exports = function create(type) {
-  return (...args) => (...argsClass) => handle(argsClass, args, type);
+  return (...args) => elementDescriptor => handle(elementDescriptor, args, type);
 };

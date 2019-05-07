@@ -6,44 +6,27 @@
  */
 
 const { formatPrefix } = require('./helpers');
-const Meta = require('../foundation/support/meta');
-// const BaseController = require('../base/controller');
-// const symbols = require('../symbol');
+const { letController, setControllerPrefix } = require('../utils');
 
-// const constrollerGetterMap = {
-//   ctx: (t) => {
-//     const [ctx] = t[symbols.INJECT_CONTAINER_ARGS];
-//     return ctx;
-//   },
-// };
-
-function injectClass(target, prefix) {
-  Meta.set('isController', true, target.prototype);
-  Meta.set('prefix', formatPrefix(prefix), target.prototype);
-  return target;
-  // return new Proxy(target, {
-  //   construct(Target, newArgs, extended) {
-  //     const instance = Reflect.construct(Target, newArgs, extended);
-  //     return new Proxy(instance, {
-  //       get(tar, property, receiver) {
-  //         // if (property === '__context__') {
-  //         //   console.log(Reflect.get(tar, '__context__', receiver));
-  //         //   return Reflect.get(tar, property, receiver);
-  //         // }
-  //         return Reflect.get(tar, property, receiver);
-  //       },
-  //     });
-  //   },
-  // });
+function injectClass(elementDescriptor, prefix) {
+  return {
+    ...elementDescriptor,
+    finisher(target) {
+      letController(target.prototype);
+      setControllerPrefix(target.prototype, formatPrefix(prefix));
+      return target;
+    },
+  };
 }
 
-function handle(args, prefix) {
-  if (args.length === 1) {
-    return injectClass(...args, prefix);
+function handle(elementDescriptor, prefix) {
+  const { kind } = elementDescriptor;
+  if (kind === 'class') {
+    return injectClass(elementDescriptor, prefix);
   }
-  return null;
+  return elementDescriptor;
 }
 
 module.exports = function Controller(prefix = '') {
-  return (...argsClass) => handle(argsClass, prefix);
+  return elementDescriptor => handle(elementDescriptor, prefix);
 };

@@ -1,8 +1,8 @@
 const Route = require('./route');
 const Collection = require('./collection');
 const Container = require('../container');
-const Meta = require('../foundation/support/meta');
 const Dispatcher = require('./dispatcher');
+const { getControllerPrefix, getControllerRoutes } = require('../utils');
 
 class Router {
   /**
@@ -46,8 +46,8 @@ class Router {
    * @param {Controller} controller
    */
   parseController(controller) {
-    const routes = Meta.get('routes', controller.prototype) || {};
-    const prefix = Meta.get('prefix', controller.prototype) || '';
+    const routes = getControllerRoutes(controller.prototype);
+    const prefix = getControllerPrefix(controller.prototype);
     for (const key of Object.keys(routes)) {
       const route = routes[key];
       this.register(`${prefix}${route.uri}`, [route.method], controller, key);

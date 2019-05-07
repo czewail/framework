@@ -11,7 +11,7 @@ const Cookies = require('cookies');
 const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
-// const Session = require('../session');
+const Session = require('../session');
 
 class Request {
   constructor(req, res) {
@@ -36,9 +36,14 @@ class Request {
     this.originalUrl = req.url;
 
     /**
-     * @var {Cookies} _cookies Cookies instance
+     * @var {Cookie} _cookies Cookies instance
      */
     this._cookies = null;
+
+    /**
+     * @var {Session} _session Session instance
+     */
+    this._session = null;
   }
 
   /**
@@ -305,6 +310,15 @@ class Request {
    */
   getCookie(...params) {
     return this.cookie(...params);
+  }
+
+  session(key, value) {
+    if (!this._session) {
+      this._session = new Session(this);
+    }
+    if (key && !value) return this._session.get(key);
+    if (key && value) return this._session.set(key, value);
+    return this._session;
   }
 
   // get port() {

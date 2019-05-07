@@ -5,6 +5,7 @@ const Container = require('../container');
 const symbols = require('../symbol');
 const Meta = require('../foundation/support/meta');
 const { patchModule } = require('./helpers');
+const { isModule } = require('../utils');
 
 /**
  * {
@@ -57,10 +58,10 @@ class Module {
    * parse module if typeof function
    * @param {Function} mdl
    */
-  parseFunctionModule(Mdl) {
+  parseFunctionModule(M) {
     // 使用了 @module 装饰器
-    if (Mdl.prototype && Meta.has('isModule', Mdl.prototype) && Meta.get('isModule', Mdl.prototype) === true) {
-      this.loadModuleProperties(new Mdl());
+    if (isModule(M.prototype)) {
+      this.loadModuleProperties(new M());
       return this;
     }
     throw new TypeError('unsupport module');
@@ -115,15 +116,6 @@ class Module {
       }
     }
   }
-
-  // /**
-  //  * bind controller in container
-  //  * @param {Class} Controller controller
-  //  */
-  // bindControllerInContainer(Controller) {
-  //   this.app.multiton(Controller, Controller);
-  //   this.app.tag(Controller, 'controller');
-  // }
 
   /**
    * get module subModules

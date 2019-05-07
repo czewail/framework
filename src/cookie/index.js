@@ -60,6 +60,12 @@ class Cookie {
   /** @var {string} cookie value */
   value = null;
 
+  /**
+   * Create Cookie instance
+   * @param {String} name cookie name
+   * @param {Mixed} value cookie value
+   * @param {Object} options cookie options
+   */
   constructor(name, value, options = {}) {
     assert(!(/\s|,|;/).test(name), new IllegalArgumentError('Cookie name is not valid!'));
     this.name = name;

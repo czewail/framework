@@ -5,34 +5,38 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Meta = require('../foundation/support/meta');
 const { formatPrefix } = require('./helpers');
+const { getControllerRoutes, setControllerRoutes } = require('../utils');
 
-function decorateMethod(target, name, descriptor, verb, uri) {
-  if (!Meta.has('routes', target)) {
-    Meta.set('routes', {}, target);
-  }
-  Meta.set('routes', {
-    ...Meta.get('routes', target),
-    [`${name}`]: {
-      uri: formatPrefix(uri),
-      method: verb,
-      action: name,
+function decorateMethod(elementDescriptor, verb, uri) {
+  return {
+    ...elementDescriptor,
+    finisher(target) {
+      const routes = getControllerRoutes(target.prototype);
+      setControllerRoutes(target.prototype, {
+        ...routes,
+        [`${elementDescriptor.key}`]: {
+          uri: formatPrefix(uri),
+          method: verb,
+          action: elementDescriptor.key,
+        },
+      });
+      return target;
     },
-  }, target);
-  return descriptor;
+  };
 }
 
-function handle(args, verb, uri) {
-  if (args.length !== 1) {
-    return decorateMethod(...args, verb, uri);
+function handle(elementDescriptor, verb, uri) {
+  const { kind } = elementDescriptor;
+  if (kind === 'method') {
+    return decorateMethod(elementDescriptor, verb, uri);
   }
-  return undefined;
+  return elementDescriptor;
 }
 
 function Verb(verb, uri = '/') {
-  return function resolve(...argsClass) {
-    return handle(argsClass, verb, uri);
+  return function resolve(elementDescriptor) {
+    return handle(elementDescriptor, verb, uri);
   };
 }
 

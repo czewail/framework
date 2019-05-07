@@ -4,8 +4,10 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const InjectMeta = require('../foundation/support/meta/inject-meta');
 const symbols = require('../symbol');
+const {
+  isNeedInjector, getConstructorInjectors, getPropertyInjectors, getMethodInjectors,
+} = require('../utils');
 
 const BIND = Symbol('Container#bind');
 /**
@@ -177,19 +179,18 @@ class Container {
   injectClass(abstract, args) {
     const that = this;
     const klass = this.binds.get(abstract).concrete;
-    if (!InjectMeta.has(symbols.NEED_INJECTOR, klass.prototype)) {
+    if (!isNeedInjector(klass.prototype)) {
       return Reflect.construct(klass, args);
     }
     const bindParams = [];
+    const constructorInjectors = getConstructorInjectors(klass.prototype);
     // 判断class原型是否需要构造函数注入
-    if (InjectMeta.has(symbols.CONSTRUCTOR_INJECTORS, klass.prototype)) {
+    if (constructorInjectors) {
       // 获取需要注入构造函数的标识
       // [ [ type, params ] ]
-      const injectors = InjectMeta.get(symbols.CONSTRUCTOR_INJECTORS, klass.prototype) || [];
+      const injectors = constructorInjectors;
       for (const [type, params = []] of injectors) {
         const injectedParam = this.make(type, [...params, ...args]);
-        // eslint-disable-next-line
-        // injectedParam.__context = args;
         bindParams.push(injectedParam);
       }
     }
@@ -203,13 +204,11 @@ class Container {
               return new Proxy(t[name], {
                 apply(tar, thisBinding, instanceArgs) {
                   const bindMethodParams = [];
-                  if (InjectMeta.has(symbols.METHOD_INJECTORS, t)) {
-                    const injectors = InjectMeta.get(symbols.METHOD_INJECTORS, t) || {};
-                    const methodInjectors = injectors[name] || [];
-                    for (const [type, params = []] of methodInjectors) {
+                  const methodInjectors = getMethodInjectors(t);
+                  const methodParams = methodInjectors[name] || [];
+                  if (methodInjectors) {
+                    for (const [type, params = []] of methodParams) {
                       const injectedParam = that.make(type, [...params, ...args]);
-                      // eslint-disable-next-line
-                      // injectedParam.__context = args;
                       bindMethodParams.push(injectedParam);
                     }
                     return Reflect.apply(tar, thisBinding, [...bindMethodParams, ...instanceArgs]);
@@ -218,23 +217,14 @@ class Container {
                 },
               });
             }
-            if (InjectMeta.has(symbols.PROPERTY_INJECTORS, t)) {
-              const injectors = InjectMeta.get(symbols.PROPERTY_INJECTORS, t) || {};
-              const [type, params = []] = injectors[name] || [];
-
-              // eslint-disable-next-line
-              // injectedParam.__context = args;
-              // return injectedParam;
+            const propertyInjectors = getPropertyInjectors(t);
+            if (propertyInjectors) {
+              const [type, params = []] = propertyInjectors[name] || [];
               if (type) {
-                // const injectedParam = that.make(type, [...params, ...args]);
                 // eslint-disable-next-line
-                // injectedParam.__context = args;
                 return that.make(type, [...params, ...args]);
               }
               return Reflect.get(t, name, receiver);
-              // return type
-              //   ? that.make(type, [...params, ...args])
-              //   : Reflect.get(t, name, receiver);
             }
             return Reflect.get(t, name, receiver);
           },

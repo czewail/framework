@@ -2,7 +2,7 @@ const path = require('path');
 const is = require('core-util-is');
 const Container = require('../container');
 const Pipeline = require('../pipeline');
-const Meta = require('../foundation/support/meta');
+const { isMiddleware } = require('../utils');
 
 class Middleware {
   constructor() {
@@ -43,7 +43,7 @@ class Middleware {
    */
   parseFunctionMiddleware(middleware) {
     // 使用了 @Middleware 装饰器
-    if (middleware.prototype && Meta.has('isMiddleware', middleware.prototype) && Meta.get('isMiddleware', middleware.prototype) === true) {
+    if (isMiddleware(middleware.prototype)) {
       this.parseClassMiddleware(middleware);
     } else {
       this.middlewares.push(middleware);

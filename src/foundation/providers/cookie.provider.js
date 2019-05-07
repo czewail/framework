@@ -1,4 +1,4 @@
-const Cookie = require('../../cookie')
+const Cookie = require('../../cookie');
 
 class CookieProvider {
   /**
@@ -11,7 +11,7 @@ class CookieProvider {
    * @param {object} app Application
    */
   constructor(app) {
-    this.app = app
+    this.app = app;
   }
 
   /**
@@ -19,8 +19,8 @@ class CookieProvider {
    */
   register() {
     // bind cookie in container
-    this.app.singleton('cookie', Cookie)
+    this.app.singleton('cookie', Cookie);
   }
 }
 
-module.exports = CookieProvider
+module.exports = CookieProvider;

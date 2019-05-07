@@ -6,31 +6,31 @@ const View = require('./view');
 const Cookie = require('./cookie');
 
 if (!Reflect.has(global, 'app')) {
-  global.app = function (abstract = 'app', args = [], force = false) {
+  global.app = function app(abstract = 'app', args = [], force = false) {
     return Container.get(abstract, args, force);
   };
 }
 
 if (!Reflect.has(global, 'res')) {
-  global.res = function (data = null, code = 200, header = {}) {
+  global.res = function res(data = null, code = 200, header = {}) {
     return new Response(data, code, header);
   };
 }
 
 if (!Reflect.has(global, 'redirect')) {
-  global.redirect = function (url = null, code = 302, header = {}) {
+  global.redirect = function redirect(url = null, code = 302, header = {}) {
     return new Redirect(url, code, header);
   };
 }
 
 if (!Reflect.has(global, 'view')) {
-  global.view = function (template = '', vars = {}) {
+  global.view = function view(template = '', vars = {}) {
     return new View(template, vars);
   };
 }
 
 if (!Reflect.has(global, 'cookie')) {
-  global.cookie = function (key, value, options = {}) {
+  global.cookie = function cookie(key, value, options = {}) {
     return new Cookie(key, value, options);
   };
 }

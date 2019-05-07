@@ -27,30 +27,61 @@ class RequestProvider {
     }, true);
 
     // for @HttpRequest
-    this.app.singleton(symbols.INJECTORS.REQUEST, request => request, true);
+    this.app.singleton(
+      symbols.INJECTORS.REQUEST,
+      request => request,
+      true,
+    );
 
     // for @Req
-    this.app.singleton(symbols.INJECTORS.REQ, request => request.req, true);
+    this.app.singleton(
+      symbols.INJECTORS.REQ,
+      request => request.req,
+      true,
+    );
 
     // for @Res
-    this.app.singleton(symbols.INJECTORS.RES, request => request.res, true);
+    this.app.singleton(
+      symbols.INJECTORS.RES,
+      request => request.res,
+      true,
+    );
 
     // for @HttpQuery
     this.app.singleton(symbols.INJECTORS.QUERY, request => request.query, true);
 
     // for @HttpParams
-    this.app.singleton(symbols.INJECTORS.PARAMS, request => request.param(), true);
+    this.app.singleton(
+      symbols.INJECTORS.PARAMS,
+      (name, request) => (name ? request.param(name) : request.param()),
+      true,
+    );
 
     // for @HttpHeaders
-    this.app.singleton(symbols.INJECTORS.HEADERS, (key, request) => {
-      if (key) {
-        return request.headers[key];
-      }
-      return request.headers;
-    }, true);
+    this.app.singleton(
+      symbols.INJECTORS.HEADERS,
+      (key, request) => {
+        if (key) {
+          return request.headers[key];
+        }
+        return request.headers;
+      },
+      true,
+    );
 
     // for @HttpBody
-    this.app.singleton(symbols.INJECTORS.BODY, request => request.body, true);
+    this.app.singleton(
+      symbols.INJECTORS.BODY,
+      request => request.body,
+      true,
+    );
+
+    // for @CookieValue
+    this.app.singleton(
+      symbols.INJECTORS.COOKIE,
+      (key, request) => (key ? request.cookie(key) : request.cookies),
+      true,
+    );
   }
 
   launch() {

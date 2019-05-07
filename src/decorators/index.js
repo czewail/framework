@@ -16,6 +16,7 @@ const Verbs = require('./verb');
 const Contexts = require('./contexts');
 const HttpCode = require('./http-code');
 const Middleware = require('./middleware');
+const Test = require('./test');
 
 const Http = {
   Code: HttpCode,
@@ -32,4 +33,5 @@ module.exports = {
   UseMiddleware,
   Http,
   ...Contexts,
+  Test,
 };

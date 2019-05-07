@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { PREFIX, ISROUTE, ROUTES } = require('../symbol');
+const { setControllerPrefix, getControllerRoutes, setControllerRoutes } = require('../utils');
 
 const rest = {
   index: { uri: '/', method: 'get' },
@@ -17,26 +17,30 @@ const rest = {
   destroy: { uri: '/:id', method: 'del' },
 };
 
-function injectClass(target, prefix) {
-  const tempTartget = target;
-  const prefixed = prefix.slice(0, 1) === '/' ? prefix : `/${prefix}`;
-  tempTartget.prototype[ISROUTE] = true;
-  tempTartget.prototype[PREFIX] = prefixed;
-  if (tempTartget.prototype[ROUTES]) {
-    tempTartget.prototype[ROUTES] = Object.assign({}, tempTartget.prototype[ROUTES], rest);
-  } else {
-    tempTartget.prototype[ROUTES] = rest;
-  }
-  return target;
+function injectClass(elementDescriptor, prefix) {
+  return {
+    ...elementDescriptor,
+    finisher(target) {
+      const prefixed = prefix.slice(0, 1) === '/' ? prefix : `/${prefix}`;
+      setControllerPrefix(target.prototype, prefixed);
+      const routes = getControllerRoutes(target.prototype);
+      setControllerRoutes(target.prototype, {
+        ...routes,
+        ...rest,
+      });
+      return target;
+    },
+  };
 }
 
-function handle(args, prefix) {
-  if (args.length === 1) {
-    return injectClass(...args, prefix);
+function handle(elementDescriptor, prefix) {
+  const { kind } = elementDescriptor;
+  if (kind === 'class') {
+    return injectClass(elementDescriptor, prefix);
   }
-  return undefined;
+  return elementDescriptor;
 }
 
 module.exports = function RestController(prefix = '') {
-  return (...argsClass) => handle(argsClass, prefix);
+  return elementDescriptor => handle(elementDescriptor, prefix);
 };

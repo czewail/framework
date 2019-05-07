@@ -7,19 +7,23 @@
 
 const { HTTP_CODE } = require('../symbol');
 
-function injectdMethod(target, name, descriptor, code) {
-  target[name][HTTP_CODE] = code;
-  return descriptor;
-}
-
-function handle(args, code) {
-  if (args.length === 3) {
-    return injectdMethod(...args, code);
-  }
-}
-
-module.exports = function Inject(code = 200) {
-  return function (...argsClass) {
-    return handle(argsClass, code);
+function injectdMethod(elementDescriptor, code) {
+  return {
+    ...elementDescriptor,
+    finisher(target) {
+      target.prototype[elementDescriptor.key][HTTP_CODE] = code;
+    },
   };
+}
+
+function handle(elementDescriptor, code) {
+  const { kind } = elementDescriptor;
+  if (kind === 'method') {
+    return injectdMethod(elementDescriptor, code);
+  }
+  return elementDescriptor;
+}
+
+module.exports = function HttpCode(code = 200) {
+  return elementDescriptor => handle(elementDescriptor, code);
 };
