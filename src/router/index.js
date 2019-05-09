@@ -4,6 +4,7 @@ const Container = require('../container');
 const Dispatcher = require('./dispatcher');
 const { getControllerPrefix, getControllerRoutes } = require('../utils');
 
+
 class Router {
   /**
    * Create Router
@@ -30,8 +31,9 @@ class Router {
   getRouterPipe() {
     return async (request) => {
       const metchedRoute = this.collection.match(request);
-      const dispatcher = new Dispatcher(metchedRoute);
-      return dispatcher.resolve(request);
+      const dispatcher = new Dispatcher(request, metchedRoute);
+      return dispatcher.resolve();
+      // return this.getStaticServerPipe(request);
     };
   }
 

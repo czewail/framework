@@ -11,6 +11,7 @@ class Manager {
   }
 
   output(request) {
+    if (!this.response) return undefined;
     this.response.send(request);
     return this.response;
   }

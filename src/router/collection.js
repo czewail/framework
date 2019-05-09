@@ -19,7 +19,7 @@ class RouteCollection {
     const methodRoutes = this.getMethodRoutes(request.method);
     const machedRoutes = this.getMatchedRoutes(methodRoutes, request.path);
     if (machedRoutes.length > 0) return machedRoutes[0];
-    throw new Error('not found');
+    return null;
   }
 
   getMatchedRoutes(methodRoutes, pathname) {

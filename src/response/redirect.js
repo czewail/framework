@@ -1,9 +1,9 @@
 
-const is = require('is-type-of')
-const Response = require('./')
-const Validate = require('../validate')
-const Container = require('../container')
-const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol')
+const is = require('is-type-of');
+const Response = require('./');
+const Validate = require('../validate');
+const Container = require('../container');
+const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol');
 
 class Redirect extends Response {
   /**
@@ -32,8 +32,8 @@ class Redirect extends Response {
   forceBack = false;
 
   constructor(url = null, code = 302, header = {}) {
-    super(url, code, header)
-    this.cacheControl('no-cache,must-revalidate')
+    super(url, code, header);
+    this.cacheControl('no-cache,must-revalidate');
   }
 
   /**
@@ -42,24 +42,24 @@ class Redirect extends Response {
    * @param {number} code
    */
   setUrl(url) {
-    this.setData(url)
-    return this
+    this.setData(url);
+    return this;
   }
 
   /**
    * alias setUrl
    */
   go(url, code = 302) {
-    this.setUrl(url).setCode(code)
-    return this
+    this.setUrl(url).setCode(code);
+    return this;
   }
 
   /**
    * 获取跳转地址
    */
   getUrl() {
-    const data = this.getData()
-    return data
+    const data = this.getData();
+    return data;
   }
 
   /**
@@ -68,17 +68,17 @@ class Redirect extends Response {
    * @param {number} code
    */
   back(alt, code = 302) {
-    this.alt = alt
-    this.forceBack = true
-    this.setCode(code)
-    return this
+    this.alt = alt;
+    this.forceBack = true;
+    this.setCode(code);
+    return this;
   }
 
   /**
    * withInput
    */
   withInput() {
-    this.needWithInput = true
+    this.needWithInput = true;
   }
 
   /**
@@ -87,16 +87,16 @@ class Redirect extends Response {
    * @param {mixed} value
    */
   with(name, value) {
-    if (!name || !value) return this
-    if (!this.flashSessions) this.flashSessions = {}
+    if (!name || !value) return this;
+    if (!this.flashSessions) this.flashSessions = {};
     if (is.object(name)) {
-      Object.keys(name).forEach(key => {
-        this.flashSessions[key] = name[key]
-      })
+      Object.keys(name).forEach((key) => {
+        this.flashSessions[key] = name[key];
+      });
     } else {
-      this.flashSessions[name] = value
+      this.flashSessions[name] = value;
     }
-    return this
+    return this;
   }
 
   /**
@@ -104,34 +104,34 @@ class Redirect extends Response {
    * @param {Validate|mixed} val errors
    */
   withErrors(val) {
-    if (!val) return this
-    this.errors = val
-    return this
+    if (!val) return this;
+    this.errors = val;
+    return this;
   }
 
   send(ctx) {
-    const session = Container.get('session', [ctx])
+    const session = Container.get('session', [ctx]);
     if (this.forceBack) {
-      const url = session.get(SESSION_PREVIOUS_URL) || this.ctx.get('Referrer') || this.alt || '/'
-      this.setUrl(url)
+      const url = session.get(SESSION_PREVIOUS_URL) || this.ctx.get('Referrer') || this.alt || '/';
+      this.setUrl(url);
     }
     if (this.needWithInput) {
-      const old = ctx.params
-      session.flash(SESSION_OLD_INPUT, old)
+      const old = ctx.params;
+      session.flash(SESSION_OLD_INPUT, old);
     }
     if (this.flashSessions) {
-      session.flash(this.flashSessions)
+      session.flash(this.flashSessions);
     }
     if (this.errors) {
       if (this.errors instanceof Validate) {
-        session.flash(SESSION_ERRORS, this.errors.errors.many())
+        session.flash(SESSION_ERRORS, this.errors.errors.many());
       } else {
-        session.flash(SESSION_ERRORS, this.errors)
+        session.flash(SESSION_ERRORS, this.errors);
       }
     }
-    this.setHeader('Location', this.getUrl())
-    super.send(ctx)
+    this.setHeader('Location', this.getUrl());
+    super.send(ctx);
   }
 }
 
-module.exports = Redirect
+module.exports = Redirect;

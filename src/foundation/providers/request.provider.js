@@ -82,6 +82,13 @@ class RequestProvider {
       (key, request) => (key ? request.cookie(key) : request.cookies),
       true,
     );
+
+    // for @SessionValue
+    this.app.singleton(
+      symbols.INJECTORS.SESSION,
+      (key, request) => (key ? request.session(key) : request.session()),
+      true,
+    );
   }
 
   launch() {

@@ -205,7 +205,10 @@ class Response {
    */
   setHeader(name, value) {
     if (is.object(name)) {
-      this.header = Object.assign(this.header, name);
+      this.header = {
+        ...this.header,
+        ...name,
+      };
     } else {
       this.header[name] = value;
     }
@@ -403,7 +406,7 @@ class Response {
     return this;
   }
 
-  end(request, code, headers, data) {
+  async end(request, code, headers, data) {
     const { req, res } = request;
     // code
     if (!res.headersSent) {
@@ -418,6 +421,8 @@ class Response {
       for (const key of Object.keys(headers)) {
         res.setHeader(key, headers[key]);
       }
+      // commit session
+      await request.session().commit();
       // send cookie
       for (const cookie of this.cookies) {
         request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
@@ -446,12 +451,12 @@ class Response {
    * @param {*} ctx
    * @public
    */
-  send(request) {
+  async send(request) {
     const code = this.getCode();
     const headers = this.getHeaders();
     const data = this.handleData();
 
-    this.end(request, code, headers, data);
+    await this.end(request, code, headers, data);
   }
 }
 

@@ -8,6 +8,7 @@ const parse = require('parseurl');
 const qs = require('querystring');
 const typeis = require('type-is');
 const Cookies = require('cookies');
+const accepts = require('accepts');
 const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
@@ -44,6 +45,11 @@ class Request {
      * @var {Session} _session Session instance
      */
     this._session = null;
+
+    /**
+     * @var {Object} _accept accepts
+     */
+    this._accept = null;
   }
 
   /**
@@ -88,6 +94,55 @@ class Request {
    */
   getMethod() {
     return this.method;
+  }
+
+  /**
+   * check if the request method is OPTIONS
+   */
+  isOptions() {
+    return this.method === 'OPTIONS';
+  }
+
+  /**
+   * check if the request method is HEAD
+   */
+  isHead() {
+    return this.method === 'HEAD';
+  }
+
+  /**
+   * check if the request method is GET
+   */
+  isGet() {
+    return this.method === 'GET';
+  }
+
+  /**
+   * check if the request method is POST
+   */
+  isPost() {
+    return this.method === 'POST';
+  }
+
+  /**
+   * check if the request method is PUT
+   */
+  isPut() {
+    return this.method === 'PUT';
+  }
+
+  /**
+   * check if the request method is PATCH
+   */
+  isPatch() {
+    return this.method === 'PATCH';
+  }
+
+  /**
+   * check if the request method is DELETE
+   */
+  isDelete() {
+    return this.method === 'DELETE';
   }
 
   /**
@@ -280,6 +335,51 @@ class Request {
   }
 
   /**
+   * Get accept object
+   * @private
+   */
+  get accepts() {
+    if (!this._accepts) this._accepts = accepts(this.req);
+    return this._accepts;
+  }
+
+  /**
+   * Return the types that the request accepts,
+   * in the order of the client's preference (most preferred first).
+   * @param  {...String} params
+   */
+  acceptsTypes(...params) {
+    return this.accepts.types(...params);
+  }
+
+  /**
+   * Return the first accepted encoding.
+   * If nothing in encodings is accepted, then false is returned.
+   * @param  {...String} params
+   */
+  acceptsEncodings(...params) {
+    return this.accepts.encodings(...params);
+  }
+
+  /**
+   * Return the first accepted charset.
+   * If nothing in charsets is accepted, then false is returned.
+   * @param  {...String} params
+   */
+  acceptsCharsets(...params) {
+    return this.accepts.charsets(...params);
+  }
+
+  /**
+   * Return the first accepted language.
+   * If nothing in languages is accepted, then false is returned.
+   * @param  {...String} params
+   */
+  acceptsLanguages(...params) {
+    return this.accepts.languages(...params);
+  }
+
+  /**
    * get the cookie instance
    */
   get cookies() {
@@ -319,6 +419,10 @@ class Request {
     if (key && !value) return this._session.get(key);
     if (key && value) return this._session.set(key, value);
     return this._session;
+  }
+
+  sessionValue(key) {
+    return this.session(key);
   }
 
   // get port() {
