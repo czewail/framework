@@ -1,3 +1,4 @@
+const is = require('core-util-is');
 const Processor = require('./processor');
 
 /**
@@ -35,7 +36,7 @@ class Pipeline {
    * @param {mixed} payload pipe data payload
    * @returns {mixed} result
    */
-  process(cb) {
+  async process(cb) {
     return this.processor.process(this.stages, cb, ...this.payload);
   }
 }

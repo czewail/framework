@@ -7,8 +7,10 @@
 const parse = require('parseurl');
 const qs = require('querystring');
 const typeis = require('type-is');
-const Cookies = require('cookies');
+const cookie = require('cookie');
 const accepts = require('accepts');
+const vary = require('vary');
+const Keygrip = require('keygrip');
 const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
@@ -37,9 +39,9 @@ class Request {
     this.originalUrl = req.url;
 
     /**
-     * @var {Cookie} _cookies Cookies instance
+     * @var {Object} _cookies Cookies instance
      */
-    this._cookies = null;
+    this._cookies = {};
 
     /**
      * @var {Session} _session Session instance
@@ -384,10 +386,7 @@ class Request {
    */
   get cookies() {
     if (!this._cookies) {
-      this._cookies = new Cookies(this.req, this.res, {
-        keys: this.app.keys,
-        secure: this.isSsl,
-      });
+      this._cookies = cookie.parse(this.getHeader('Cookie'));
     }
     return this._cookies;
   }
@@ -398,10 +397,9 @@ class Request {
    * @param {Object} options cookie opts
    */
   cookie(key, options = {}) {
-    return this.cookies.get(key, {
-      ...this.app.get('config').get('cookie', {}),
-      ...options,
-    });
+    const defaultOptions = this.app.get('config').get('cookie', {});
+    const signed = options && options.signed !== undefined ? options.signed : !!this.app.keys;
+    return this.cookies && this.cookies[key];
   }
 
   /**

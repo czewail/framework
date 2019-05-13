@@ -33,6 +33,13 @@ class RequestProvider {
       true,
     );
 
+    // for @HttpResponse
+    this.app.singleton(
+      symbols.INJECTORS.RESPONSE,
+      request => request.response,
+      true,
+    );
+
     // for @Req
     this.app.singleton(
       symbols.INJECTORS.REQ,

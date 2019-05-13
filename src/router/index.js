@@ -28,12 +28,11 @@ class Router {
     this.registerRoutes();
   }
 
-  getRouterPipe() {
+  resolve() {
     return async (request) => {
       const metchedRoute = this.collection.match(request);
       const dispatcher = new Dispatcher(request, metchedRoute);
       return dispatcher.resolve();
-      // return this.getStaticServerPipe(request);
     };
   }
 

@@ -9,7 +9,7 @@ class HttpServer {
   listen(...args) {
     const server = http.createServer((req, res) => {
       const request = this.app.get('request', [req, res]);
-      return this.app.get('middleware').handle(request, this.app.get('router').getRouterPipe());
+      return this.app.get('middleware').handle(request, this.app.get('router').resolve());
     });
     return server.listen(...args);
   }

@@ -11,7 +11,7 @@ const Controller = require('./controller');
 const RestController = require('./rest-controller');
 const Service = require('./service');
 const Multiton = require('./multiton');
-const UseMiddleware = require('./use-middleware');
+const useMiddleware = require('./use-middleware');
 const Verbs = require('./verb');
 const Contexts = require('./contexts');
 const HttpCode = require('./http-code');
@@ -30,7 +30,7 @@ module.exports = {
   Service,
   Middleware,
   Multiton,
-  UseMiddleware,
+  useMiddleware,
   Http,
   ...Contexts,
   Test,

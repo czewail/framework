@@ -6,10 +6,12 @@
  */
 
 const Container = require('../container');
+const Response = require('../response');
 
 class Base {
   constructor(request) {
     this.request = request;
+    this._response = null;
   }
 
   get app() {
@@ -25,7 +27,10 @@ class Base {
   }
 
   get response() {
-    return Container.get('response');
+    if (!this._response) {
+      this._response = new Response();
+    }
+    return this._response;
   }
 
   get redirect() {

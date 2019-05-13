@@ -3,6 +3,7 @@ const is = require('core-util-is');
 const Container = require('../container');
 const Pipeline = require('../pipeline');
 const { isMiddleware } = require('../utils');
+const Response = require('../response');
 
 class Middleware {
   constructor() {
@@ -59,7 +60,7 @@ class Middleware {
       this.app.bind(middleware, middleware);
     }
     this.middlewares.push((request, next) => {
-      const injectedMiddleware = this.app.get(middleware, [request, next]);
+      const injectedMiddleware = this.app.get(middleware, [request]);
       injectedMiddleware.resolve(request, next);
     });
   }
@@ -70,7 +71,7 @@ class Middleware {
    * @param {Function} dispatch dispatch to next node
    * @returns {Pipeline}
    */
-  handle(request, dispatch) {
+  async handle(request, dispatch) {
     return (new Pipeline())
       .send(request)
       .pipe(this.middlewares)

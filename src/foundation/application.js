@@ -383,8 +383,8 @@ class Application extends Container {
    * @param {mixed} abstract Dependent identification
    * @param {array} args Depends on instantiated parameters
    */
-  get(abstract, args = [], context = null, force = false) {
-    return this.make(abstract, args, context, force);
+  get(abstract, args = [], force = false) {
+    return this.make(abstract, args, force);
   }
 
   /**

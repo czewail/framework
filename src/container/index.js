@@ -145,7 +145,7 @@ class Container {
    * @returns {Container} this
    * @public
    */
-  make(abstract, args = [], context = null, force = false) {
+  make(abstract, args = [], force = false) {
     const shared = this.isShared(abstract);
     let obj = null;
     // returns directly if an object instance already exists in the container
@@ -158,7 +158,7 @@ class Container {
     }
     // if a binding object exists, the binding object is instantiated
     if (this.binds.has(abstract)) {
-      obj = this.injectClass(abstract, args, context);
+      obj = this.injectClass(abstract, args);
       // obj = Reflect.construct(this.binds.get(abstract).concrete, args)
     }
     // 如果是单例，保存实例到容器

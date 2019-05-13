@@ -40,102 +40,126 @@ exports.iterable = function iterable(target) {
 //   return Reflect.has(obj, name) && typeof Reflect.get(obj, name) !== 'function';
 // };
 
-exports.isModule = function isModule(target) {
+exports.isModule = function (target) {
   return target && target[symbols.CHECKERS.MODULE] === true;
 };
 
-exports.letModule = function letModule(target) {
+exports.letModule = function (target) {
   if (target) {
     target[symbols.CHECKERS.MODULE] = true;
   }
 };
 
-exports.isController = function isController(target) {
+exports.isController = function (target) {
   return target && target[symbols.CHECKERS.CONTROLLER] === true;
 };
 
-exports.letController = function letController(target) {
+exports.letController = function (target) {
   if (target) {
     target[symbols.CHECKERS.CONTROLLER] = true;
   }
 };
 
-exports.isMiddleware = function isMiddleware(target) {
+exports.isMiddleware = function (target) {
   return target && target[symbols.CHECKERS.MIDDLEWARE] === true;
 };
 
-exports.letMiddleware = function letMiddleware(target) {
+exports.letMiddleware = function (target) {
   if (target) {
     target[symbols.CHECKERS.MIDDLEWARE] = true;
   }
 };
 
-exports.getControllerPrefix = function getControllerPrefix(target) {
+exports.getControllerPrefix = function (target) {
   return (target && target[symbols.EXTRAS.CONTROLLER_PREFIX])
     ? target[symbols.EXTRAS.CONTROLLER_PREFIX]
     : '';
 };
 
-exports.setControllerPrefix = function setControllerPrefix(target, prefix = '') {
+exports.setControllerPrefix = function (target, prefix = '') {
   if (target) {
     target[symbols.EXTRAS.CONTROLLER_PREFIX] = prefix;
   }
 };
 
-exports.getControllerRoutes = function getControllerRoutes(target) {
+exports.getControllerRoutes = function (target) {
   return (target && target[symbols.EXTRAS.CONTROLLER_ROUTES])
     ? target[symbols.EXTRAS.CONTROLLER_ROUTES]
     : {};
 };
 
-exports.setControllerRoutes = function setControllerRoutes(target, routes = {}) {
+exports.setControllerRoutes = function (target, routes = {}) {
   if (target) {
     target[symbols.EXTRAS.CONTROLLER_ROUTES] = routes;
   }
 };
 
-exports.isNeedInjector = function isNeedInjector(target) {
+exports.getControllerMiddlewares = function (target) {
+  return (target && target[symbols.EXTRAS.CONTROLLER_MIDDLEWARES])
+    ? target[symbols.EXTRAS.CONTROLLER_MIDDLEWARES]
+    : [];
+};
+
+exports.setControllerMiddlewares = function (target, middlewares = []) {
+  if (target) {
+    target[symbols.EXTRAS.CONTROLLER_MIDDLEWARES] = middlewares;
+  }
+};
+
+exports.getControllerRouteMiddlewares = function (target) {
+  return (target && target[symbols.EXTRAS.CONTROLLER_ROUTE_MIDDLEWARES])
+    ? target[symbols.EXTRAS.CONTROLLER_ROUTE_MIDDLEWARES]
+    : {};
+};
+
+exports.setControllerRouteMiddlewares = function (target, middlewares = {}) {
+  if (target) {
+    target[symbols.EXTRAS.CONTROLLER_ROUTE_MIDDLEWARES] = middlewares;
+  }
+};
+
+exports.isNeedInjector = function (target) {
   return target && target[symbols.EXTRAS.NEED_INJECT] === true;
 };
 
-exports.setNeedInjector = function setNeedInjector(target) {
+exports.setNeedInjector = function (target) {
   if (target) {
     target[symbols.EXTRAS.NEED_INJECT] = true;
   }
 };
 
-exports.getConstructorInjectors = function getConstructorInjectors(target) {
+exports.getConstructorInjectors = function (target) {
   return (target && target[symbols.EXTRAS.CONSTRUCTOR_INJECTORS])
     ? target[symbols.EXTRAS.CONSTRUCTOR_INJECTORS]
     : [];
 };
 
-exports.setConstructorInjectors = function setConstructorInjectors(target, injectors = []) {
+exports.setConstructorInjectors = function (target, injectors = []) {
   if (target) {
     target[symbols.EXTRAS.CONSTRUCTOR_INJECTORS] = injectors;
   }
 };
 
-exports.getPropertyInjectors = function getPropertyInjectors(target) {
+exports.getPropertyInjectors = function (target) {
   return (target && target[symbols.EXTRAS.PROPERTY_INJECTORS])
     ? target[symbols.EXTRAS.PROPERTY_INJECTORS]
     : {};
 };
 
-exports.setPropertyInjectors = function setPropertyInjectors(target, injectors = {}) {
+exports.setPropertyInjectors = function (target, injectors = {}) {
   if (target) {
     target[symbols.EXTRAS.PROPERTY_INJECTORS] = injectors;
   }
 };
 
 
-exports.getMethodInjectors = function getMethodInjectors(target) {
+exports.getMethodInjectors = function (target) {
   return (target && target[symbols.EXTRAS.METHOD_INJECTORS])
     ? target[symbols.EXTRAS.METHOD_INJECTORS]
     : {};
 };
 
-exports.setMethodInjectors = function setMethodInjectors(target, injectors = {}) {
+exports.setMethodInjectors = function (target, injectors = {}) {
   if (target) {
     target[symbols.EXTRAS.METHOD_INJECTORS] = injectors;
   }

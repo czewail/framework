@@ -19,11 +19,12 @@ class MiddlewareProvider {
   }
 
   launch() {
-    const middlewareInstance = this.app.get('middleware');
-    const middlewares = this.app.get('config').get('middleware', []);
-    for (const middleware of middlewares) {
-      middlewareInstance.register(middleware);
-    }
+    this.app.make('middleware');
+    // const middlewareInstance = this.app.get('middleware');
+    // const middlewares = this.app.get('config').get('middleware', []);
+    // for (const middleware of middlewares) {
+    //   middlewareInstance.register(middleware);
+    // }
   }
 }
 

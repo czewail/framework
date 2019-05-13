@@ -7,7 +7,8 @@
 
 const pathToRegExp = require('path-to-regexp');
 const Middleware = require('../middleware');
-const Meta = require('../foundation/support/meta');
+// const Meta = require('../foundation/support/meta');
+const { getControllerMiddlewares, getControllerRouteMiddlewares } = require('../utils');
 
 class Route {
   /**
@@ -68,8 +69,10 @@ class Route {
   }
 
   parseMiddleware() {
-    const middlewares = Meta.get('middlewares', this.controller.prototype) || [];
-    const routeMiddlewares = Meta.get('route_middlewares', this.controller.prototype) || {};
+    // const middlewares = Meta.get('middlewares', this.controller.prototype) || [];
+    // const routeMiddlewares = Meta.get('route_middlewares', this.controller.prototype) || {};
+    const middlewares = getControllerMiddlewares(this.controller.prototype);
+    const routeMiddlewares = getControllerRouteMiddlewares(this.controller.prototype);
     this.registerMiddlewares(middlewares);
     this.registerMiddlewares(routeMiddlewares[this.action]);
   }

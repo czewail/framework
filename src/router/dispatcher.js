@@ -36,10 +36,13 @@ class Dispatcher {
    * @param {Request} request
    */
   async resolve() {
+    let res;
     if (this.route) {
-      return this.route.middleware.handle(this.request, this.dispatchToController.bind(this));
+      res = await this.dispatchToController();
+    } else {
+      res = await this.dispatchToStaticServer();
     }
-    return this.dispatchToStaticServer();
+    return (new ResponseFactory(res)).output(this.request);
   }
 
   /**
@@ -83,7 +86,8 @@ class Dispatcher {
         }
         response.setHeader('Content-Type', mime.lookup(type(filePath, encodingExt)));
         response.setData(fs.createReadStream(filePath));
-        return (new ResponseFactory(response)).output(this.request);
+        return response;
+        // return (new ResponseFactory(response)).output(this.request);
       }
     }
     throw this.createNotFountError();
@@ -125,12 +129,15 @@ class Dispatcher {
    * dispatch request to controller
    */
   async dispatchToController() {
-    const controller = this.app.get(this.route.controller, [this.request], [this.request]);
-    const proxyController = this.combineBaseController(controller);
-    const { action } = this.route;
-    const routeParams = this.route.getParams(this.request.path);
-    const result = await proxyController[action](...routeParams);
-    return (new ResponseFactory(result)).output(this.request);
+    return this.route.middleware.handle(this.request, async (request) => {
+      const controller = this.app.get(this.route.controller, [request]);
+      const proxyController = this.combineBaseController(controller);
+      const { action } = this.route;
+      const routeParams = this.route.getParams(request.path);
+      const res = await proxyController[action](...routeParams);
+      if (res instanceof Response) return res;
+      return (new Response()).setData(res);
+    });
   }
 
   createNotFountError() {

@@ -24,6 +24,7 @@
     "no-underscore-dangle": [0],
     "no-multi-assign": [0],
     "no-bitwise": [0],
+    "func-names": [0],
     "no-param-reassign": [0]
   }
 }

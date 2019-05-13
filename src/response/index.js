@@ -43,7 +43,7 @@ class Response {
    * http headers
    * @var object
    */
-  header = {};
+  _header = {};
 
   /**
    * 默认字符集
@@ -191,8 +191,8 @@ class Response {
    * get http header
    */
   getHeader(name = null) {
-    if (name) return this.header[name] || null;
-    return this.header;
+    if (name) return this._header[name] || null;
+    return this._header;
   }
 
   /**
@@ -205,12 +205,12 @@ class Response {
    */
   setHeader(name, value) {
     if (is.object(name)) {
-      this.header = {
-        ...this.header,
+      this._header = {
+        ...this._header,
         ...name,
       };
     } else {
-      this.header[name] = value;
+      this._header[name] = value;
     }
     return this;
   }
@@ -231,6 +231,19 @@ class Response {
    */
   setHeaders(...params) {
     return this.setHeader(...params);
+  }
+
+  /**
+ * setHeader or getHeader alias
+ * @public
+ */
+  header(name, value) {
+    if ((name && value) || is.object(name)) {
+      return this.setHeader(name, value);
+    } if (name && !value) {
+      return this.getHeader(name);
+    }
+    return undefined;
   }
 
   /**
@@ -422,10 +435,10 @@ class Response {
         res.setHeader(key, headers[key]);
       }
       // commit session
-      await request.session().commit();
+      // await request.session().commit();
       // send cookie
       for (const cookie of this.cookies) {
-        request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
+        // request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
       }
     }
 
