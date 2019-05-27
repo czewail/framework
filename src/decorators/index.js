@@ -16,7 +16,7 @@ const Verbs = require('./verb');
 const Contexts = require('./contexts');
 const HttpCode = require('./http-code');
 const Middleware = require('./middleware');
-const Test = require('./test');
+const CrossOrigin = require('./cross-origin');
 
 const Http = {
   Code: HttpCode,
@@ -32,6 +32,6 @@ module.exports = {
   Multiton,
   useMiddleware,
   Http,
+  CrossOrigin,
   ...Contexts,
-  Test,
 };

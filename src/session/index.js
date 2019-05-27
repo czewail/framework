@@ -55,7 +55,7 @@ class Session {
   }
 
   async commit() {
-    console.log(this.session, 11111, 222);
+    // console.log(this.session, 11111, 222);
     const encodedSession = encode(this.session);
     this.request.cookies.set(this.options.key, encodedSession, this.options);
   }

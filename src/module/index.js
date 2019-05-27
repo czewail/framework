@@ -2,10 +2,9 @@ const path = require('path');
 const glob = require('glob');
 const is = require('core-util-is');
 const Container = require('../container');
-const symbols = require('../symbol');
-const Meta = require('../foundation/support/meta');
 const { patchModule } = require('./helpers');
-const { isModule } = require('../utils');
+const { isModule, getModuleMiddlewares } = require('./helpers');
+const { getMiddlewares, setMiddlewares } = require('../middleware/helpers');
 
 /**
  * {
@@ -61,7 +60,7 @@ class Module {
   parseFunctionModule(M) {
     // 使用了 @module 装饰器
     if (isModule(M.prototype)) {
-      this.loadModuleProperties(new M());
+      this.loadModuleProperties(M);
       return this;
     }
     throw new TypeError('unsupport module');
@@ -71,8 +70,9 @@ class Module {
    * load module Props
    * @param {Object} ModuleInstance module instance
    */
-  loadModuleProperties(ModuleInstance) {
-    const middlewares = this.getMiddlewares(ModuleInstance);
+  loadModuleProperties(Mod) {
+    const middlewares = getModuleMiddlewares(Mod.prototype);
+    const ModuleInstance = new Mod();
     this.parsePropertyControllers(ModuleInstance, middlewares);
     this.parsePropertyModules(ModuleInstance);
   }
@@ -84,7 +84,9 @@ class Module {
   parsePropertyModules(ModuleInstance) {
     const propertyModules = this.getModuleModules(ModuleInstance);
     for (const Mod of propertyModules) {
-      this.loadModuleProperties(new Mod());
+      if (isModule(Mod.prototype)) {
+        this.loadModuleProperties(Mod);
+      }
     }
   }
 
@@ -105,13 +107,13 @@ class Module {
         for (const controller of klawControllers) {
           // eslint-disable-next-line global-require, import/no-dynamic-require
           const Ctrl = require(controller);
-          const metaMiddlewares = Meta.get('middlewares', Ctrl.prototype) || [];
-          Meta.set('middlewares', [...middlewares, ...metaMiddlewares], Ctrl.prototype);
+          const metaMiddlewares = getMiddlewares(Ctrl.prototype);
+          setMiddlewares(Ctrl.prototype, [...middlewares, ...metaMiddlewares]);
           this.app.get('controller').register(Ctrl);
         }
       } else {
-        const metaMiddlewares = Meta.get('middlewares', controllerProp.prototype) || [];
-        Meta.set('middlewares', [...middlewares, ...metaMiddlewares], controllerProp.prototype);
+        const metaMiddlewares = getMiddlewares(controllersProp.prototype);
+        setMiddlewares(controllerProp.prototype, [...middlewares, ...metaMiddlewares]);
         this.app.get('controller').register(controllerProp);
       }
     }
@@ -141,17 +143,6 @@ class Module {
       }
     }
     return modules;
-  }
-
-  /**
-   * get module middlewares
-   * @param {Object} ModuleInstance module instance
-   */
-  getMiddlewares(ModuleInstance) {
-    return [].concat(
-      ModuleInstance[symbols.MODULE_PARENT_MIDDLEWARES] || [],
-      ModuleInstance.middlewares || [],
-    );
   }
 }
 

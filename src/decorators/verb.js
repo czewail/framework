@@ -6,7 +6,7 @@
  */
 
 const { formatPrefix } = require('./helpers');
-const { getControllerRoutes, setControllerRoutes } = require('../utils');
+const { getControllerRoutes, setControllerRoutes } = require('../controller/helpers');
 
 function decorateMethod(elementDescriptor, verb, uri) {
   return {

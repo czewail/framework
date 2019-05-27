@@ -2,8 +2,8 @@ const path = require('path');
 const is = require('core-util-is');
 const Container = require('../container');
 const Pipeline = require('../pipeline');
-const { isMiddleware } = require('../utils');
-const Response = require('../response');
+const { isMiddleware } = require('./helpers');
+// const Response = require('../response');
 
 class Middleware {
   constructor() {
@@ -59,10 +59,24 @@ class Middleware {
     if (!this.app.has(middleware)) {
       this.app.bind(middleware, middleware);
     }
-    this.middlewares.push((request, next) => {
+    this.middlewares.push(async (request, next) => {
       const injectedMiddleware = this.app.get(middleware, [request]);
-      injectedMiddleware.resolve(request, next);
+      return injectedMiddleware.resolve(request, next);
     });
+  }
+
+  /**
+   * power by middleware
+   */
+  powerBy() {
+    this.middlewares.push((request, next) => {
+      const { res } = request;
+      if (!res.headersSent) {
+        res.setHeader('X-Power-By', 'Daze.js');
+      }
+      return next();
+    });
+    return this;
   }
 
   /**

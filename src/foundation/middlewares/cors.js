@@ -2,6 +2,7 @@
 // const cors = require('koa2-cors');
 const vary = require('vary');
 // const Middleware = require('../../base/middleware');
+const Response = require('../../response');
 const Middleware = require('../../decorators/middleware');
 
 @Middleware()
@@ -29,7 +30,6 @@ class CORSMiddleware {
   async resolve(request, next) {
     const requestOrigin = request.getHeader('Origin');
     if (!requestOrigin) return next();
-
     if (request.isOptions()) {
       // Preflight Request
       if (!request.getHeader('Access-Control-Request-Method')) return next();
@@ -55,23 +55,21 @@ class CORSMiddleware {
       return response.NoContent();
     }
 
-    return next.then((response) => {
-      response.setHeader('Access-Control-Allow-Origin', this.origin);
+    let response = await next();
 
-      if (this.credentials) {
-        response.setHeader('Access-Control-Allow-Credentials', 'true');
-      }
-    }).catch((err) => {
-      throw err;
-    });
+    // todo response==undefined
 
-    // return cors({
-    //   origin: (c) => this.origin(c) || '*',
-    //   maxAge: this.maxAge,
-    //   credentials: this.credentials,
-    //   allowMethods: this.allowMethods,
-    //   allowHeaders: this.allowHeaders,
-    // })(ctx, next);
+    if (!(response instanceof Response)) {
+      response = (new Response()).setData(response);
+    }
+
+    response.setHeader('Access-Control-Allow-Origin', this.origin);
+
+    if (this.credentials) {
+      response.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+
+    return response;
   }
 }
 

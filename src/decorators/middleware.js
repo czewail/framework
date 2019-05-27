@@ -6,7 +6,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const { letMiddleware } = require('../utils');
+const { letMiddleware } = require('../middleware/helpers');
 
 function injectClass(elementDescriptor) {
   return {

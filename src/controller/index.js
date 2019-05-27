@@ -1,7 +1,7 @@
 const path = require('path');
 const is = require('core-util-is');
 const Container = require('../container');
-const { isController } = require('../utils');
+const { isController } = require('../controller/helpers');
 
 class Controller {
   constructor() {

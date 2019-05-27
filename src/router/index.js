@@ -1,8 +1,10 @@
+const http = require('http');
 const Route = require('./route');
 const Collection = require('./collection');
 const Container = require('../container');
 const Dispatcher = require('./dispatcher');
-const { getControllerPrefix, getControllerRoutes } = require('../utils');
+const { getControllerPrefix, getControllerRoutes, getControllerCrossOrigin } = require('../controller/helpers');
+const corsMiddleware = require('../foundation/middlewares/cors');
 
 
 class Router {
@@ -32,7 +34,8 @@ class Router {
     return async (request) => {
       const metchedRoute = this.collection.match(request);
       const dispatcher = new Dispatcher(request, metchedRoute);
-      return dispatcher.resolve();
+      const res = await dispatcher.resolve();
+      return res;
     };
   }
 
@@ -49,15 +52,30 @@ class Router {
   parseController(controller) {
     const routes = getControllerRoutes(controller.prototype);
     const prefix = getControllerPrefix(controller.prototype);
+    const corses = getControllerCrossOrigin(controller.prototype);
     for (const key of Object.keys(routes)) {
-      const route = routes[key];
-      this.register(`${prefix}${route.uri}`, [route.method], controller, key);
+      const { uri, method } = routes[key];
+      // // 当前控制器方法需要加载 cors
+      // if (corses[key]) {
+      //   this.register(`${prefix}${route.uri}`, ['OPTIONS'], handlers.cors);
+      // }
+      const route = this.register(`${prefix}${uri}`, this.getSuportMethods(method), controller, key);
+
+      if (corses[key]) {
+        route.addMethod('OPTIONS').registerMiddleware(corsMiddleware);
+      }
+      this.collection.add(route);
     }
+  }
+
+
+  getSuportMethods(inputMethod = '') {
+    return inputMethod.toUpperCase() === 'ALL' ? http.METHODS : [inputMethod];
   }
 
   register(uri, methods, controller, action, middlewares) {
     const route = new Route(uri, methods, controller, action, middlewares);
-    this.collection.add(route);
+    return route;
   }
 
   getControllers() {

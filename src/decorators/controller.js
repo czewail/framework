@@ -6,7 +6,8 @@
  */
 
 const { formatPrefix } = require('./helpers');
-const { letController, setControllerPrefix } = require('../utils');
+// const Metadata = require('../foundation/support/metadata');
+const { letController, setControllerPrefix } = require('../controller/helpers');
 
 function injectClass(elementDescriptor, prefix) {
   return {

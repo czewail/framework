@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { setControllerPrefix, getControllerRoutes, setControllerRoutes } = require('../utils');
+const { setControllerPrefix, getControllerRoutes, setControllerRoutes } = require('../controller/helpers');
 
 const rest = {
   index: { uri: '/', method: 'get' },

@@ -5,7 +5,7 @@ const mime = require('mime-types');
 const Container = require('../container');
 const Response = require('../response');
 const ResponseFactory = require('../response/manager');
-const BaseController = require('../base/controller');
+// const BaseController = require('../base/controller');
 const NotFoundHttpError = require('../errors/not-found-http-error');
 // const Pipeline = require('../pipeline');
 
@@ -38,7 +38,7 @@ class Dispatcher {
   async resolve() {
     let res;
     if (this.route) {
-      res = await this.dispatchToController();
+      res = await this.dispatchToRoute();
     } else {
       res = await this.dispatchToStaticServer();
     }
@@ -87,7 +87,6 @@ class Dispatcher {
         response.setHeader('Content-Type', mime.lookup(type(filePath, encodingExt)));
         response.setData(fs.createReadStream(filePath));
         return response;
-        // return (new ResponseFactory(response)).output(this.request);
       }
     }
     throw this.createNotFountError();
@@ -128,32 +127,12 @@ class Dispatcher {
   /**
    * dispatch request to controller
    */
-  async dispatchToController() {
-    return this.route.middleware.handle(this.request, async (request) => {
-      const controller = this.app.get(this.route.controller, [request]);
-      const proxyController = this.combineBaseController(controller);
-      const { action } = this.route;
-      const routeParams = this.route.getParams(request.path);
-      const res = await proxyController[action](...routeParams);
-      if (res instanceof Response) return res;
-      return (new Response()).setData(res);
-    });
+  async dispatchToRoute() {
+    return this.route.middleware.handle(this.request, async request => this.route.resolve(request));
   }
 
   createNotFountError() {
     return new NotFoundHttpError('Not Found');
-  }
-
-  combineBaseController(controller) {
-    const baseController = new BaseController(this.request);
-    return new Proxy(controller, {
-      get(target, p, receiver) {
-        if (Reflect.has(target, p)) {
-          return Reflect.get(target, p, receiver);
-        }
-        return Reflect.get(baseController, p);
-      },
-    });
   }
 }
 

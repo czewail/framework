@@ -6,25 +6,22 @@
  */
 // const Meta = require('../foundation/support/meta');
 const {
-  getControllerMiddlewares, setControllerMiddlewares,
   getControllerRouteMiddlewares, setControllerRouteMiddlewares,
-} = require('../utils');
+} = require('../controller/helpers');
+const { getMiddlewares, setMiddlewares } = require('../middleware/helpers');
 
 function injectClass(elementDescriptor, middleware) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const middlewares = getControllerMiddlewares(target.prototype);
-      setControllerMiddlewares(target.prototype, [
+      const middlewares = getMiddlewares(target.prototype);
+      setMiddlewares(target.prototype, [
         ...middlewares,
         middleware,
       ]);
       return target;
     },
   };
-  // const middlewares = Meta.get('middlewares', target.prototype) || [];
-  // Meta.set('middlewares', [...middlewares, middleware], target.prototype);
-  // return target;
 }
 
 function injectMethod(elementDescriptor, middleware) {
@@ -40,13 +37,6 @@ function injectMethod(elementDescriptor, middleware) {
       return target;
     },
   };
-  // const routeMiddlewares = Meta.get('route_middlewares', target) || {};
-  // if (!routeMiddlewares[name]) {
-  //   routeMiddlewares[name] = [];
-  // }
-  // routeMiddlewares[name].push(middleware);
-  // Meta.set('route_middlewares', routeMiddlewares, target);
-  // return descriptor;
 }
 
 function handle(elementDescriptor, middleware) {

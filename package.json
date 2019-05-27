@@ -4,9 +4,9 @@
   "description": "Daze.js - A powerful web framework for Node.js",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "babel src --out-dir dist --copy-files --watch  --source-map",
+    "dev": "babel src --out-dir dist --copy-files --watch --source-maps",
     "clean": "rimraf dist/*",
-    "build": "npm run clean && babel src --out-dir dist --copy-files",
+    "build": "npm run clean && babel src --out-dir dist --copy-files --source-maps",
     "test": "jest --detectOpenHandles --runInBand --forceExit",
     "debugger": "node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --no-watchman --detectOpenHandles"
   },
@@ -44,7 +44,7 @@
     "url": "https://github.com/dazejs/daze/issues"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.15.0"
   },
   "readmeFilename": "README.md",
   "dependencies": {
