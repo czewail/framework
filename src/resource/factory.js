@@ -5,10 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
-const path = require('path')
-const Container = require('../container')
-const Collection = require('./collection')
-const Item = require('./item')
+const path = require('path');
+const Container = require('../container');
+const Collection = require('./collection');
+const Item = require('./item');
 
 class Factory {
   /**
@@ -17,7 +17,7 @@ class Factory {
   app = Container.get('app');
 
   constructor(resource) {
-    this.resource = resource
+    this.resource = resource;
   }
 
   /**
@@ -25,8 +25,8 @@ class Factory {
    * @param {object} resource resource instance
    */
   transformResourceMeta(resource) {
-    const { metaFormatter, meta } = resource
-    return this.useTransformer(metaFormatter, meta)
+    const { metaFormatter, meta } = resource;
+    return this.useTransformer(metaFormatter, meta);
   }
 
   /**
@@ -34,14 +34,14 @@ class Factory {
    * @param {object} resource resource instance
    */
   transformResourceData(resource) {
-    const { formatter, data } = resource
+    const { formatter, data } = resource;
     if (resource instanceof Item) {
-      return this.useTransformer(formatter, data)
+      return this.useTransformer(formatter, data);
     }
     if (resource instanceof Collection) {
-      return data.map(i => this.useTransformer(formatter, i))
+      return data.map(i => this.useTransformer(formatter, i));
     }
-    return data
+    return data;
   }
 
   /**
@@ -50,19 +50,19 @@ class Factory {
    * @param {object|array} data resource meta or data
    */
   useTransformer(formatter, data) {
-    if (!data) return null
+    if (!data) return null;
     // 如果是字符串
     if (typeof formatter === 'string') {
-      const transformerFileName = this.getTransformerFilePath(formatter)
-      const transformerPath = path.join(this.app.transformerPath, transformerFileName)
-      const Transformer = this.app.craft(transformerPath)
-      return Transformer.toJSON(data)
+      const transformerFileName = this.getTransformerFilePath(formatter);
+      const transformerPath = path.join(this.app.transformerPath, transformerFileName);
+      const Transformer = this.app.craft(transformerPath);
+      return Transformer.resolve(data);
     }
     // 如果是回调函数
     if (typeof formatter === 'function') {
-      return formatter(data)
+      return formatter(data);
     }
-    return data
+    return data;
   }
 
   /**
@@ -70,7 +70,7 @@ class Factory {
   * @param {string} formatter formatter value (filename)
   */
   getTransformerFilePath(formatter) {
-    return formatter.slice(-3) === '.js' ? formatter : `${formatter}.js`
+    return formatter.slice(-3) === '.js' ? formatter : `${formatter}.js`;
   }
 
   /**
@@ -78,38 +78,38 @@ class Factory {
    * @param {boolean} isWrapCollection is collection use wrap key
    */
   serializeResourceData(isWrapCollection = true) {
-    const { key } = this.resource
+    const { key } = this.resource;
 
-    const data = this.transformResourceData(this.resource)
+    const data = this.transformResourceData(this.resource);
 
     if (this.resource instanceof Collection) {
-      if (key) return { [key]: data }
-      return isWrapCollection ? { data } : data
+      if (key) return { [key]: data };
+      return isWrapCollection ? { data } : data;
     }
     if (this.resource instanceof Item) {
-      if (key) return { [key]: data }
-      return data
+      if (key) return { [key]: data };
+      return data;
     }
-    if (key) return { [key]: null }
-    return null
+    if (key) return { [key]: null };
+    return null;
   }
 
   /**
    * serialize resource meta
    */
   serializeResourceMeta() {
-    const meta = this.transformResourceMeta(this.resource)
-    return meta ? { meta } : null
+    const meta = this.transformResourceMeta(this.resource);
+    return meta ? { meta } : null;
   }
 
   /**
    * output result
    */
   output() {
-    const data = this.serializeResourceData()
-    const meta = this.serializeResourceMeta()
-    return Object.assign({}, data, meta)
+    const data = this.serializeResourceData();
+    const meta = this.serializeResourceMeta();
+    return Object.assign({}, data, meta);
   }
 }
 
-module.exports = Factory
+module.exports = Factory;

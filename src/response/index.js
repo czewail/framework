@@ -12,7 +12,7 @@ const Stream = require('stream');
 const { extname } = require('path');
 const is = require('is-type-of');
 const contentDisposition = require('content-disposition');
-const Resource = require('../resource');
+const Resource = require('../resource/resource');
 const Container = require('../container');
 const ResourceFactory = require('../resource/factory');
 const ViewFactory = require('../view/factory');
@@ -21,49 +21,46 @@ const View = require('../view');
 const Cookie = require('../cookie');
 
 class Response {
-  /**
-   * Application
-   * @var Application
-   */
-  app = Container.get('app');
-
-  /**
-   * status code
-   * @var number
-   */
-  _code = 200;
-
-  /**
-   * original data
-   * @var mixed
-   */
-  _data = null;
-
-  /**
-   * http headers
-   * @var object
-   */
-  _header = {};
-
-  /**
-   * 默认字符集
-   * @var string
-   */
-  _charset = 'utf-8';
-
-  /**
-   * 默认 contentType
-   * @var string
-   */
-  _contentType = 'text/html';
-
-  cookies = [];
-
   constructor(data = null, code = 200, header = {}) {
+    /**
+     * Application
+     * @var Application
+     */
+    this.app = Container.get('app');
+
+    /**
+     * status code
+     * @var number
+     */
+    this._code = code;
+
+    /**
+     * original data
+     * @var mixed
+     */
+    this._data = data;
+
+    /**
+     * http headers
+     * @var object
+     */
+    this._header = header;
+
+    /**
+     * 默认字符集
+     * @var string
+     */
+    this._charset = 'utf-8';
+
+    /**
+     * 默认 contentType
+     * @var string
+     */
+    this._contentType = 'text/html';
+
+    this.cookies = [];
+
     this.patchCodeMethods();
-    this.setCode(code);
-    this.setData(data);
-    this.setHeader(header);
   }
 
   set code(code) {

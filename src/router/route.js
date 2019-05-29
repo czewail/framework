@@ -106,7 +106,6 @@ class Route {
 
   parseControllerMiddleware() {
     const middlewares = getMiddlewares(this.handler.prototype);
-    console.log(middlewares);
     const routeMiddlewares = getControllerRouteMiddlewares(this.handler.prototype);
     this.registerControllerMiddlewares(middlewares);
     this.registerControllerMiddlewares(routeMiddlewares[this.action]);

@@ -5,10 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Resource = require('./resource')
+const Resource = require('./resource');
 
 class Collection extends Resource {
 
 }
 
-module.exports = Collection
+module.exports = Collection;

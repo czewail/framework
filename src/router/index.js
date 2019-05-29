@@ -55,12 +55,7 @@ class Router {
     const corses = getControllerCrossOrigin(controller.prototype);
     for (const key of Object.keys(routes)) {
       const { uri, method } = routes[key];
-      // // 当前控制器方法需要加载 cors
-      // if (corses[key]) {
-      //   this.register(`${prefix}${route.uri}`, ['OPTIONS'], handlers.cors);
-      // }
       const route = this.register(`${prefix}${uri}`, this.getSuportMethods(method), controller, key);
-
       if (corses[key]) {
         route.addMethod('OPTIONS').registerMiddleware(corsMiddleware);
       }

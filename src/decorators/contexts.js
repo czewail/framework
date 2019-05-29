@@ -12,7 +12,7 @@ exports.HttpHeader = exports.HttpHeaders = createContextsDecorator(symbols.INJEC
 exports.HttpBody = createContextsDecorator(symbols.INJECTORS.BODY);
 exports.CookieValue = createContextsDecorator(symbols.INJECTORS.COOKIE);
 exports.SessionValue = createContextsDecorator(symbols.INJECTORS.SESSION);
+exports.useService = createContextsDecorator(symbols.INJECTORS.SERVICE);
 exports.Config = createContextsDecorator('config');
 exports.App = createContextsDecorator('app');
 exports.Messenger = createContextsDecorator('messenger');
-exports.useService = createContextsDecorator(symbols.INJECTORS.SERVICE);
