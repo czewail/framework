@@ -353,6 +353,13 @@ class Application extends Container {
     return server.listen(...args);
   }
 
+
+  call(abstract, args = []) {
+    const concrete = this.make(abstract);
+    if (typeof concrete !== 'function') return undefined;
+    return concrete(...args);
+  }
+
   /**
    * Gets the binding dependency from the container
    * @param {string} group group name

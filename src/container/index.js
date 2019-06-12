@@ -234,12 +234,6 @@ class Container {
     return Reflect.construct(klassProxy, [...bindParams, ...args]);
   }
 
-  call(abstract, args = []) {
-    const concrete = this.make(abstract);
-    if (typeof concrete !== 'function') return undefined;
-    return concrete(...args);
-  }
-
   /**
    * set abstract in groups
    * @param {string} abstract Object identifier
@@ -274,8 +268,8 @@ class Container {
    * @public
    * @static
    */
-  static bind(abstract, concrete = null, shared = true) {
-    return this.getInstance()[BIND](abstract, concrete, shared);
+  static bind(abstract, concrete = null, shared = true, callable = false) {
+    return this.getInstance()[BIND](abstract, concrete, shared, callable);
   }
 
   /**

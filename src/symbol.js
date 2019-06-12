@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-// 容器实例多例标识
+// 容器实例多例标识 - used
 exports.MULTITON = Symbol('DAZE#multiton');
 
 exports.INJECT_CONTAINER_ARGS = '__DAZE_INJECT_CONTAINER_ARGS__';
