@@ -5,18 +5,20 @@
 [![npm](https://travis-ci.com/dazejs/framework.svg?branch=master)](https://www.npmjs.com/package/dazejs)
 [![GitHub license](https://img.shields.io/github/license/dazejs/daze.svg)](https://github.com/dazejs/daze/blob/master/LICENSE)
 
-
 <div align="center">
   <a href="https://github.com/dazejs/daze">
     <img width="200" heigth="200" src="https://github.com/dazejs/daze/blob/master/logo.png">
   </a>  
   <h1>Daze.js</h1>
-  <h4>Just use Javascript!</h4>
+  <h4>A Powerful Nodejs Web Framework</h4>
 </div>
 
 
-> ## 🛠 Status: In Development
-> Dazejs is currently in development. It's on the fast track to a 1.0 release, so we encourage you to use it and give us your feedback, but there are things that haven't been finalized yet and you can expect some changes.
+## Ecosystem
+
+| Project                                                  | Status                                                       | Description         |
+| -------------------------------------------------------- | ------------------------------------------------------------ | ------------------- |
+| [@dazejs/cli](https://www.npmjs.com/package/@dazejs/cli) | [![npm](https://img.shields.io/npm/v/@dazejs/cli.svg)](https://www.npmjs.com/package/@dazejs/cli) | Project scaffolding |
 
 ## Installation
 
@@ -36,7 +38,9 @@ $ npm start
 
 - [Documentations](https://dazejs.org/)
 
+
 ## License
 
-Daze is [MIT licensed](https://github.com/dazejs/daze/blob/master/LICENSE)
+[MIT]https://github.com/dazejs/daze/blob/master/LICENSE)
 
+Copyright (c) 2018-present, Zewail Chan
