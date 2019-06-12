@@ -27,7 +27,11 @@ class ModuleProvider {
    * Provider launch Hook
    */
   launch() {
-    this.app.make('module');
+    const _module = this.app.make('module');
+    for (const m of this.app.modules) {
+      _module.register(m);
+    }
+    _module.resolve();
   }
 }
 

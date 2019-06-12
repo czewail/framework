@@ -4,6 +4,7 @@ const Response = require('./response');
 const Redirect = require('./response/redirect');
 const View = require('./view');
 const Cookie = require('./cookie');
+const Metadata = require('./foundation/support/metadata');
 
 if (!Reflect.has(global, 'app')) {
   global.app = function app(abstract = 'app', args = [], force = false) {
@@ -34,3 +35,14 @@ if (!Reflect.has(global, 'cookie')) {
     return new Cookie(key, value, options);
   };
 }
+
+
+Reflect.getMetadata = function (...params) {
+  return Metadata.get(...params);
+};
+Reflect.setMetadata = function (...params) {
+  return Metadata.set(...params);
+};
+Reflect.hasMetadata = function (...params) {
+  return Metadata.has(...params);
+};

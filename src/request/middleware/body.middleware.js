@@ -47,6 +47,6 @@ module.exports = function Body() {
       body = await parseForm(request.req);
     }
     request.req.body = body;
-    await next();
+    return next();
   };
 };

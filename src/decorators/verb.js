@@ -6,21 +6,20 @@
  */
 
 const { formatPrefix } = require('./helpers');
-const { getControllerRoutes, setControllerRoutes } = require('../controller/helpers');
 
 function decorateMethod(elementDescriptor, verb, uri) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const routes = getControllerRoutes(target.prototype);
-      setControllerRoutes(target.prototype, {
+      const routes = Reflect.getMetadata('routes', target.prototype);
+      Reflect.setMetadata('routes', {
         ...routes,
         [`${elementDescriptor.key}`]: {
           uri: formatPrefix(uri),
           method: verb,
           action: elementDescriptor.key,
         },
-      });
+      }, target.prototype);
       return target;
     },
   };

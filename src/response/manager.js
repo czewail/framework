@@ -2,12 +2,12 @@
 const Response = require('./index');
 
 class Manager {
-  response = null;
-
   constructor(data = null, code = null, headers = {}) {
-    this.response = (data instanceof Response) ? data : new Response(data);
-    this.response.setCode(code);
-    this.response.setHeader(headers);
+    if (data instanceof Response) {
+      this.response = data;
+    } else {
+      this.response = new Response(data, code, headers);
+    }
   }
 
   output(request) {

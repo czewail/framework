@@ -41,7 +41,7 @@ class Request {
     /**
      * @var {Object} _cookies Cookies instance
      */
-    this._cookies = {};
+    this._cookies = null;
 
     /**
      * @var {Session} _session Session instance
@@ -398,7 +398,11 @@ class Request {
    */
   cookie(key, options = {}) {
     const defaultOptions = this.app.get('config').get('cookie', {});
-    const signed = options && options.signed !== undefined ? options.signed : !!this.app.keys;
+    const _options = {
+      ...defaultOptions,
+      ...options,
+    };
+    const signed = _options && _options.signed !== undefined ? _options.signed : !!this.app.keys;
     return this.cookies && this.cookies[key];
   }
 
@@ -406,7 +410,7 @@ class Request {
    * alias this.cookie
    * @param  {...any} params this.cookie params
    */
-  getCookie(...params) {
+  cookieValue(...params) {
     return this.cookie(...params);
   }
 

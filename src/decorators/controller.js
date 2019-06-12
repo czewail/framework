@@ -6,15 +6,13 @@
  */
 
 const { formatPrefix } = require('./helpers');
-// const Metadata = require('../foundation/support/metadata');
-const { letController, setControllerPrefix } = require('../controller/helpers');
 
 function injectClass(elementDescriptor, prefix) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      letController(target.prototype);
-      setControllerPrefix(target.prototype, formatPrefix(prefix));
+      Reflect.setMetadata('isController', true, target.prototype);
+      Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
       return target;
     },
   };

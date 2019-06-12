@@ -5,20 +5,27 @@
  * https://opensource.org/licenses/MIT
  */
 // const Meta = require('../foundation/support/meta');
-const {
-  getControllerRouteMiddlewares, setControllerRouteMiddlewares,
-} = require('../controller/helpers');
-const { getMiddlewares, setMiddlewares } = require('../middleware/helpers');
+const Middleware = require('../middleware');
+const Metadata = require('../foundation/support/metadata');
 
 function injectClass(elementDescriptor, middleware) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const middlewares = getMiddlewares(target.prototype);
-      setMiddlewares(target.prototype, [
-        ...middlewares,
-        middleware,
-      ]);
+      // -------------- new -----------
+      if (!Metadata.has('middleware', target.prototype)) {
+        Metadata.set('middleware', new Middleware(), target.prototype);
+      }
+      const _Middleware = Metadata.get('middleware', target.prototype);
+
+      _Middleware.register(middleware);
+
+      // // -------------- old -----------
+      // const middlewares = getMiddlewares(target.prototype);
+      // (target.prototype, [
+      //   ...middlewares,
+      //   middleware,
+      // ]);
       return target;
     },
   };
@@ -28,12 +35,12 @@ function injectMethod(elementDescriptor, middleware) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const middlewares = getControllerRouteMiddlewares(target.prototype);
+      const middlewares = Reflect.getMetadata('routeMiddlewares', target.prototype);
       if (!middlewares[elementDescriptor.key]) {
         middlewares[elementDescriptor.key] = [];
       }
       middlewares[elementDescriptor.key].push(middleware);
-      setControllerRouteMiddlewares(target.prototype, middlewares);
+      Reflect.setMetadata('routeMiddlewares', middlewares, target.prototype);
       return target;
     },
   };

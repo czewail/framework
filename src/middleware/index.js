@@ -2,7 +2,6 @@ const path = require('path');
 const is = require('core-util-is');
 const Container = require('../container');
 const Pipeline = require('../pipeline');
-const { isMiddleware } = require('./helpers');
 // const Response = require('../response');
 
 class Middleware {
@@ -25,6 +24,27 @@ class Middleware {
     } else if (is.isFunction(middleware)) {
       this.parseFunctionMiddleware(middleware);
     }
+    return this;
+  }
+
+  /**
+   * combine another Middleware before this middlewares
+   * @param {Middleware} anotherMiddleware
+   */
+  combineBefore(anotherMiddleware) {
+    if (!(anotherMiddleware instanceof Middleware)) return this;
+    this.middlewares.unshift(...anotherMiddleware.middlewares);
+    return this;
+  }
+
+  /**
+   * combine another Middleware after this middlewares
+   * @param {Middleware} anotherMiddleware
+   */
+  combineAfter(anotherMiddleware) {
+    if (!(anotherMiddleware instanceof Middleware)) return this;
+    this.middlewares.push(...anotherMiddleware.middlewares);
+    return this;
   }
 
   /**
@@ -44,7 +64,7 @@ class Middleware {
    */
   parseFunctionMiddleware(middleware) {
     // 使用了 @Middleware 装饰器
-    if (isMiddleware(middleware.prototype)) {
+    if (Reflect.getMetadata('isMiddleware', middleware.prototype)) {
       this.parseClassMiddleware(middleware);
     } else {
       this.middlewares.push(middleware);
@@ -63,20 +83,6 @@ class Middleware {
       const injectedMiddleware = this.app.get(middleware, [request]);
       return injectedMiddleware.resolve(request, next);
     });
-  }
-
-  /**
-   * power by middleware
-   */
-  powerBy() {
-    this.middlewares.push((request, next) => {
-      const { res } = request;
-      if (!res.headersSent) {
-        res.setHeader('X-Power-By', 'Daze.js');
-      }
-      return next();
-    });
-    return this;
   }
 
   /**

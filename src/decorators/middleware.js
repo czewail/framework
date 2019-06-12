@@ -6,13 +6,12 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const { letMiddleware } = require('../middleware/helpers');
 
 function injectClass(elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      letMiddleware(target.prototype);
+      Reflect.setMetadata('isMiddleware', true, target.prototype);
       return target;
     },
   };

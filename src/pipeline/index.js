@@ -36,8 +36,11 @@ class Pipeline {
    * @param {mixed} payload pipe data payload
    * @returns {mixed} result
    */
-  async process(cb) {
-    return this.processor.process(this.stages, cb, ...this.payload);
+  async process(processor) {
+    if (this.stages.length > 0) {
+      return this.processor.process(this.stages, processor, ...this.payload);
+    }
+    return processor(...this.payload);
   }
 }
 

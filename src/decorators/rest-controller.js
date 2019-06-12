@@ -5,7 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { setControllerPrefix, getControllerRoutes, setControllerRoutes } = require('../controller/helpers');
 
 const rest = {
   index: { uri: '/', method: 'get' },
@@ -22,12 +21,12 @@ function injectClass(elementDescriptor, prefix) {
     ...elementDescriptor,
     finisher(target) {
       const prefixed = prefix.slice(0, 1) === '/' ? prefix : `/${prefix}`;
-      setControllerPrefix(target.prototype, prefixed);
-      const routes = getControllerRoutes(target.prototype);
-      setControllerRoutes(target.prototype, {
+      Reflect.setMetadata('prefix', prefixed, target.prototype);
+      const routes = Reflect.getMetadata('routes', target.prototype);
+      Reflect.setMetadata('routes', {
         ...routes,
         ...rest,
-      });
+      }, target.prototype);
       return target;
     },
   };

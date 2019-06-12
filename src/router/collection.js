@@ -48,6 +48,7 @@ class RouteCollection {
       this.routes[method].push(route);
     }
     this.allRoutes.push(route);
+    console.log(this.routes);
   }
 }
 

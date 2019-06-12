@@ -8,10 +8,12 @@ class HttpServer {
   }
 
   listen(...args) {
-    const server = http.createServer((req, res) => {
+    const server = http.createServer(async (req, res) => {
       const request = this.app.get('request', [req, res]);
-      return this.app.get('middleware').handle(request, this.app.get('router').resolve());
-      // return result.then(finalReault => (new ResponseFactory(finalReault).output(request)));
+      const processer = this.app.get('router').resolve();
+      // , response => new ResponseFactory(response).output(request)
+      this.app.get('middleware')
+        .handle(request, processer).then(result => new ResponseFactory(result).output(request));
     });
     return server.listen(...args);
   }

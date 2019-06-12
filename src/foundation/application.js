@@ -11,6 +11,7 @@ const Keygrip = require('keygrip');
 const Container = require('../container');
 const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
+const Module = require('../module');
 // const Middleware = require('../middleware');
 
 const DEFAULT_PORT = 8000;
@@ -66,6 +67,7 @@ class Application extends Container {
   runtimeCalls = [];
 
   modules = [];
+
 
   /**
    * Create a Dazejs Application insstance
@@ -145,9 +147,6 @@ class Application extends Container {
     // register module provioder
     await this.register(new providers.Module(this));
 
-    // register controller provider
-    await this.register(new providers.Controller(this));
-
     // register middleware provider
     await this.register(new providers.Middleware(this));
 
@@ -162,7 +161,7 @@ class Application extends Container {
 
     // register template provider
     await this.register(new providers.Template(this));
-    await this.register(new providers.Service(this));
+    // await this.register(new providers.Service(this));
 
     // this.register(new providers.Response(this))
 

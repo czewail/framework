@@ -11,6 +11,7 @@ const statuses = require('statuses');
 const Stream = require('stream');
 const { extname } = require('path');
 const is = require('is-type-of');
+const cookie = require('cookie');
 const contentDisposition = require('content-disposition');
 const Resource = require('../resource/resource');
 const Container = require('../container');
@@ -404,9 +405,9 @@ class Response {
     return data;
   }
 
-  withCookie(cookie) {
-    if (cookie instanceof Cookie) {
-      this.cookies.push(cookie);
+  withCookie(_cookie) {
+    if (_cookie instanceof Cookie) {
+      this.cookies.push(_cookie);
     }
     return this;
   }
@@ -416,34 +417,47 @@ class Response {
     return this;
   }
 
-  async end(request, code, headers, data) {
+  async end(request) {
     const { req, res } = request;
-    // code
+
+    // commit session
+    // await request.session().commit(this);
+    // send cookie
+    const cookies = [];
+    for (const _cookie of this.cookies) {
+      const serializer = cookie
+        .serialize(_cookie.getName(), _cookie.getValue(), _cookie.getOptions());
+      cookies.push(serializer);
+      // request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
+    }
+
+    this.setHeader('Set-Cookie', cookies);
+
+
+    // headers
     if (!res.headersSent) {
+      const headers = this.getHeaders();
+      const code = this.getCode();
+
       res.statusCode = code;
       if (req.httpVersionMajor < 2) {
         res.statusMessage = statuses[code];
       }
-    }
 
-    // headers
-    if (!res.headerSent) {
       for (const key of Object.keys(headers)) {
         res.setHeader(key, headers[key]);
       }
-      // commit session
-      // await request.session().commit();
-      // send cookie
-      for (const cookie of this.cookies) {
-        // request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
-      }
     }
+
+    const data = this.handleData();
 
     // data
     if (Buffer.isBuffer(data) || typeof data === 'string') {
       return res.end(data);
     }
+    if (typeof body === 'string') return res.end(data);
     if (data instanceof Stream) {
+      // console.log(this.getCode());
       return data.pipe(res);
     }
 
@@ -462,11 +476,7 @@ class Response {
    * @public
    */
   async send(request) {
-    const code = this.getCode();
-    const headers = this.getHeaders();
-    const data = this.handleData();
-
-    await this.end(request, code, headers, data);
+    return this.end(request);
   }
 }
 

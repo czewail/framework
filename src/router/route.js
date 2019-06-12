@@ -9,8 +9,6 @@ const pathToRegExp = require('path-to-regexp');
 const is = require('core-util-is');
 const Container = require('../container');
 const Middleware = require('../middleware');
-const { getControllerRouteMiddlewares, isController } = require('../controller/helpers');
-const { getMiddlewares } = require('../middleware/helpers');
 const BaseController = require('../base/controller');
 const Response = require('../response');
 
@@ -23,7 +21,7 @@ class Route {
    * @param {String} action controller action
    * @param {Array} middlewares route middlewares
    */
-  constructor(uri, methods = [], handler = null, action = '') {
+  constructor(uri, methods = [], controller = null, action = '') {
     this.app = Container.get('app');
     /**
      * @var {Array} keys route params keys
@@ -38,7 +36,7 @@ class Route {
     /**
      * @var {Array} methods upper case method name
      */
-    this.methods = methods.map(method => method.toUpperCase());
+    this.methods = this.parseMethods(methods);
 
     /**
      * @var {RegExp} regexp path RegExp
@@ -46,9 +44,9 @@ class Route {
     this.regexp = pathToRegExp(uri, this.keys);
 
     /**
-     * @var {Controller | Function} handler handler
+     * @var {Controller | Function} controller controller
      */
-    this.handler = handler;
+    this.controller = controller;
 
     /**
      * @var {String} action controller action name
@@ -58,12 +56,12 @@ class Route {
     /**
      * @var {Middleware} middleware Middleware instance
      */
-    this.middleware = new Middleware();
+    this.middleware = Reflect.getMetadata('middleware', controller.prototype) || new Middleware();
 
     /**
      * register Middlewares in Middleware instance
      */
-    this.parseHandler();
+    // this.parseHandler();
 
     /**
      * patch HEAD method with GET method
@@ -94,22 +92,25 @@ class Route {
 
 
   parseMethods(methods = []) {
-    return methods.map(method => method.toUpperCase());
-  }
-
-  parseHandler() {
-    // check if is controller
-    if (this.handler && this.handler.prototype && isController(this.handler.prototype)) {
-      this.parseControllerMiddleware();
+    const _methods = [];
+    for (const method of methods) {
+      const _method = method.toUpperCase();
+      if (_method === 'ALL') {
+        _methods.push.push(...http.METHODS);
+      } else {
+        _methods.push(_method);
+      }
     }
+    return [...new Set(_methods)];
   }
 
-  parseControllerMiddleware() {
-    const middlewares = getMiddlewares(this.handler.prototype);
-    const routeMiddlewares = getControllerRouteMiddlewares(this.handler.prototype);
-    this.registerControllerMiddlewares(middlewares);
-    this.registerControllerMiddlewares(routeMiddlewares[this.action]);
-  }
+
+  // parseControllerMiddleware() {
+  //   const middlewares = getMiddlewares(this.handler.prototype);
+  //   const routeMiddlewares = getControllerRouteMiddlewares(this.handler.prototype);
+  //   this.registerControllerMiddlewares(middlewares);
+  //   this.registerControllerMiddlewares(routeMiddlewares[this.action]);
+  // }
 
   /**
    * get route params
@@ -119,12 +120,12 @@ class Route {
     return path.match(this.regexp).slice(1);
   }
 
-  /**
-   * get route controller
-   */
-  getController() {
-    return this.handler;
-  }
+  // /**
+  //  * get route controller
+  //  */
+  // getController() {
+  //   return this.handler;
+  // }
 
   /**
    * register Middlewares in Middleware instance
@@ -146,25 +147,22 @@ class Route {
   }
 
   async resolve(request) {
-    if (this.handler && this.handler.prototype && isController(this.handler.prototype)) {
-      const controller = this.app.get(this.handler, [request]);
-      const proxyController = this.combineBaseController(controller);
-      const routeParams = this.getParams(request.path);
-      const res = await proxyController[this.action](...routeParams);
-      if (res instanceof Response) return res;
-      return (new Response()).setData(res);
-    }
-    return this.handler(request);
+    const controller = this.app.get(this.controller, [request]);
+    const proxyController = this.combineBaseController(controller, request);
+    const routeParams = this.getParams(request.path);
+    const res = await proxyController[this.action](...routeParams);
+    if (res instanceof Response) return res;
+    return (new Response()).setData(res);
   }
 
-  combineBaseController(controller) {
-    const baseController = new BaseController(this.request);
+  combineBaseController(controller, request) {
+    const baseController = new BaseController(request);
     return new Proxy(controller, {
       get(target, p, receiver) {
         if (Reflect.has(target, p)) {
           return Reflect.get(target, p, receiver);
         }
-        return Reflect.get(baseController, p);
+        return baseController[p];
       },
     });
   }

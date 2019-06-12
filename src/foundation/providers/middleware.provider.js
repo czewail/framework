@@ -21,13 +21,20 @@ class MiddlewareProvider {
 
   launch() {
     const middleware = this.app.make('middleware');
-    middleware.powerBy();
-    // middleware.register(Cors);
-    // const middlewareInstance = this.app.get('middleware');
-    // const middlewares = this.app.get('config').get('middleware', []);
-    // for (const middleware of middlewares) {
-    //   middlewareInstance.register(middleware);
-    // }
+
+    // middleware.register(async (request, next) => {
+    //   const response = await next();
+    //   await request.session().commit(response);
+    //   return response;
+    // });
+
+    middleware.register((request, next) => {
+      const { res } = request;
+      if (!res.headersSent) {
+        res.setHeader('X-Power-By', 'Daze.js');
+      }
+      return next();
+    });
   }
 }
 

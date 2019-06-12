@@ -36,13 +36,17 @@ class Dispatcher {
    * @param {Request} request
    */
   async resolve() {
-    let res;
     if (this.route) {
-      res = await this.dispatchToRoute();
-    } else {
-      res = await this.dispatchToStaticServer();
+      return this.dispatchToRoute();
     }
-    return (new ResponseFactory(res)).output(this.request);
+    return this.dispatchToStaticServer();
+    // let res;
+    // if (this.route) {
+    //   res = await this.dispatchToRoute();
+    // } else {
+    //   res = await this.dispatchToStaticServer();
+    // }
+    // return (new ResponseFactory(res)).output(this.request);
   }
 
   /**

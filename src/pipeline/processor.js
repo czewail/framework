@@ -8,19 +8,13 @@ class Processor {
    * @param  {Array<Function>} stages pipe stage
    * @returns {Promise} Processor result
    */
-  async process(stages, cb, ...payload) {
-    const nextFn = this.getNextFn(cb);
+  async process(stages, processor, ...payload) {
     const callback = stages
       .reduceRight(
         (next, pipe) => async (...data) => pipe(...data, next.bind(null, ...data)),
-        nextFn,
+        async (...params) => processor(...params),
       );
     return callback(...payload);
-  }
-
-  getNextFn(fn) {
-    if (typeof fn !== 'function') throw new TypeError('process callback must be a function');
-    return async (...payload) => fn(...payload);
   }
 }
 

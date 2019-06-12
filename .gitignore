@@ -6,3 +6,4 @@ coverage
 .vscode
 logs
 DEPRECATED_*
+__debug__

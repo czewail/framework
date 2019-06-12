@@ -42,22 +42,22 @@ class Controller extends Base {
     return this.app.get(resolvePath, args, [this.request], force);
   }
 
-  createServicePathProxy() {
-    const that = this;
-    return new Proxy({}, {
-      get(target, prop, receiver) {
-        console.log(prop);
-        if (prop === 'valueOf') {
-          return 11111;
-        }
-        return that.createServicePathProxy(prop);
-      },
-    });
-  }
+  // createServicePathProxy() {
+  //   const that = this;
+  //   return new Proxy({}, {
+  //     get(target, prop, receiver) {
+  //       console.log(prop);
+  //       if (prop === 'valueOf') {
+  //         return 11111;
+  //       }
+  //       return that.createServicePathProxy(prop);
+  //     },
+  //   });
+  // }
 
-  get services() {
-    return this.createServicePathProxy();
-  }
+  // get services() {
+  //   return this.createServicePathProxy();
+  // }
 
   /**
    * create item resouce instance

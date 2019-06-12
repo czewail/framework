@@ -4,40 +4,71 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const { letModule } = require('../module/helpers');
+const Controller = require('../controller');
+const Metadata = require('../foundation/support/metadata');
 
 function injectClass(elementDescriptor) {
   return {
     ...elementDescriptor,
+    // elements: [
+    //   ...elementDescriptor.elements,
+    //   {
+    //     kind: 'method',
+    //     key: 'run',
+    //     placement: 'prototype',
+    //     descriptor: {
+    //       value(item) {
+    //         if (!this.controllers) this.controllers = [];
+    //         this.controllers.push(item);
+    //       },
+    //       writable: true,
+    //       configurable: true,
+    //       enumerable: false,
+    //     },
+    //   },
+    // ],
     finisher(target) {
-      letModule(target.prototype);
+      Reflect.setMetadata('isModule', true, target.prototype);
 
-      return class extends target {
-        constructor() {
-          super();
-          this.controllers = [];
-          this.modules = [];
-          this.resolve();
-        }
+      // Metadata.set('controller', new Controller(), target.prototype);
 
-        resolve() {
-          if (super.resolve && typeof super.resolve === 'function') {
-            super.resolve();
-          }
-        }
-
-        loadModule(_module) {
-          this.modules.push(_module);
-        }
-
-        loadController(controller) {
-          this.controllers.push(controller);
-        }
-
-        run(controller) {
-          this.loadController(controller);
-        }
+      target.prototype.run = function (item) {
+        if (!this.controllers) this.controllers = [];
+        this.controllers.push(item);
       };
+
+      Metadata.set('controller', new Controller(), target.prototype);
+
+      // if (Metadata.has('controller', target.prototype)) {
+      //   Metadata.set('controller', new Controller(), target.prototype);
+      // }
+      // const _Controller = Metadata.get('controller', target.prototype);
+      return target;
+      // return class extends target {
+      //   constructor() {
+      //     super();
+      //     this.resolve();
+      //   }
+
+      //   resolve() {
+      //     if (super.resolve && typeof super.resolve === 'function') {
+      //       super.resolve();
+      //     }
+      //   }
+
+      //   loadModule(_module) {
+      //     this.modules.push(_module);
+      //   }
+
+      //   loadController(controller) {
+      //     _Controller.register(controller);
+      //   }
+
+      //   run(item) {
+      //     console.log(item);
+      //     this.loadController(item);
+      //   }
+      // };
     },
   };
 }

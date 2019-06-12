@@ -1,6 +1,3 @@
-const {
-  getControllerCrossOrigin, setControllerCrossOrigin,
-} = require('../controller/helpers');
 
 // const Cors = function () {
 //   return useMiddleware(CorsMiddleware);
@@ -22,7 +19,7 @@ function injectClass(elementDescriptor, options) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const corses = getControllerCrossOrigin(target.prototype);
+      const corses = Reflect.getMetadata('crossOrigin', target.prototype);
       for (const element of elementDescriptor.elements) {
         if (element.kind === 'method') {
           if (!corses[element.key]) {
@@ -33,7 +30,7 @@ function injectClass(elementDescriptor, options) {
           }
         }
       }
-      setControllerCrossOrigin(target.prototype, corses);
+      Reflect.setMetadata('crossOrigin', corses, target.prototype);
       return target;
     },
   };
@@ -44,13 +41,13 @@ function injectMethod(elementDescriptor, options) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const corses = getControllerCrossOrigin(target.prototype);
+      const corses = Reflect.getMetadata('crossOrigin', target.prototype);
       // console.log(elementDescriptor);
       corses[elementDescriptor.key] = {
         ...defaultOptions,
         ...options,
       };
-      setControllerCrossOrigin(target.prototype, corses);
+      Reflect.setMetadata('crossOrigin', corses, target.prototype);
       return target;
     },
   };

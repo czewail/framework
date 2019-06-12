@@ -3,8 +3,8 @@ const Route = require('./route');
 const Collection = require('./collection');
 const Container = require('../container');
 const Dispatcher = require('./dispatcher');
-const { getControllerPrefix, getControllerRoutes, getControllerCrossOrigin } = require('../controller/helpers');
 const corsMiddleware = require('../foundation/middlewares/cors');
+const ResponseFactory = require('../response/manager');
 
 
 class Router {
@@ -25,57 +25,29 @@ class Router {
     /**
      * @var {Controller[]} controllers controllers in container
      */
-    this.controllers = this.getControllers();
+    // this.controllers = this.getControllers();
 
-    this.registerRoutes();
+    // this.registerRoutes();
   }
 
   resolve() {
     return async (request) => {
       const metchedRoute = this.collection.match(request);
       const dispatcher = new Dispatcher(request, metchedRoute);
-      const res = await dispatcher.resolve();
-      return res;
+      return dispatcher.resolve();
+      // return new ResponseFactory(res).output(request);
     };
   }
 
-  registerRoutes() {
-    for (const controller of this.controllers) {
-      this.parseController(controller);
-    }
-  }
-
-  /**
-   * parse controller
-   * @param {Controller} controller
-   */
-  parseController(controller) {
-    const routes = getControllerRoutes(controller.prototype);
-    const prefix = getControllerPrefix(controller.prototype);
-    const corses = getControllerCrossOrigin(controller.prototype);
-    for (const key of Object.keys(routes)) {
-      const { uri, method } = routes[key];
-      const route = this.register(`${prefix}${uri}`, this.getSuportMethods(method), controller, key);
-      if (corses[key]) {
-        route.addMethod('OPTIONS').registerMiddleware(corsMiddleware);
-      }
-      this.collection.add(route);
-    }
-  }
-
-
-  getSuportMethods(inputMethod = '') {
-    return inputMethod.toUpperCase() === 'ALL' ? http.METHODS : [inputMethod];
-  }
-
   register(uri, methods, controller, action, middlewares) {
+    if (!Reflect.getMetadata('isController', controller.prototype)) throw new Error('route must be register an controller!');
     const route = new Route(uri, methods, controller, action, middlewares);
+    const corses = Reflect.getMetadata('crossOrigin', controller.prototype) || {};
+    if (corses[action]) {
+      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware);
+    }
+    this.collection.add(route);
     return route;
-  }
-
-  getControllers() {
-    // return this.app.tagged('controller');
-    return this.app.get('controller').controllers || [];
   }
 }
 
