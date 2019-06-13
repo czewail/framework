@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Meta = require('../foundation/support/meta');
+const Meta = require('../foundation/support/DEPRECATED_meta');
 
 function injectClass(target, serviceName) {
   Meta.set('isService', true, target.prototype);

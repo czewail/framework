@@ -6,9 +6,9 @@
  */
 const fs = require('fs');
 const path = require('path');
-const is = require('is-type-of');
+const is = require('core-util-is');
 const Container = require('../container');
-// const debug = require('debug')('daze-framework:config')
+const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 const SET_VALUE = Symbol('Config#setValue');
 const PARSE = Symbol('Config#parse');
@@ -20,12 +20,16 @@ const envMap = new Map([
 ]);
 
 class Config {
-  app = Container.get('app');
-
-  /** @type {object} this.items configuration */
-  items = {};
-
   constructor() {
+    /**
+     * @var {object} this._app Application
+     */
+    this._app = Container.get('app');
+
+    /**
+     * @var {object} this._items configuration
+     * */
+    this._items = {};
     // parse configuration files
     this[PARSE]();
   }
@@ -35,34 +39,35 @@ class Config {
    */
   [PARSE]() {
     const currentEnv = this.env;
-    // 读取名称不包含 '.' 的配置文件
-    fs
-      .readdirSync(this.app.configPath).filter(file => !~path.basename(file, '.js').indexOf('.'))
+    const files = fs.readdirSync(this._app.configPath);
+    // Read a configuration file whose name does not contain '.'
+    files.filter(file => !~path.basename(file, '.js').indexOf('.'))
       .forEach((file) => {
-        const currentConfig = require(path.join(this.app.configPath, file));
+        // eslint-disable-next-line
+        const currentConfig = require(path.join(this._app.configPath, file));
         const basename = path.basename(file, '.js');
         if (!this.has(basename)) {
           this.set(basename, currentConfig);
         }
       });
-    // 读取包含 '.' 的配置文件
-    fs
-      .readdirSync(this.app.configPath).filter(file => ~file.indexOf(`.${currentEnv}.js`))
+    // Read the configuration file that contains '.'
+    files.filter(file => ~file.indexOf(`.${currentEnv}.js`))
       .forEach((file) => {
-        const currentConfig = require(path.join(this.app.configPath, file));
+        // eslint-disable-next-line
+        const currentConfig = require(path.join(this._app.configPath, file));
         const basename = path.basename(file, `.${currentEnv}.js`);
         if (!this.has(basename)) {
           this.set(basename, currentConfig);
         } else {
           const oldConfig = this.get(basename);
-          if (is.object(oldConfig)) {
+          if (is.isObject(oldConfig)) {
             this.set(basename, Object.assign({}, oldConfig, currentConfig));
           } else {
             this.set(basename, currentConfig);
           }
         }
       });
-    return this.items;
+    return this._items;
   }
 
   /**
@@ -90,23 +95,15 @@ class Config {
    * Set the property value according to the property name
    * @param {array|string} name name,  array or string
    * @param {mixed} value set value
-   * @returns {object} this.items
+   * @returns {object} this._items
    */
   set(name, value = null) {
-    if (typeof name === 'string') { // if name is a string
-      const names = name.split('.');
-      const nameValue = this[SET_VALUE](names, value);
-      // Merge configuration attributes
-      this.items = Object.assign(this.items, nameValue);
-    } else if (Array.isArray(name)) { // if name is a array
-      for (const n of name) {
-        const names = n.split('.');
-        const nameValue = this[SET_VALUE](names, value);
-        // Merge configuration attributes
-        this.items = Object.assign(this.items, nameValue);
-      }
-    }
-    return this.items;
+    if (!is.isString(name)) throw new IllegalArgumentError('Config#set name must be String!');
+    const names = name.split('.');
+    const nameValue = this[SET_VALUE](names, value);
+    // Merge configuration attributes
+    this._items = Object.assign(this._items, nameValue);
+    return this._items;
   }
 
   /**
@@ -115,7 +112,7 @@ class Config {
    * @param {mixed} def The default configuration
    */
   get(name = null, def = null) {
-    let value = this.items;
+    let value = this._items;
     // Gets all the configuration when name is empty
     if (name === null) {
       return value;
@@ -143,6 +140,9 @@ class Config {
     return !(this.get(name) === null);
   }
 
+  /**
+   * current env getter
+   */
   get env() {
     return process.env.DAZE_ENV || envMap.get(process.env.NODE_ENV) || process.env.NODE_ENV;
   }

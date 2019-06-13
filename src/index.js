@@ -17,11 +17,6 @@ const View = require('./view');
 const Cookie = require('./cookie');
 const Decorators = require('./decorators');
 
-process.on('warning', (e) => {
-  Error.stackTraceLimit = 30;
-  console.warn(e.stack);
-});
-
 module.exports = {
   Application,
   Container,

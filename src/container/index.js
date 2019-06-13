@@ -5,9 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 const symbols = require('../symbol');
-const {
-  isNeedInjector, getConstructorInjectors, getPropertyInjectors, getMethodInjectors,
-} = require('../utils');
+const Metadata = require('../foundation/support/metadata');
 
 const BIND = Symbol('Container#bind');
 /**
@@ -179,11 +177,11 @@ class Container {
   injectClass(abstract, args) {
     const that = this;
     const klass = this.binds.get(abstract).concrete;
-    if (!isNeedInjector(klass.prototype)) {
+    if (!Metadata.get('needInject', klass.prototype)) {
       return Reflect.construct(klass, args);
     }
     const bindParams = [];
-    const constructorInjectors = getConstructorInjectors(klass.prototype);
+    const constructorInjectors = Metadata.get('constructorInjectors', klass.prototype) || [];
     // 判断class原型是否需要构造函数注入
     if (constructorInjectors) {
       // 获取需要注入构造函数的标识
@@ -204,7 +202,7 @@ class Container {
               return new Proxy(t[name], {
                 apply(tar, thisBinding, instanceArgs) {
                   const bindMethodParams = [];
-                  const methodInjectors = getMethodInjectors(t);
+                  const methodInjectors = Metadata.get('methodInjectors', t) || {};
                   const methodParams = methodInjectors[name] || [];
                   if (methodInjectors) {
                     for (const [type, params = []] of methodParams) {
@@ -217,7 +215,7 @@ class Container {
                 },
               });
             }
-            const propertyInjectors = getPropertyInjectors(t);
+            const propertyInjectors = Metadata.get('propertyInjectors', t) || {};
             if (propertyInjectors) {
               const [type, params = []] = propertyInjectors[name] || [];
               if (type) {

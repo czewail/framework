@@ -1,6 +1,7 @@
 
 
 const Container = require('../../src/container');
+const Metadata = require('../../src/foundation/support/metadata');
 
 it('Container.setInstance', () => {
   const App = class { };
@@ -109,4 +110,37 @@ it('Container#callable', () => {
   Container.bind('callable', callableFn, true, true);
 
   expect(Container.get('callable')).toBe('callable');
+});
+
+it('Container inject class', () => {
+  const App = class {
+    constructor(param) {
+      this.param = param;
+      this.prop = null;
+    }
+
+    index(param) {
+      return param;
+    }
+  };
+  Container.bind(App, App);
+  Container.bind('request', r => r, true, true);
+  Metadata.set('needInject', true, App.prototype);
+  Metadata.set('constructorInjectors', [
+    ['request', ['request']],
+  ], App.prototype);
+  Metadata.set('propertyInjectors', {
+    prop: ['request', ['request']],
+  }, App.prototype);
+  Metadata.set('methodInjectors', {
+    index: [
+      ['request', ['request']],
+    ],
+  }, App.prototype);
+
+  const app = Container.get(App);
+
+  expect(app.param).toBe('request');
+  expect(app.prop).toBe('request');
+  expect(app.index()).toBe('request');
 });
