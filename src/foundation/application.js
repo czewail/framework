@@ -144,8 +144,12 @@ class Application extends Container {
    * @private
    */
   async registerDefaultProviders() {
-    // register module provioder
-    await this.register(new providers.Module(this));
+    await this.register(new providers.App(this));
+
+    await this.register(new providers.Controller(this));
+    await this.register(new providers.Component(this));
+    // // register module provioder
+    // await this.register(new providers.Module(this));
 
     // register middleware provider
     await this.register(new providers.Middleware(this));

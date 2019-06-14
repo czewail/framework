@@ -1,4 +1,7 @@
+exports.App = require('./app.provider');
 exports.Config = require('./config.provider');
+exports.Controller = require('./controller.provider');
+exports.Component = require('./component.provider');
 exports.View = require('./view.provider');
 exports.Request = require('./request.provider');
 exports.Response = require('./response.provider');
@@ -9,6 +12,6 @@ exports.Logger = require('./logger.provider');
 exports.Template = require('./template.provider');
 exports.Middleware = require('./middleware.provider');
 exports.HttpServer = require('./http-server.provider');
-exports.Module = require('./module.provider');
+exports.Module = require('./DEPRECATED_module.provider');
 exports.Router = require('./router.provider');
 exports.Service = require('./service.provider');

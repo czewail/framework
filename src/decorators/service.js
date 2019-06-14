@@ -5,21 +5,27 @@
  * https://opensource.org/licenses/MIT
  */
 
-const Meta = require('../foundation/support/DEPRECATED_meta');
+const TYPE = 'service';
 
-function injectClass(target, serviceName) {
-  Meta.set('isService', true, target.prototype);
-  Meta.set('serviceName', serviceName, target.prototype);
-  return target;
+function injectClass(elementDescriptor, name) {
+  return {
+    ...elementDescriptor,
+    finisher(target) {
+      Reflect.setMetadata('type', TYPE, target.prototype);
+      Reflect.setMetadata(TYPE, name, target.prototype);
+      return target;
+    },
+  };
 }
 
-function handle(args, serviceName) {
-  if (args.length === 1) {
-    return injectClass(...args, serviceName);
+function handle(elementDescriptor, name) {
+  const { kind } = elementDescriptor;
+  if (kind === 'class') {
+    return injectClass(elementDescriptor, name);
   }
-  return null;
+  return elementDescriptor;
 }
 
-module.exports = function Service(serviceName = '') {
-  return (...argsClass) => handle(argsClass, serviceName);
+module.exports = function Controller(name = '') {
+  return elementDescriptor => handle(elementDescriptor, name);
 };

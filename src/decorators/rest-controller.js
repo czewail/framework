@@ -4,7 +4,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-
+const { formatPrefix } = require('./helpers');
 
 const rest = {
   index: { uri: '/', method: 'get' },
@@ -20,8 +20,9 @@ function injectClass(elementDescriptor, prefix) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const prefixed = prefix.slice(0, 1) === '/' ? prefix : `/${prefix}`;
-      Reflect.setMetadata('prefix', prefixed, target.prototype);
+      Reflect.setMetadata('isController', true, target.prototype);
+      Reflect.setMetadata('type', 'controller', target.prototype);
+      Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
       const routes = Reflect.getMetadata('routes', target.prototype);
       Reflect.setMetadata('routes', {
         ...routes,

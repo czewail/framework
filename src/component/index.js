@@ -1,45 +1,28 @@
-const path = require('path');
-const glob = require('glob');
 const is = require('core-util-is');
-const Metadata = require('../foundation/support/metadata');
-
-const PREFIX = '__DAZE_CONTAINER_COMPONENT_';
+const Container = require('../container');
 
 class Component {
   constructor() {
-    this.components = [];
+    this.app = Container.get('app');
   }
 
   register(component) {
-    if (is.isString(component)) {
-      this.parseStringComponent(component);
-    } else if (is.isFunction(component)) {
-      this.parseFunctionComponent(component);
-    }
-  }
-
-  parseStringComponent(component) {
-    if (!is.isString(component)) return this;
-    const klawComponents = glob.sync(path.resolve(this.app.appPath, component), {
-      nodir: true,
-    });
-    for (const _component of klawComponents) {
-      // eslint-disable-next-line global-require, import/no-dynamic-require
-      const _Component = require(_component);
-      this.parseFunctionComponent(_Component);
-    }
+    if (!is.isFunction(component)) return this;
+    this.parseComponent(component);
     return this;
   }
 
-  parseFunctionComponent(component) {
-    if (!is.isFunction(component)) return this;
-    if (!Metadata.get('isComponent', component.prototype)) return this;
-    const componentSign = Metadata.get('component', component.prototype) || {};
-    if (!componentSign.name) return this;
-    const containerKey = `${PREFIX}${componentSign.name}`;
-    if (!this.app.has(containerKey)) {
-      this.app.bind(containerKey, component);
-      this.components.push(containerKey);
+  parseComponent(component) {
+    const type = Reflect.getMetadata('type', component.prototype);
+    this.registerComponent(component, type);
+    return this;
+  }
+
+  registerComponent(component, type) {
+    const componentName = Reflect.getMetadata(type, component.prototype) || component.name;
+    const key = `${type}.${componentName}`;
+    if (!this.app.has(key)) {
+      this.app.bind(key, component);
     }
     return this;
   }

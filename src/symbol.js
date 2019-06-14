@@ -36,7 +36,7 @@ exports.MODULE_PARENT_MIDDLEWARES = Symbol('Module#parentMiddleware');
 exports.PROVIDERS = '__DAZE_PROVIDERS__';
 
 /**
- * Inject type ids
+ * Inject type ids - used
  */
 exports.INJECTORS = {
   REQUEST: '__DAZE_INJECT_REQUEST__',
@@ -50,6 +50,8 @@ exports.INJECTORS = {
   SERVICE: '__DAZE_INJECT_SERVICE__',
   COOKIE: '__DAZE_INJECT_COOKIE__',
   SESSION: '__DAZE_INJECT_SESSION__',
+  RESOURCE: '__DAZE_INJECT_RESOURCE_',
+  COMPONENT: '__DAZE_INJECT_COMPONENT__',
 };
 
 /**
