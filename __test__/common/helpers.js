@@ -26,3 +26,24 @@ exports.createController = function () {
 
   return newController;
 };
+
+exports.createService = function () {
+  const target = class {};
+  Reflect.setMetadata('type', 'service', target.prototype);
+  Reflect.setMetadata('service', 'user', target.prototype);
+  return target;
+};
+
+exports.createResource = function () {
+  const target = class { };
+  Reflect.setMetadata('type', 'resource', target.prototype);
+  Reflect.setMetadata('resource', 'user', target.prototype);
+  return target;
+};
+
+exports.createComponent = function () {
+  const target = class { };
+  Reflect.setMetadata('type', 'component', target.prototype);
+  Reflect.setMetadata('component', 'user', target.prototype);
+  return target;
+};

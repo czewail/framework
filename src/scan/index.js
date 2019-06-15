@@ -15,20 +15,20 @@ class Scan {
   sortingFiles(files = []) {
     for (const file of files) {
       // eslint-disable-next-line
-      const currentFile = require(file)
-      if (currentFile && currentFile.prototype) {
-        const type = Reflect.getMetadata('type', currentFile.prototype);
+      const target = require(file)
+      if (target && target.prototype) {
+        const type = Reflect.getMetadata('type', target.prototype);
         switch (type) {
           case 'controller':
-            this.registerController(currentFile);
+            this.registerController(target, file);
             break;
           case 'middleware':
-            this.registerMiddleware(currentFile);
+            this.registerMiddleware(target, file);
             break;
           case 'service':
           case 'resource':
           case 'component':
-            this.registerComponent(currentFile);
+            this.registerComponent(target, file);
             break;
           default:
             break;
@@ -44,16 +44,16 @@ class Scan {
     });
   }
 
-  registerMiddleware(middleware) {
-    console.log(middleware);
+  registerMiddleware(middleware, file) {
+    console.log(middleware, file);
   }
 
-  registerController(controller) {
-    this.app.get('controller').register(controller);
+  registerController(controller, file) {
+    this.app.get('controller').register(controller, file);
   }
 
-  registerComponent(component) {
-    this.app.get('component').register(component);
+  registerComponent(component, file) {
+    this.app.get('component').register(component, file);
   }
 }
 

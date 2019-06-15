@@ -50,6 +50,7 @@ class Component {
    */
   resolve(component, type) {
     const componentName = Reflect.getMetadata(type, component.prototype) || component.name;
+    if (!componentName) throw new IllegalArgumentError(`${type} must have a name!`);
     const key = `${type}.${componentName}`;
     if (!this.app.has(key)) {
       this.app.bind(key, component);

@@ -11,8 +11,7 @@ class HttpServer {
     const server = http.createServer(async (req, res) => {
       const request = this.app.get('request', [req, res]);
       const processer = this.app.get('router').resolve();
-      // , response => new ResponseFactory(response).output(request)
-      this.app.get('middleware')
+      return this.app.get('middleware')
         .handle(request, processer).then(result => new ResponseFactory(result).output(request));
     });
     return server.listen(...args);
