@@ -12,6 +12,5 @@ exports.Logger = require('./logger.provider');
 exports.Template = require('./template.provider');
 exports.Middleware = require('./middleware.provider');
 exports.HttpServer = require('./http-server.provider');
-exports.Module = require('./DEPRECATED_module.provider');
 exports.Router = require('./router.provider');
 exports.Service = require('./service.provider');

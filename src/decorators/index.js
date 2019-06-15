@@ -5,8 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 
-// const Inject = require('./inject')
-const Module = require('./module');
 const Controller = require('./controller');
 const RestController = require('./rest-controller');
 const Service = require('./service');
@@ -25,7 +23,6 @@ const Http = {
 };
 
 module.exports = {
-  Module,
   Controller,
   RestController,
   Service,
