@@ -1,43 +1,68 @@
-const path = require('path');
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 const is = require('core-util-is');
 const Container = require('../container');
+const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Controller {
+  /**
+   * Create Controller Module
+   */
   constructor() {
+    /**
+     * @var {object} app Application
+     */
     this.app = Container.get('app');
-
-    this.controllers = [];
   }
 
+  /**
+   * register a controller
+   * @param {Class} controller controller class
+   * @return {Controller} this
+   * @public
+   */
   register(controller) {
-    if (is.isString(controller)) {
-      this.parseStringController(controller);
-    } else if (is.isFunction(controller)) {
-      this.parseFunctionController(controller);
-    }
-  }
-
-  parseStringController(controller) {
-    const controllerPatth = require.resolve(path.join(this.app.controllerPath, controller));
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const controllerRequired = require(controllerPatth);
-    this.parseFunctionController(controllerRequired);
-  }
-
-  parseFunctionController(controller) {
-    if (!is.isFunction(controller)) return this;
-    // 使用了 @Controller 装饰器
-    if (Reflect.hasMetadata('isController', controller.prototype)) {
-      this.app.multiton(controller, controller);
-      this.resolve(controller);
-    }
+    if (!is.isFunction(controller)) throw new IllegalArgumentError('controller must be a class!');
+    this.parseController(controller);
     return this;
   }
 
-  resolve(controller) {
-    const routes = Reflect.getMetadata('routes', controller.prototype);
-    const prefix = Reflect.getMetadata('prefix', controller.prototype);
+  /**
+   * parse a controller
+   * @param {Class} controller ontroller class
+   * @return {Controller} this
+   * @private
+   */
+  parseController(controller) {
+    if (Reflect.getMetadata('type', controller.prototype) !== 'controller') throw new IllegalArgumentError('controller class must use @Controller decorator!');
+    this.app.multiton(controller, controller);
+    this.resolve(controller);
+    return this;
+  }
 
+  /**
+   * resolve this controller
+   * @param {Class} controller controller class
+   * @private
+   */
+  resolve(controller) {
+    const routes = Reflect.getMetadata('routes', controller.prototype) || {};
+    const prefix = Reflect.getMetadata('prefix', controller.prototype) || '';
+    this.registerRoutes(controller, routes, prefix);
+  }
+
+  /**
+   * register controller routes
+   * @param {Class} controller controller class
+   * @param {Array} routes routes desc array
+   * @param {String} prefix routes prifix
+   * @private
+   */
+  registerRoutes(controller, routes, prefix) {
     const Router = this.app.get('router');
     for (const key of Object.keys(routes)) {
       const { uri, method } = routes[key];

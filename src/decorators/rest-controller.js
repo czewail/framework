@@ -20,7 +20,6 @@ function injectClass(elementDescriptor, prefix) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata('isController', true, target.prototype);
       Reflect.setMetadata('type', 'controller', target.prototype);
       Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
       const routes = Reflect.getMetadata('routes', target.prototype);

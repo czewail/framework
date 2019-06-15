@@ -40,7 +40,7 @@ class Router {
   }
 
   register(uri, methods, controller, action, middlewares) {
-    if (!Reflect.getMetadata('isController', controller.prototype)) throw new Error('route must be register an controller!');
+    if (Reflect.getMetadata('type', controller.prototype) !== 'controller') throw new Error('route must be register an controller!');
     const route = new Route(uri, methods, controller, action, middlewares);
     const corses = Reflect.getMetadata('crossOrigin', controller.prototype) || {};
     if (corses[action]) {

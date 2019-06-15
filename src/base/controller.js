@@ -32,32 +32,35 @@ class Controller extends Base {
     return new View(...params);
   }
 
-  service(servicePath, args = [], force = false) {
-    const resolvePath = path.resolve(this.app.servicePath, servicePath);
-    if (!this.app.has(resolvePath)) {
-      // eslint-disable-next-line
-      const requiredService = require(resolvePath);
-      this.app.bind(resolvePath, requiredService);
-    }
-    return this.app.get(resolvePath, args, [this.request], force);
+  get service() {
+    const that = this;
+    return new Proxy({}, {
+      get(target, p, receiver) {
+        if (typeof p === 'symbol') return Reflect.get(target, p, receiver);
+        return that.app.get(`service.${p}`, [this.request]);
+      },
+    });
   }
 
-  // createServicePathProxy() {
-  //   const that = this;
-  //   return new Proxy({}, {
-  //     get(target, prop, receiver) {
-  //       console.log(prop);
-  //       if (prop === 'valueOf') {
-  //         return 11111;
-  //       }
-  //       return that.createServicePathProxy(prop);
-  //     },
-  //   });
-  // }
+  get resource() {
+    const that = this;
+    return new Proxy({}, {
+      get(target, p, receiver) {
+        if (typeof p === 'symbol') return Reflect.get(target, p, receiver);
+        return that.app.get(`resource.${p}`, [this.request]);
+      },
+    });
+  }
 
-  // get services() {
-  //   return this.createServicePathProxy();
-  // }
+  get component() {
+    const that = this;
+    return new Proxy({}, {
+      get(target, p, receiver) {
+        if (typeof p === 'symbol') return Reflect.get(target, p, receiver);
+        return that.app.get(`component.${p}`, [this.request]);
+      },
+    });
+  }
 
   /**
    * create item resouce instance

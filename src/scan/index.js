@@ -22,6 +22,9 @@ class Scan {
           case 'controller':
             this.registerController(currentFile);
             break;
+          case 'middleware':
+            this.registerMiddleware(currentFile);
+            break;
           case 'service':
           case 'resource':
           case 'component':
@@ -39,6 +42,10 @@ class Scan {
     return glob.sync(path.resolve(this.app.appPath, '**'), {
       nodir: true,
     });
+  }
+
+  registerMiddleware(middleware) {
+    console.log(middleware);
   }
 
   registerController(controller) {

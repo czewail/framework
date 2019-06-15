@@ -22,5 +22,7 @@ exports.createController = function () {
     destory() { }
   };
 
+  Reflect.setMetadata('type', 'controller', newController.prototype);
+
   return newController;
 };

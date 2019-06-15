@@ -11,7 +11,7 @@ const Keygrip = require('keygrip');
 const Container = require('../container');
 const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
-const Module = require('../module');
+// const Module = require('../module');
 // const Middleware = require('../middleware');
 
 const DEFAULT_PORT = 8000;
