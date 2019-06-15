@@ -7,10 +7,10 @@
 
 const Collection = require('./collection');
 const Item = require('./item');
-const Transformer = require('./DEPRECATED_transformer');
+// const Transformer = require('./DEPRECATED_transformer');
 
 module.exports = {
   Collection,
   Item,
-  Transformer,
+  // Transformer,
 };
