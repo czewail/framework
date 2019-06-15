@@ -1,4 +1,5 @@
 const path = require('path');
+require('../../src/helpers');
 const { createController } = require('../common/helpers');
 const Controller = require('../../src/controller');
 const Application = require('../../src/foundation/application');

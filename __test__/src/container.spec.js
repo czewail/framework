@@ -1,5 +1,5 @@
 
-
+require('../../src/helpers');
 const Container = require('../../src/container');
 const Metadata = require('../../src/foundation/support/metadata');
 

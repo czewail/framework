@@ -1,4 +1,5 @@
 const path = require('path');
+require('../../src/helpers');
 const Config = require('../../src/config');
 const appConfig = require('../config/app');
 const appConfig2 = require('../config/app.test');
