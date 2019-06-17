@@ -66,6 +66,7 @@ class Request {
    * @param {String} name headers key
    */
   getHeader(name) {
+    if (!name) return this.req.headers;
     const field = name.toLowerCase();
     switch (field) {
       case 'referer':
@@ -179,12 +180,12 @@ class Request {
     return this.url;
   }
 
-  // /**
-  //  * Get original Url
-  //  */
-  // getOriginalUrl() {
-  //   return this.originalUrl;
-  // }
+  /**
+   * Get original Url
+   */
+  getOriginalUrl() {
+    return this.originalUrl;
+  }
 
   /**
    * Get request socket

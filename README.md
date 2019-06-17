@@ -23,7 +23,7 @@
 ## Installation
 
 ```bash
-$ npm install -g @dazejs/cli
+$ npm install -g @dazejs/cli@next
 ```
 
 ## Getting Started
