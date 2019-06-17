@@ -1,5 +1,5 @@
-const { isAlphanumeric } = require('validator')
+const { isAlphanumeric } = require('validator');
 
 module.exports = function alphanumeric(value, locale) {
-  return isAlphanumeric(value, locale)
-}
+  return isAlphanumeric(value, locale);
+};

@@ -1,5 +1,5 @@
-const length = require('./length')
+const length = require('./length');
 
 module.exports = function minLength(value, min) {
-  return length(value, min)
-}
+  return length(value, min);
+};

@@ -9,6 +9,7 @@ const qs = require('querystring');
 const typeis = require('type-is');
 const cookie = require('cookie');
 const accepts = require('accepts');
+const is = require('core-util-is');
 const vary = require('vary');
 const Keygrip = require('keygrip');
 const Container = require('../container');
@@ -34,11 +35,6 @@ class Request {
     this.res = res;
 
     /**
-     * @var {String} originalUrl http.ClinetRequest.url
-     */
-    this.originalUrl = req.url;
-
-    /**
      * @var {Object} _cookies Cookies instance
      */
     this._cookies = null;
@@ -51,7 +47,7 @@ class Request {
     /**
      * @var {Object} _accept accepts
      */
-    this._accept = null;
+    this._accepts = null;
   }
 
   /**
@@ -181,13 +177,6 @@ class Request {
   }
 
   /**
-   * Get original Url
-   */
-  getOriginalUrl() {
-    return this.originalUrl;
-  }
-
-  /**
    * Get request socket
    */
   get socket() {
@@ -253,8 +242,8 @@ class Request {
    * Get request href
    */
   get href() {
-    if (/^https?:\/\//i.test(this.originalUrl)) return this.originalUrl;
-    return this.origin + this.originalUrl;
+    if (/^https?:\/\//i.test(this.url)) return this.url;
+    return this.origin + this.url;
   }
 
   /**
@@ -501,11 +490,11 @@ class Request {
   only(...args) {
     const res = {};
     for (const arg of args) {
-      if (typeof arg === 'string') {
+      if (is.isString(arg)) {
         if (this.has(arg)) {
           res[arg] = this.param(arg);
         }
-      } else if (Array.isArray(arg)) {
+      } else if (is.isArray(arg)) {
         for (const name of arg) {
           if (this.has(name)) {
             res[name] = this.param(name);
@@ -525,7 +514,7 @@ class Request {
     let exceptKeys = [];
     let keys = Object.keys(this.param());
     for (const arg of args) {
-      if (typeof arg === 'string') {
+      if (is.isString(arg)) {
         exceptKeys.push(arg);
       } else if (Array.isArray(arg)) {
         exceptKeys = exceptKeys.concat(arg);

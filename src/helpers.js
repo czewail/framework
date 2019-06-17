@@ -36,7 +36,6 @@ if (!Reflect.has(global, 'cookie')) {
   };
 }
 
-
 Reflect.getMetadata = function (...params) {
   return Metadata.get(...params);
 };

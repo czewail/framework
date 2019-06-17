@@ -5,5 +5,5 @@ module.exports = function (field = '', handler = () => {}, args = [], options = 
     handler,
     args,
     options,
-  }
-}
+  };
+};

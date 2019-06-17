@@ -8,7 +8,7 @@ class Scan {
   }
 
   resolve() {
-    const files = this.scanFiles();
+    const files = this.sanAppDir();
     this.sortingFiles(files);
   }
 
@@ -38,7 +38,7 @@ class Scan {
     return this;
   }
 
-  scanFiles() {
+  sanAppDir() {
     return glob.sync(path.resolve(this.app.appPath, '**'), {
       nodir: true,
     });

@@ -1,5 +1,5 @@
-const { isIP } = require('validator')
+const { isIP } = require('validator');
 
 module.exports = function ip(value, version) {
-  return isIP(value, version)
-}
+  return isIP(value, version);
+};

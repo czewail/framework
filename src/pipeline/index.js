@@ -1,4 +1,3 @@
-const is = require('core-util-is');
 const Processor = require('./processor');
 
 /**

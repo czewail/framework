@@ -1,5 +1,6 @@
 require('../../src/helpers');
 const path = require('path');
+const Accepts = require('accepts');
 const Request = require('../../src/request');
 const context = require('../common/context');
 
@@ -371,6 +372,371 @@ describe('Request', () => {
       const instance = new Request(req, res);
       expect(instance.origin).toBe('http://yyy.com');
       expect(instance.getOrigin()).toBe('http://yyy.com');
+    });
+  });
+
+  describe('Request#href', () => {
+    it('should return full url', () => {
+      const request = {
+        url: '/users?name=zewail',
+        headers: {
+          host: 'localhost',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.href).toBe('http://localhost/users?name=zewail');
+      expect(instance.getHref()).toBe('http://localhost/users?name=zewail');
+    });
+  });
+
+  describe('Request#path', () => {
+    it('should return req pathname', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.path).toBe('/users');
+      expect(instance.getPath()).toBe('/users');
+    });
+  });
+
+  describe('Request#querystring', () => {
+    it('should return req querystring', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.querystring).toBe('page=10&color=blue');
+      expect(instance.getQuerystring()).toBe('page=10&color=blue');
+    });
+  });
+
+  describe('Request#search', () => {
+    it('should return req search', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.search).toBe('?page=10&color=blue');
+      expect(instance.getSearch()).toBe('?page=10&color=blue');
+    });
+  });
+
+  describe('Request#query', () => {
+    it('should return req query object', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.query).toEqual({
+        page: '10',
+        color: 'blue',
+      });
+      expect(instance.getQuery()).toEqual({
+        page: '10',
+        color: 'blue',
+      });
+    });
+  });
+
+  describe('Request#type', () => {
+    it('should return content type', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          'content-type': 'text/html; applition/json',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.type).toBe('text/html');
+      expect(instance.getType()).toBe('text/html');
+    });
+
+    it('should return "" when no content type', () => {
+      const { req, res } = context({});
+      const instance = new Request(req, res);
+      expect(instance.type).toBe('');
+    });
+  });
+
+  describe('Request#accepts', () => {
+    it('should accepts return Accepts instance', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          accept: 'application/json, text/html, text/plain',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.accepts).toBeInstanceOf(Accepts);
+    });
+
+    it('when Accept type is populated', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          accept: 'application/*;q=0.1, text/html, text/plain, image/jpeg;q=0.5',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.acceptsTypes()).toEqual(['text/html', 'text/plain', 'image/jpeg', 'application/*']);
+    });
+
+    it('when Accept-Encoding is populated', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          'accept-encoding': 'gzip, compress;q=0.3',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.acceptsEncodings()).toEqual(['gzip', 'compress', 'identity']);
+      expect(instance.acceptsEncodings('gzip', 'compress')).toBe('gzip');
+    });
+
+    it('when Accept-Charsets is populated', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          'accept-charset': 'utf-8, iso-8859-1;q=0.3',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.acceptsCharsets()).toEqual(['utf-8', 'iso-8859-1']);
+    });
+
+    it('when Accept-Language is populated', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          'accept-language': 'en;q=0.8, es',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.acceptsLanguages()).toEqual(['es', 'en']);
+    });
+  });
+
+  describe('Request#param', () => {
+    it('shoud return query value', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.param('page')).toBe('10');
+    });
+
+    it('shoud return body value', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.param('name')).toBe('dazejs');
+    });
+
+    it('should return null when key does not exist', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.param('age')).toBeNull();
+    });
+
+    it('should return default value when key does not exist', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.param('age', '100')).toBe('100');
+    });
+
+    it('should return all param object whitout name', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.param()).toEqual({
+        page: '10',
+        color: 'blue',
+        name: 'dazejs',
+      });
+    });
+  });
+
+  describe('Request#only', () => {
+    it('should return only object', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.only('name', 'page')).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+
+    it('should return only object when array param', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.only(['name', 'page'])).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+
+    it('should return only object when invalid param', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.only(['name', 'page', 'age'])).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+      expect(instance.only('name', 'page', 'age')).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+
+    it('should return only object when invalid type', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.only(['name', 'page', 'age'], {})).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+      expect(instance.only('name', 'page', 'age', {})).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+  });
+
+  describe('Request#except', () => {
+    it('should return left object', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.except('color')).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+
+    it('should return left object when array param', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.except(['color'])).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+
+    it('should return left object when invalid param', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.except(['color', 'age'])).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+      expect(instance.except('color', 'age')).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+
+    it('should return left object when invalid type', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.except(['color', 'age'], {})).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+      expect(instance.except('color', 'age', {})).toEqual({
+        name: 'dazejs',
+        page: '10',
+      });
+    });
+  });
+
+  describe('Request#proxy', () => {
+    it('shoud return param value', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        body: {
+          name: 'dazejs',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.page).toBe('10');
+      expect(instance.color).toBe('blue');
     });
   });
 });

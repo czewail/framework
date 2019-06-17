@@ -1,16 +1,16 @@
-const coreUtil = require('core-util-is')
-const path = require('path')
-const Message = require('../foundation/support/message')
-const Container = require('../container')
-const libs = require('./lib')
-const validatorRulesFactory = require('./factory/validator-rules')
+const coreUtil = require('core-util-is');
+const path = require('path');
+const Message = require('../foundation/support/message');
+const Container = require('../container');
+const libs = require('./lib');
+const validatorRulesFactory = require('./factory/validator-rules');
 
 class Validate {
   constructor(data, rules = {}) {
-    this.app = Container.get('app')
-    this.data = this.parseData(data)
-    this.rules = this.parseRules(rules)
-    this.messages = new Message()
+    this.app = Container.get('app');
+    this.data = this.parseData(data);
+    this.rules = this.parseRules(rules);
+    this.messages = new Message();
     this.typeMessages = {
       accepted: '$field must be yes,on or 1',
       required: '$field require',
@@ -26,89 +26,88 @@ class Validate {
       length: 'size of $field must be $1 - $2',
       minLength: 'min size of $field must be $1',
       maxLength: 'max size of $field must be $1',
-    }
+    };
   }
 
   getRulesPath(rulesName) {
-    if (rulesName.slice(-3) === '.js') return rulesName
-    return `${rulesName}.js`
+    if (rulesName.slice(-3) === '.js') return rulesName;
+    return `${rulesName}.js`;
   }
 
   parseRules(rules) {
     if (coreUtil.isObject(rules)) {
       if (rules.__DAZE_VALIDATOR_RULES__) {
-        return rules.__DAZE_VALIDATOR_RULES__
-      } else {
-        return this.parseRulesIndependence(rules)
+        return rules.__DAZE_VALIDATOR_RULES__;
       }
-    } else if (coreUtil.isString(rules)) {
-      const rulesPath = path.resolve(this.app.validatePath, this.getRulesPath(rules))
-      const rulesInstance = this.app.craft(rulesPath)
+      return this.parseRulesIndependence(rules);
+    } if (coreUtil.isString(rules)) {
+      const rulesPath = path.resolve(this.app.validatePath, this.getRulesPath(rules));
+      const rulesInstance = this.app.craft(rulesPath);
       if (rulesInstance.__DAZE_VALIDATOR_RULES__) {
-        return rulesInstance.__DAZE_VALIDATOR_RULES__
+        return rulesInstance.__DAZE_VALIDATOR_RULES__;
       }
     }
-    return []
+    return [];
   }
 
   parseRulesIndependence(rules) {
-    const res = []
-    const fields = Object.keys(rules)
+    const res = [];
+    const fields = Object.keys(rules);
     for (const field of fields) {
-      const fieldRules = rules[field]
+      const fieldRules = rules[field];
       for (const rule of fieldRules) {
-        const validatorRules = validatorRulesFactory(field, libs[rule[0]], rule[1], rule[2])
-        res.push(validatorRules)
+        const validatorRules = validatorRulesFactory(field, libs[rule[0]], rule[1], rule[2]);
+        res.push(validatorRules);
       }
     }
-    return res
+    return res;
   }
 
   parseData(data) {
-    return data
+    return data;
   }
 
   parseMessage(message, field, args) {
-    if (!message) return
-    let msg = message
+    if (!message) return undefined;
+    let msg = message;
     for (const [index, val] of args.entries()) {
-      msg = msg.replace(`$${index + 1}`, val)
+      msg = msg.replace(`$${index + 1}`, val);
     }
-    return msg.replace('$field', field)
+    return msg.replace('$field', field);
   }
 
   validateProperty(rule) {
-    if (!rule) return
-    const { field, name, args, handler, options } = rule
-    const msg = options.message || this.typeMessages[name]
-    const property = this.data[field]
+    if (!rule) return;
+    const {
+      field, name, args, handler, options,
+    } = rule;
+    const msg = options.message || this.typeMessages[name];
+    const property = this.data[field];
     try {
-      const validated = handler(property, ...args)
+      const validated = handler(property, ...args);
       if (coreUtil.isFunction(validated)) {
-        if (!validated(this)) this.messages.add(field, this.parseMessage(msg, field, args))
-      } else {
-        if (!validated) this.messages.add(field, this.parseMessage(msg, field, args))
-      }
+        if (!validated(this)) this.messages.add(field, this.parseMessage(msg, field, args));
+      } else if (!validated) this.messages.add(field, this.parseMessage(msg, field, args));
     } catch (err) {
       // console.log(err)
-      this.messages.add(field, this.parseMessage(msg, field, args))
+      this.messages.add(field, this.parseMessage(msg, field, args));
     }
   }
 
   get passes() {
     for (const rule of this.rules) {
-      this.validateProperty(rule)
+      this.validateProperty(rule);
     }
-    return this.messages.isEmpty()
+    return this.messages.isEmpty();
   }
 
   get fails() {
-    return !this.passes
+    return !this.passes;
   }
 
   get errors() {
-    return this.messages
+    return this.messages;
   }
 }
 
-module.exports = Validate
+module.exports = Validate;
