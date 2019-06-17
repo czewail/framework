@@ -154,7 +154,7 @@ class Request {
   get length() {
     const len = this.getHeader('Content-Length');
     if (!len) return undefined;
-    return ~~len; // eslint-disable-line no-bitwise
+    return len | 0; // eslint-disable-line no-bitwise
   }
 
   /**
@@ -179,12 +179,12 @@ class Request {
     return this.url;
   }
 
-  /**
-   * Get original Url
-   */
-  getOriginalUrl() {
-    return this.originalUrl;
-  }
+  // /**
+  //  * Get original Url
+  //  */
+  // getOriginalUrl() {
+  //   return this.originalUrl;
+  // }
 
   /**
    * Get request socket
@@ -206,6 +206,8 @@ class Request {
    */
   get protocol() {
     if (this.socket.encrypted) return 'https';
+    const proxy = this.app.get('config').get('app.proxy');
+    if (!proxy) return 'http';
     const xForwordedProto = this.getHeader('X-Forwarded-Proto');
     return xForwordedProto ? xForwordedProto.split(/\s*,\s*/, 1)[0] : 'http';
   }
@@ -222,11 +224,12 @@ class Request {
    * get request host
    */
   get host() {
-    let host = '';
-    if (this.isHttp2) {
-      host = this.getHeader(':authority');
-    } else {
-      host = this.getHeader('Host');
+    let host;
+    const proxy = this.app.get('config').get('app.proxy');
+    if (proxy) host = this.getHeader('X-Forwarded-Host');
+    if (!host) {
+      if (this.isHttp2) host = this.getHeader(':authority');
+      if (!host) host = this.getHeader('Host');
     }
     return host ? host.split(/\s*,\s*/, 1)[0] : '';
   }
