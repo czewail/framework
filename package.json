@@ -8,7 +8,7 @@
     "clean": "rimraf dist/*",
     "build": "npm run clean && babel src --out-dir dist --copy-files --source-maps",
     "test": "jest",
-    "test:coverage": "jest --coverage --runInBand --forceExit",
+    "test:coverage": "jest --detectOpenHandles --runInBand --forceExit --coverage",
     "debugger": "node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --no-watchman --detectOpenHandles"
   },
   "keywords": [

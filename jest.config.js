@@ -17,10 +17,10 @@ module.exports = {
   // An array of glob patterns indicating a set of
   // files for which coverage information should be collected
   collectCoverageFrom: [
-    'src /**/*.js',
-    '!src /**/DEPRECATED_*.js',
-    '!src /**/*.bak.js',
-    '!src/DEPRECATED_* /*.js',
+    'src/**/*.js',
+    '!src/**/DEPRECATED_*.js',
+    '!src/**/*.bak.js',
+    '!src/DEPRECATED_*/*.js',
   ],
 
   // The directory where Jest should output its coverage files
@@ -32,12 +32,12 @@ module.exports = {
   // ],
 
   // A list of reporter names that Jest uses when writing coverage reports
-  // coverageReporters: [
-  //   "json",
-  //   "text",
-  //   "lcov",
-  //   "clover"
-  // ],
+  coverageReporters: [
+    'json',
+    'text',
+    'lcov',
+    'clover',
+  ],
 
   // An object that configures minimum threshold enforcement for coverage results
   // coverageThreshold: null,
@@ -142,7 +142,8 @@ module.exports = {
     '**/__tests__ /**/*.js?(x)',
     '**/?(*.)+(spec).js?(x)',
   ],
-  // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
+  // An array of regexp pattern strings
+  //  that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
   //   "/node_modules/"
   // ],
