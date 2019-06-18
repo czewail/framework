@@ -9,8 +9,8 @@ const IllegalArgumentError = require('../../../src/errors/illegal-argument-error
 
 Container.bind('app', class {
   constructor() {
-    this.appPath = path.resolve(__dirname, '../');
-    this.configPath = path.resolve(__dirname, '../config');
+    this.appPath = path.resolve(__dirname, '../../');
+    this.configPath = path.resolve(__dirname, '../../config');
   }
 });
 

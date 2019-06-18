@@ -70,16 +70,16 @@ class Message {
     return this[MESSAGES];
   }
 
-  /**
-   * many format messages
-   */
-  many() {
-    return {
-      all: this.all(),
-      first: this.first(),
-      format: this.format(),
-    };
-  }
+  // /**
+  //  * many format messages
+  //  */
+  // many() {
+  //   return {
+  //     all: this.all(),
+  //     first: this.first(),
+  //     format: this.format(),
+  //   };
+  // }
 
   /**
    * Message iterator
