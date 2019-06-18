@@ -13,11 +13,8 @@ exports.Required = function (...params) {
 };
 
 exports.Email = function (...params) {
-  const [ignore_whitespace = false, options = {}] = params;
-  if (coreUtil.isObject(ignore_whitespace)) {
-    return validatorFactory(Validators.email, [ignore_whitespace.ignore_whitespace || false], ignore_whitespace);
-  }
-  return validatorFactory(Validators.email, [ignore_whitespace], options);
+  const [options = {}] = params;
+  return validatorFactory(Validators.email, [options], options);
 };
 
 exports.Mobile = function (...params) {

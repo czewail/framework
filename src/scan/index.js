@@ -27,6 +27,7 @@ class Scan {
             break;
           case 'service':
           case 'resource':
+          case 'validate':
           case 'component':
             this.registerComponent(target, file);
             break;

@@ -1,11 +1,17 @@
 
-const MESSAGES = Symbol('Message#messages')
+const MESSAGES = Symbol('Message#messages');
 
 class Message {
   constructor() {
-    /** @type {array} messages */
-    this[MESSAGES] = []
-    this.pointer = 0
+    /**
+     * @type {Array} messages
+     */
+    this[MESSAGES] = [];
+
+    /**
+     * @type {Number} iterator pointer
+     */
+    this.pointer = 0;
   }
 
   /**
@@ -13,55 +19,55 @@ class Message {
    * @param {string} key message key
    * @param {string} message message content
    */
-  add(key, message) {
-    if (!key || !message) return this
+  add(field, message) {
+    if (!field || !message) return this;
     this[MESSAGES].push({
-      field: key,
+      field,
       message,
-    })
-    return this
+    });
+    return this;
   }
 
   /**
    * check messages is empty
    */
   isEmpty() {
-    return !this.messages.length
+    return !this.messages.length;
   }
 
   /**
    * get all messages
    */
   all() {
-    return this[MESSAGES].map(m => m.message)
+    return this[MESSAGES].map(m => m.message);
   }
 
   /**
    * format messages
    */
   format() {
-    const res = {}
+    const res = {};
     for (const msg of this.messages) {
       if (!res[msg.field]) {
-        res[msg.field] = []
+        res[msg.field] = [];
       }
-      res[msg.field].push(msg.message)
+      res[msg.field].push(msg.message);
     }
-    return res
+    return res;
   }
 
   /**
    * get first message
    */
   first() {
-    return this.messages.length > 0 ? this.messages[0].message : null
+    return this.messages.length > 0 ? this.messages[0].message : null;
   }
 
   /**
    * all messages
    */
   get messages() {
-    return this[MESSAGES]
+    return this[MESSAGES];
   }
 
   /**
@@ -72,26 +78,26 @@ class Message {
       all: this.all(),
       first: this.first(),
       format: this.format(),
-    }
+    };
   }
 
   /**
    * Message iterator
    */
   next() {
-    const { messages } = this
+    const { messages } = this;
     if (this.pointer < messages.length) {
-      const pointer = this.pointer
-      this.pointer++
+      const { pointer } = this;
+      this.pointer = this.pointer + 1;
       return {
         done: false,
-        value: messages[pointer]
-      }
+        value: messages[pointer],
+      };
     }
-    return { done: true, value: void 0 }
+    return { done: true, value: undefined };
   }
 
-  [Symbol.iterator]() { return this }
+  [Symbol.iterator]() { return this; }
 }
 
-module.exports = Message
+module.exports = Message;

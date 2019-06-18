@@ -9,8 +9,6 @@ require('./helpers');
 
 const Application = require('./foundation/application');
 const Container = require('./container');
-const Resource = require('./resource');
-const Validate = require('./validate');
 const Response = require('./response');
 const Redirect = require('./response/redirect');
 const View = require('./view');
@@ -20,8 +18,6 @@ const Decorators = require('./decorators');
 module.exports = {
   Application,
   Container,
-  Resource,
-  Validate,
   Response,
   Redirect,
   View,

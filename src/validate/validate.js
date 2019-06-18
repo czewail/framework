@@ -1,9 +1,10 @@
-const coreUtil = require('core-util-is');
+const is = require('core-util-is');
 const path = require('path');
 const Message = require('../foundation/support/message');
 const Container = require('../container');
 const libs = require('./lib');
 const validatorRulesFactory = require('./factory/validator-rules');
+const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Validate {
   constructor(data, rules = {}) {
@@ -29,23 +30,14 @@ class Validate {
     };
   }
 
-  getRulesPath(rulesName) {
-    if (rulesName.slice(-3) === '.js') return rulesName;
-    return `${rulesName}.js`;
-  }
-
   parseRules(rules) {
-    if (coreUtil.isObject(rules)) {
-      if (rules.__DAZE_VALIDATOR_RULES__) {
-        return rules.__DAZE_VALIDATOR_RULES__;
-      }
-      return this.parseRulesIndependence(rules);
-    } if (coreUtil.isString(rules)) {
-      const rulesPath = path.resolve(this.app.validatePath, this.getRulesPath(rules));
-      const rulesInstance = this.app.craft(rulesPath);
-      if (rulesInstance.__DAZE_VALIDATOR_RULES__) {
-        return rulesInstance.__DAZE_VALIDATOR_RULES__;
-      }
+    if (is.isObject(rules)) {
+      const _rules = Reflect.getMetadata('rules', rules) || [];
+      return _rules || this.parseRulesIndependence(rules);
+    }
+    if (is.isString(rules)) {
+      const rulesInstance = this.app.get(`validate.${rules}`);
+      return Reflect.getMetadata('rules', rulesInstance) || [];
     }
     return [];
   }
@@ -85,11 +77,11 @@ class Validate {
     const property = this.data[field];
     try {
       const validated = handler(property, ...args);
-      if (coreUtil.isFunction(validated)) {
+      if (is.isFunction(validated)) {
         if (!validated(this)) this.messages.add(field, this.parseMessage(msg, field, args));
       } else if (!validated) this.messages.add(field, this.parseMessage(msg, field, args));
     } catch (err) {
-      // console.log(err)
+      // console.log(err);
       this.messages.add(field, this.parseMessage(msg, field, args));
     }
   }
