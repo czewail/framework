@@ -5,4 +5,9 @@ node_js:
  - '11'
  - '12'
 
-script: npm run test
+script:
+  - npm run test:coverage
+
+after_script:
+  - npm install codecov
+  - ./node_modules/.bin/codecov
