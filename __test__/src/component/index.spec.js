@@ -1,8 +1,8 @@
 const path = require('path');
-require('../../src/helpers');
-const { createComponent } = require('../common/helpers');
-const Component = require('../../src/component');
-const Application = require('../../src/foundation/application');
+require('../../../src/helpers');
+const { createComponent } = require('../../common/helpers');
+const Component = require('../../../src/component');
+const Application = require('../../../src/foundation/application');
 
 const app = new Application(path.resolve(__dirname, '../'));
 app.initialize();

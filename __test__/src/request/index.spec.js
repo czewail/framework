@@ -1,10 +1,10 @@
-require('../../src/helpers');
+require('../../../src/helpers');
 const path = require('path');
 const Accepts = require('accepts');
-const Request = require('../../src/request');
-const context = require('../common/context');
+const Request = require('../../../src/request');
+const context = require('../../common/context');
 
-const Application = require('../../src/foundation/application');
+const Application = require('../../../src/foundation/application');
 
 const app = new Application(path.resolve(__dirname, '../'));
 app.initialize();

@@ -1,8 +1,8 @@
 const path = require('path');
-require('../../src/helpers');
-const { createController } = require('../common/helpers');
-const Controller = require('../../src/controller');
-const Application = require('../../src/foundation/application');
+require('../../../src/helpers');
+const { createController } = require('../../common/helpers');
+const Controller = require('../../../src/controller');
+const Application = require('../../../src/foundation/application');
 
 const app = new Application(path.resolve(__dirname, '../'));
 app.initialize();
