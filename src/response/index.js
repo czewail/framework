@@ -303,6 +303,10 @@ class Response {
     return this;
   }
 
+  setType() {
+
+  }
+
   /**
    * LastModified
    * @public

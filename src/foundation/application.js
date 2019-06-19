@@ -7,10 +7,12 @@
 
 const path = require('path');
 const cluster = require('cluster');
+const util = require('util');
 const Keygrip = require('keygrip');
 const Container = require('../container');
 const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
+const HttpError = require('../errors/http-error');
 // const Module = require('../module');
 // const Middleware = require('../middleware');
 
@@ -290,6 +292,20 @@ class Application extends Container {
     return this;
   }
 
+  loadListeners() {
+    if (!this.listenerCount('error')) {
+      this.on('error', this.onerror);
+    }
+  }
+
+  onerror(err) {
+    if (!(err instanceof Error)) throw new TypeError(util.format('non-error thrown: %j', err));
+    if (err instanceof HttpError) return;
+    console.error();
+    console.error(err.stack || err.toString());
+    console.error();
+  }
+
   registerKeys() {
     const keys = this.config.get('app.keys', ['DAZE_KEY_1']);
     const algorithm = this.config.get('app.algorithm', 'sha1');
@@ -303,6 +319,8 @@ class Application extends Container {
   async initialize() {
     // 加载运行环境
     this.loadEnv();
+
+    this.loadListeners();
 
     await this.registerBaseProviders();
 

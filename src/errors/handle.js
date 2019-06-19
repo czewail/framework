@@ -6,8 +6,10 @@ const tracePage = require('@dazejs/trace-page');
 const Container = require('../container');
 const HttpError = require('./http-error');
 const ValidateError = require('./validate-error');
-const ResponseFactory = require('../response/factory');
-const { SESSION_PREVIOUS_URL } = require('../symbol');
+const Response = require('../response');
+const View = require('../view');
+
+// const { SESSION_PREVIOUS_URL } = require('../symbol');
 
 const defaultHttpErrorTemplate = {
   401: 'errors/401.njk',
@@ -17,84 +19,81 @@ const defaultHttpErrorTemplate = {
 };
 
 class Handle {
-  constructor(ctx) {
-    this.ctx = ctx;
+  constructor(request, error) {
+    this.request = request;
+    this.error = error;
     this.app = Container.get('app');
-    this.request = Container.get('request', [ctx]);
-    this.response = Container.get('response', [ctx]);
-    this.redirect = Container.get('redirect', [ctx]);
-    this.view = Container.get('view', [ctx]);
+    this.response = new Response();
+    this.view = new View();
   }
 
-  render(err) {
+  render() {
     let httpCode = 500;
-    if (err instanceof HttpError) {
-      httpCode = err.statusCode;
+    if (this.error instanceof HttpError) {
+      httpCode = this.error.statusCode;
     }
-    this.ctx.status = httpCode;
-    const type = this.ctx.accepts('html', 'text', 'json') || 'text';
-    this.ctx.type = type;
-    return this[type](err);
+    const type = this.request.acceptsTypes('html', 'text', 'json') || 'text';
+    return this[type](httpCode);
   }
 
-  renderTrance(err) {
-    const temp = tracePage(err, this.ctx, {
-      logo: `${fs.readFileSync(path.resolve(__dirname, './views/assets/logo.svg'))}<span style="vertical-align: top;line-height: 50px;margin-left: 10px;">Daze.js</span>`,
-    });
-    return (new ResponseFactory(temp)).output(this.ctx);
+  text(code) {
+    const data = this.error.message || statuses[+this.error.statusCode];
+    return new Response(data, code);
   }
 
-  text(err) {
-    return (new ResponseFactory(err.message || statuses[+err.statusCode])).output(this.ctx);
-  }
-
-  json(err) {
-    const message = err.message || statuses[+err.statusCode];
-    const { errors } = err;
+  json(code) {
+    const message = this.error.message || statuses[+this.error.statusCode];
+    const { errors } = this.error;
     const data = { message, errors };
     if (this.app.isDebug) {
-      if (err.statusCode >= 500) {
-        data.stack = err.stack;
+      if (this.error.statusCode >= 500) {
+        data.stack = this.error.stack;
       }
     }
-    return (new ResponseFactory(data)).output(this.ctx);
+    return new Response(data, code);
   }
 
-  html(err) {
-    if (err instanceof ValidateError) {
-      this.ctx.status = 302;
-      const url = this.ctx.session[SESSION_PREVIOUS_URL] || this.ctx.get('Referrer') || '/';
-      this.ctx.response.set('Location', url);
-      return;
+  html(code) {
+    if (this.error instanceof ValidateError) {
+      // this.ctx.status = 302;
+      // const url = this.ctx.session[SESSION_PREVIOUS_URL] || this.ctx.get('Referrer') || '/';
+      // this.ctx.response.set('Location', url);
+      // return undefined;
     }
-    if (!(err instanceof HttpError) && this.app.isDebug) {
-      return this.renderTrance(err);
+    if (!(this.error instanceof HttpError) && this.app.isDebug) {
+      return this.renderTrace(code);
     }
-    return this.renderHttpHtml(err);
+    return this.renderHttpHtml(code);
   }
 
-  renderHttpHtml(err) {
-    const config = this.app.get('config')
+  renderTrace(code) {
+    const temp = tracePage(this.error, this.request, {
+      logo: `${fs.readFileSync(path.resolve(__dirname, './views/assets/logo.svg'))}<span style="vertical-align: top;line-height: 50px;margin-left: 10px;">Daze.js</span>`,
+    });
+    return new Response(temp, code);
+  }
+
+  renderHttpHtml(code) {
+    const config = this.app.get('config');
     // get http_exception_template object
-    const httpErrorTemplate = config.get('app.http_exception_template')
-    const temps = Object.assign({}, httpErrorTemplate, defaultHttpErrorTemplate)
+    const httpErrorTemplate = config.get('app.http_exception_template');
+    const temps = Object.assign({}, httpErrorTemplate, defaultHttpErrorTemplate);
     // check user config s status page
-    if (Reflect.has(temps, this.ctx.status)) {
-      const view = this.view.render(temps[this.ctx.status] || 'errors/error.njk', {
-        err,
-      })
-      return (new ResponseFactory(view)).output(this.ctx)
+    if (Reflect.has(temps, this.error.status)) {
+      const view = this.view.render(temps[this.error.status] || 'errors/error.njk', {
+        err: this.error,
+      });
+      return new Response(view, code);
     } if (Reflect.has(temps, 'error')) {
       const view = this.view.render(temps.error || 'errors/error.njk', {
-        err,
-      })
-      return (new ResponseFactory(view)).output(this.ctx)
-    } 
-      const view = this.view.render('errors/error.njk', {
-        err,
-      })
-      return (new ResponseFactory(view)).output(this.ctx)
-    
+        err: this.error,
+      });
+      return new Response(view, code);
+    }
+    const view = this.view.render('errors/error.njk', {
+      err: this.error,
+    });
+    return new Response(view, code);
   }
 }
 

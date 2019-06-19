@@ -124,7 +124,7 @@ class Redirect extends Response {
     }
     if (this.errors) {
       if (this.errors instanceof Validate) {
-        session.flash(SESSION_ERRORS, this.errors.errors.many());
+        session.flash(SESSION_ERRORS, this.errors.errors.format());
       } else {
         session.flash(SESSION_ERRORS, this.errors);
       }

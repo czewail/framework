@@ -1,10 +1,10 @@
-const HttpError = require('./http-error')
+const HttpError = require('./http-error');
 
 class ValidateError extends HttpError {
   constructor(message = 'Validation error', validate = null) {
-    super(422, message, validate && validate.errors.many())
-    this.validate = validate
+    super(422, message, validate && validate.errors);
+    this.validate = validate;
   }
 }
 
-module.exports = ValidateError
+module.exports = ValidateError;

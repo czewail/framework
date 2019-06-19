@@ -4,13 +4,14 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+const EventEmitter = require('events');
 const symbols = require('../symbol');
 
 const BIND = Symbol('Container#bind');
 /**
  * The Container
  */
-class Container {
+class Container extends EventEmitter {
   /**
    * Container binding identifier
    *
