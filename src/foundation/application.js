@@ -106,16 +106,16 @@ class Application extends Container {
     this.publicPath = path.resolve(this.rootPath, paths.public || '../public');
     /** log file path */
     this.logPath = path.resolve(this.rootPath, paths.log || '../logs');
-    /** controller file path */
-    this.controllerPath = path.resolve(this.rootPath, this.appPath, paths.controller || 'controller');
-    /** middleware file path */
-    this.middlewarePath = path.resolve(this.rootPath, this.appPath, paths.middleware || 'middleware');
-    /** service file path */
-    this.servicePath = path.resolve(this.rootPath, this.appPath, paths.service || 'service');
-    /** validate file path */
-    this.validatePath = path.resolve(this.rootPath, this.appPath, paths.validate || 'validate');
-    /** transformer file path */
-    this.transformerPath = path.resolve(this.rootPath, this.appPath, paths.validate || 'transformer');
+    // /** controller file path */
+    // this.controllerPath = path.resolve(this.rootPath, this.appPath, paths.controller || 'controller');
+    // /** middleware file path */
+    // this.middlewarePath = path.resolve(this.rootPath, this.appPath, paths.middleware || 'middleware');
+    // /** service file path */
+    // this.servicePath = path.resolve(this.rootPath, this.appPath, paths.service || 'service');
+    // /** validate file path */
+    // this.validatePath = path.resolve(this.rootPath, this.appPath, paths.validate || 'validate');
+    // /** transformer file path */
+    // this.transformerPath = path.resolve(this.rootPath, this.appPath, paths.validate || 'transformer');
 
     return this;
   }
@@ -301,8 +301,11 @@ class Application extends Container {
   onerror(err) {
     if (!(err instanceof Error)) throw new TypeError(util.format('non-error thrown: %j', err));
     if (err instanceof HttpError) return;
+    // eslint-disable-next-line
     console.error();
+    // eslint-disable-next-line
     console.error(err.stack || err.toString());
+    // eslint-disable-next-line
     console.error();
   }
 

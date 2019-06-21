@@ -6,6 +6,7 @@
  */
 
 const assert = require('assert');
+const cookie = require('cookie');
 const Container = require('../container');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
 
@@ -206,6 +207,26 @@ class Cookie {
   setExpires(expires) {
     this.options.expires = expires;
     return this;
+  }
+
+  /**
+   * get serialize cookie
+   */
+  serialize() {
+    const signed = this.options && this.options.signed;
+    if (signed) {
+      const signedValue = this.app.keys.sign(this.value);
+      this.setValue(signedValue);
+    }
+    return cookie.serialize(this.name, this.value, this.options);
+  }
+
+  sign() {
+    if (!this.options.signed || !this.app.keys) return undefined;
+    const name = `${this.name}.sig`;
+    const value = this.app.keys.sign(this.value);
+    const options = Object.assign(this.options, { signed: false });
+    return cookie.serialize(name, value, options);
   }
 }
 

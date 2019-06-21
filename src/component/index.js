@@ -37,7 +37,7 @@ class Component {
    */
   parseComponent(component) {
     const type = Reflect.getMetadata('type', component.prototype);
-    if (!['service', 'resource', 'validate', 'component'].includes(type)) throw new IllegalArgumentError('component must be use @Service or @Resource or @Component!');
+    if (!['service', 'resource', 'validator', 'component'].includes(type)) throw new IllegalArgumentError('component must be use @Service or @Resource or @Component!');
     this.resolve(component, type);
     return this;
   }

@@ -17,6 +17,7 @@ const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
 const Session = require('../session');
 
+
 class Request {
   constructor(req, res) {
     /**
@@ -390,13 +391,31 @@ class Request {
    * @param {Object} options cookie opts
    */
   cookie(key, options = {}) {
+    const sigName = `${key}.sig`;
     const defaultOptions = this.app.get('config').get('cookie', {});
+
     const _options = {
       ...defaultOptions,
       ...options,
     };
     const signed = _options && _options.signed !== undefined ? _options.signed : !!this.app.keys;
-    return this.cookies && this.cookies[key];
+
+    if (!this.cookies) return undefined;
+    const value = this.cookies[key];
+
+    if (!signed) return value;
+
+    const remote = this.cookie(sigName, { signed: false });
+
+    if (!remote) return undefined;
+
+    const data = `${key}=${value}`;
+
+    const index = this.app.keys.index(data, remote);
+    if (index < 0) {
+      return undefined;
+    }
+    return value;
   }
 
   /**
@@ -416,6 +435,10 @@ class Request {
     return this._session;
   }
 
+  /**
+   * get Session value
+   * @param {String} key
+   */
   sessionValue(key) {
     return this.session(key);
   }
@@ -460,10 +483,13 @@ class Request {
   // }
 
   get mergedParams() {
-    return {
-      ...this.query,
-      ...this.body || {},
-    };
+    if (!this._params) {
+      this._params = {
+        ...this.query,
+        ...this.body || {},
+      };
+    }
+    return this._params;
   }
 
   get body() {
@@ -512,7 +538,7 @@ class Request {
    */
   except(...args) {
     let exceptKeys = [];
-    let keys = Object.keys(this.param());
+    let keys = Object.keys(this.mergedParams);
     for (const arg of args) {
       if (is.isString(arg)) {
         exceptKeys.push(arg);
@@ -543,11 +569,6 @@ class Request {
       throw new ValidateError(message, validate);
     }
   }
-
-  // session() {
-  //   // if (!this.sess) this.sess = new Session(this.ctx);
-  //   // return this.sess;
-  // }
 }
 
 /**

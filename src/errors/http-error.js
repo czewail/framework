@@ -10,6 +10,10 @@ class HttpError extends Error {
   get statusCode() {
     return this.status;
   }
+
+  get code() {
+    return this.status;
+  }
 }
 
 module.exports = HttpError;

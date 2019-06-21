@@ -5,7 +5,6 @@ exports.Component = require('./component.provider');
 exports.View = require('./view.provider');
 exports.Request = require('./request.provider');
 exports.Response = require('./response.provider');
-exports.Session = require('./session.provider');
 exports.Cookie = require('./cookie.provider');
 exports.Messenger = require('./messenger.provider');
 exports.Logger = require('./logger.provider');

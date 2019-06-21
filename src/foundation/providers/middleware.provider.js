@@ -22,12 +22,6 @@ class MiddlewareProvider {
   launch() {
     const middleware = this.app.make('middleware');
 
-    // middleware.register(async (request, next) => {
-    //   const response = await next();
-    //   await request.session().commit(response);
-    //   return response;
-    // });
-
     middleware.register((request, next) => {
       const { res } = request;
       if (!res.headersSent) {

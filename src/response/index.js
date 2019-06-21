@@ -11,7 +11,6 @@ const statuses = require('statuses');
 const Stream = require('stream');
 const { extname } = require('path');
 const is = require('is-type-of');
-const cookie = require('cookie');
 const contentDisposition = require('content-disposition');
 const Resource = require('../resource/resource');
 const Container = require('../container');
@@ -429,14 +428,14 @@ class Response {
     // send cookie
     const cookies = [];
     for (const _cookie of this.cookies) {
-      const serializer = cookie
-        .serialize(_cookie.getName(), _cookie.getValue(), _cookie.getOptions());
-      cookies.push(serializer);
-      // request.cookies.set(cookie.getName(), cookie.getValue(), cookie.getOptions());
+      cookies.push(_cookie.serialize());
+      const sign = _cookie.sign();
+      if (sign) {
+        cookies.push(sign);
+      }
     }
 
     this.setHeader('Set-Cookie', cookies);
-
 
     // headers
     if (!res.headersSent) {

@@ -1,4 +1,3 @@
-
 const statuses = require('statuses');
 const fs = require('fs');
 const path = require('path');
@@ -7,6 +6,7 @@ const Container = require('../container');
 const HttpError = require('./http-error');
 const ValidateError = require('./validate-error');
 const Response = require('../response');
+const RedirectResponse = require('../response/redirect');
 const View = require('../view');
 
 // const { SESSION_PREVIOUS_URL } = require('../symbol');
@@ -18,83 +18,123 @@ const defaultHttpErrorTemplate = {
   503: 'errors/503.njk',
 };
 
-class Handle {
+class Handler {
+  /**
+   * Create Application Error Handler
+   */
   constructor(request, error) {
-    this.request = request;
-    this.error = error;
+    /**
+     * @var {Application} app Application instance
+     */
     this.app = Container.get('app');
-    this.response = new Response();
-    this.view = new View();
+
+    /**
+     * @var {Request} request request instance
+     */
+    this.request = request;
+
+    /**
+     * @var {Error} error thrown Error
+     */
+    this.error = error;
+
+    /**
+     * @var {Number} code error code
+     */
+    this.code = (this.error instanceof HttpError) ? this.error.statusCode : 500;
   }
 
+  /**
+   * render error response
+   * @public
+   */
   render() {
-    let httpCode = 500;
-    if (this.error instanceof HttpError) {
-      httpCode = this.error.statusCode;
-    }
     const type = this.request.acceptsTypes('html', 'text', 'json') || 'text';
-    return this[type](httpCode);
+    return this[type]();
   }
 
-  text(code) {
+  /**
+   * render error response when text type
+   * @private
+   */
+  text() {
     const data = this.error.message || statuses[+this.error.statusCode];
-    return new Response(data, code);
+    return new Response(data, this.code);
   }
 
-  json(code) {
+  /**
+   * render error response when json type
+   * @private
+   */
+  json() {
     const message = this.error.message || statuses[+this.error.statusCode];
     const { errors } = this.error;
-    const data = { message, errors };
+    const data = { data: message, errors };
     if (this.app.isDebug) {
       if (this.error.statusCode >= 500) {
         data.stack = this.error.stack;
       }
     }
-    return new Response(data, code);
+    return new Response(data, this.code);
   }
 
-  html(code) {
+  /**
+   * render error response when html type
+   * @private
+   */
+  html() {
     if (this.error instanceof ValidateError) {
       // this.ctx.status = 302;
       // const url = this.ctx.session[SESSION_PREVIOUS_URL] || this.ctx.get('Referrer') || '/';
       // this.ctx.response.set('Location', url);
       // return undefined;
+      // TODO: session
+      return (new RedirectResponse()).go('/');
     }
     if (!(this.error instanceof HttpError) && this.app.isDebug) {
-      return this.renderTrace(code);
+      return this.renderTracePage(this.code);
     }
-    return this.renderHttpHtml(code);
+    return this.renderHttpErrorPage(this.code);
   }
 
-  renderTrace(code) {
-    const temp = tracePage(this.error, this.request, {
+  /**
+   * render trace page for debug
+   * @private
+   */
+  renderTracePage() {
+    const page = tracePage(this.error, this.request, {
       logo: `${fs.readFileSync(path.resolve(__dirname, './views/assets/logo.svg'))}<span style="vertical-align: top;line-height: 50px;margin-left: 10px;">Daze.js</span>`,
     });
-    return new Response(temp, code);
+    return new Response(page, this.code);
   }
 
-  renderHttpHtml(code) {
+  /**
+   * render http error page
+   * @private
+   */
+  renderHttpErrorPage() {
     const config = this.app.get('config');
     // get http_exception_template object
-    const httpErrorTemplate = config.get('app.http_exception_template');
+    const httpErrorTemplate = config.get('app.errors_page', {});
     const temps = Object.assign({}, httpErrorTemplate, defaultHttpErrorTemplate);
     // check user config s status page
-    if (Reflect.has(temps, this.error.status)) {
-      const view = this.view.render(temps[this.error.status] || 'errors/error.njk', {
+    if (temps[this.error.status]) {
+      const view = (new View()).render(temps[this.error.status] || 'errors/error.njk', {
         err: this.error,
       });
-      return new Response(view, code);
-    } if (Reflect.has(temps, 'error')) {
-      const view = this.view.render(temps.error || 'errors/error.njk', {
-        err: this.error,
-      });
-      return new Response(view, code);
+      return new Response(view, this.code);
     }
-    const view = this.view.render('errors/error.njk', {
+    if (temps.error) {
+      const view = (new View()).render(temps.error || 'errors/error.njk', {
+        err: this.error,
+      });
+      return new Response(view, this.code);
+    }
+    const view = (new View()).render('errors/error.njk', {
       err: this.error,
     });
-    return new Response(view, code);
+    return new Response(view, this.code);
   }
 }
 
-module.exports = Handle;
+module.exports = Handler;

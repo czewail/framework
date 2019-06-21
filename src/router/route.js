@@ -11,6 +11,7 @@ const Container = require('../container');
 const Middleware = require('../middleware');
 const BaseController = require('../base/controller');
 const Response = require('../response');
+const autoCommitSessionMiddleware = require('../session/middlewares/auto-commit');
 
 class Route {
   /**
@@ -69,6 +70,15 @@ class Route {
     if (this.methods.includes('GET') && !this.methods.includes('HEAD')) {
       this.methods.push('HEAD');
     }
+
+    this.registerDefaultMiddlewares();
+  }
+
+  /**
+   * register default route middlewares
+   */
+  registerDefaultMiddlewares() {
+    this.middleware.register(autoCommitSessionMiddleware);
   }
 
   /**

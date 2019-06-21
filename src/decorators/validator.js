@@ -10,8 +10,8 @@ function injectClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata('type', 'validate', target.prototype);
-      Reflect.setMetadata('validate', name, target.prototype);
+      Reflect.setMetadata('type', 'validator', target.prototype);
+      Reflect.setMetadata('validator', name, target.prototype);
       return target;
     },
   };

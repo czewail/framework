@@ -11,7 +11,7 @@ const Service = require('./service');
 const Multiton = require('./multiton');
 const Resource = require('./resource');
 const Component = require('./component');
-const Validate = require('./validate');
+const Validator = require('./validator');
 const useMiddleware = require('./use-middleware');
 const Verbs = require('./verb');
 const Contexts = require('./contexts');
@@ -31,7 +31,7 @@ module.exports = {
   Service,
   Resource,
   Component,
-  Validate,
+  Validator,
   Middleware,
   Multiton,
   useMiddleware,

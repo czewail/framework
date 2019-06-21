@@ -2,9 +2,7 @@
 const { crc32 } = require('crc');
 
 exports.decode = function decode(str) {
-  console.log(str, 'str');
   const body = Buffer.from(str, 'base64').toString('utf8');
-  console.log(body, 'body');
   const json = JSON.parse(body);
   return json;
 };

@@ -3,30 +3,52 @@ const { decode, encode } = require('./helpers');
 
 const defualtOpts = {
   key: 'dazejs:sess',
-  overwrite: true,
+  // overwrite: true,
   httpOnly: true,
   signed: false,
-  autoCommit: true,
+  // autoCommit: true,
 };
 
 const ONE_DAY = 86400000;
 
 class Session {
   constructor(request, options = {}) {
+    /**
+     * @var {Application} app Application instance
+     */
     this.app = Container.get('app');
+
+    /**
+     * @var {Request} request Request instance
+     */
     this.request = request;
-    this.options = {
-      ...defualtOpts,
-      ...this.app.get('config').get('session', {}),
-      ...options,
-    };
+
+    /**
+     * @var {Object} options
+     */
+    this.options = this.parseOptions(options);
+
+    /**
+     * @var {Object | Null} store the other store
+     */
     this.store = null;
+
+    /**
+     * @var {Object | Null} session session Object
+     */
     this.session = null;
+  }
+
+  /**
+   * parse options
+   * @param {Object} options
+   */
+  parseOptions(options) {
+    return Object.assign(defualtOpts, this.app.get('config').get('session', {}), options);
   }
 
   initFromCookie() {
     const cookie = this.request.cookieValue(this.options.key, this.options);
-    console.log(cookie, 11111);
     if (!cookie) {
       this.dispose();
       return;
@@ -38,7 +60,6 @@ class Session {
       this.dispose();
       return;
     }
-    console.log(json, 222222);
     this.dispose(json);
   }
 
@@ -66,7 +87,7 @@ class Session {
       ...this.session,
       ...data,
     };
-    console.log(this.session);
+    // console.log(this.session);
     return this.session;
   }
 
@@ -79,11 +100,8 @@ class Session {
   // }
 
   async commit(response) {
-    console.log(this.session);
-    // console.log(this.session, 11111, 222);
     const encodedSession = encode(this.session);
-    // console.log(this.options.key, encodedSession, this.options);
-    // return response.cookie(this.options.key, encodedSession, this.options);
+    return response.cookie(this.options.key, encodedSession, this.options);
   }
 }
 

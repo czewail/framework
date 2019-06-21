@@ -109,28 +109,29 @@ class Redirect extends Response {
     return this;
   }
 
-  send(ctx) {
-    const session = Container.get('session', [ctx]);
-    if (this.forceBack) {
-      const url = session.get(SESSION_PREVIOUS_URL) || this.ctx.get('Referrer') || this.alt || '/';
-      this.setUrl(url);
-    }
-    if (this.needWithInput) {
-      const old = ctx.params;
-      session.flash(SESSION_OLD_INPUT, old);
-    }
-    if (this.flashSessions) {
-      session.flash(this.flashSessions);
-    }
-    if (this.errors) {
-      if (this.errors instanceof Validate) {
-        session.flash(SESSION_ERRORS, this.errors.errors.format());
-      } else {
-        session.flash(SESSION_ERRORS, this.errors);
-      }
-    }
+  send(request) {
     this.setHeader('Location', this.getUrl());
-    super.send(ctx);
+    // const session = Container.get('session', [ctx]);
+    // if (this.forceBack) {
+    //   const url = session.get(SESSION_PREVIOUS_URL) || this.ctx.get('Referrer') || this.alt || '/';
+    //   this.setUrl(url);
+    // }
+    // if (this.needWithInput) {
+    //   const old = ctx.params;
+    //   session.flash(SESSION_OLD_INPUT, old);
+    // }
+    // if (this.flashSessions) {
+    //   session.flash(this.flashSessions);
+    // }
+    // if (this.errors) {
+    //   if (this.errors instanceof Validate) {
+    //     session.flash(SESSION_ERRORS, this.errors.errors.format());
+    //   } else {
+    //     session.flash(SESSION_ERRORS, this.errors);
+    //   }
+    // }
+    // this.setHeader('Location', this.getUrl());
+    super.send(request);
   }
 }
 
