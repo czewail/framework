@@ -2,6 +2,7 @@ const path = require('path');
 const Base = require('./base');
 const View = require('../view');
 const Resource = require('../resource');
+const Validate = require('../validate');
 
 class Controller extends Base {
   constructor(request) {
@@ -30,6 +31,10 @@ class Controller extends Base {
 
   view(...params) {
     return new View(...params);
+  }
+
+  validate(data, validator) {
+    return new Validate(data, validator);
   }
 
   get service() {

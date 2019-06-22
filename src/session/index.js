@@ -1,5 +1,6 @@
 const Container = require('../container');
 const { decode, encode } = require('./helpers');
+const symbols = require('../symbol');
 
 const defualtOpts = {
   key: 'dazejs:sess',
@@ -26,7 +27,7 @@ class Session {
     /**
      * @var {Object} options
      */
-    this.options = this.parseOptions(options);
+    this.options = Object.assign(defualtOpts, this.app.get('config').get('session', {}), options);
 
     /**
      * @var {Object | Null} store the other store
@@ -37,67 +38,96 @@ class Session {
      * @var {Object | Null} session session Object
      */
     this.session = null;
+
+    /**
+     * recover session from store
+     */
+    this.recoverSession();
   }
 
   /**
-   * parse options
-   * @param {Object} options
+   * recover session from store
+   * default from cookie
    */
-  parseOptions(options) {
-    return Object.assign(defualtOpts, this.app.get('config').get('session', {}), options);
+  recoverSession() {
+    if (!this.store) this.recoverFromCookieStore();
   }
 
-  initFromCookie() {
+  /**
+   * recover session from cookie store
+   */
+  recoverFromCookieStore() {
     const cookie = this.request.cookieValue(this.options.key, this.options);
     if (!cookie) {
-      this.dispose();
+      this.generate();
       return;
     }
     let json = {};
     try {
       json = decode(cookie);
     } catch (err) {
-      this.dispose();
+      this.generate();
       return;
     }
-    this.dispose(json);
+    this.generate(json);
   }
 
-  get(key) {
-    // console.log(this.session, 1111111);
-    if (!this.store) this.initFromCookie();
-    // console.log(this.session, 22222222);
-    if (!key) return this.session;
-    // console.log(this.session, 3333333);
-    return this.session[key];
-  }
-
-  set(key, value) {
-    // console.log(key, value);
-    if (!this.session) this.session = {};
-    this.session[key] = value;
-  }
-
-  dispose(data = {}) {
+  /**
+   * generate session
+   * @param {Object} data session data
+   */
+  generate(data = {}) {
     if (!this.session) this.session = {};
     const maxAge = this.options.maxAge ? this.options.maxAge : ONE_DAY;
     this.session._expire = maxAge + Date.now();
     this.session._maxAge = maxAge;
-    this.session = {
-      ...this.session,
-      ...data,
-    };
-    // console.log(this.session);
+    this.session = data;
     return this.session;
   }
 
-  // resolve() {
-  //   return async (request, next) => {
-  //     const response = await next();
-  //     await request.session().commit(response);
-  //     return response;
-  //   };
-  // }
+  /**
+   * get session value
+   * @param {String} key session key
+   */
+  get(key) {
+    if (!key) return this.session;
+    return this.session[key];
+  }
+
+  /**
+   * set a session
+   * @param {String} key session key
+   * @param {Mixed} value session value
+   */
+  set(key, value) {
+    if (!this.session) this.session = {};
+    this.session[key] = value;
+    return this;
+  }
+
+  /**
+   * remove a session
+   * @param {*} key session key
+   */
+  remove(key) {
+    if (!this.session) this.session = {};
+    delete this.session[key];
+    return this;
+  }
+
+  /**
+   * set a flash session
+   * @param {String} key session key
+   * @param {Mixed} value  session value
+   */
+  flash(key, value) {
+    if (!this.session) this.session = {};
+    if (!this.session[symbols.SESSION.FLASHS]) this.session[symbols.SESSION.FLASHS] = [];
+    this.session[symbols.SESSION.FLASHS].push(key);
+    this.session[key] = value;
+    this.session[symbols.SESSION.FLASHED] = false;
+    return this;
+  }
 
   async commit(response) {
     const encodedSession = encode(this.session);

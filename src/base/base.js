@@ -7,11 +7,11 @@
 
 const Container = require('../container');
 const Response = require('../response');
+const RedirectResponse = require('../response/redirect');
 
 class Base {
   constructor(request) {
     this.request = request;
-    this._response = null;
   }
 
   get app() {
@@ -34,7 +34,10 @@ class Base {
   }
 
   get redirect() {
-    return Container.get('redirect');
+    if (!this._redirectResponse) {
+      this._redirectResponse = new RedirectResponse();
+    }
+    return this._redirectResponse;
   }
 
   get cookies() {

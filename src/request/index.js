@@ -409,9 +409,9 @@ class Request {
 
     if (!remote) return undefined;
 
-    const data = `${key}=${value}`;
+    // const data = `${key}=${value}`;
 
-    const index = this.app.keys.index(data, remote);
+    const index = this.app.keys.index(value, remote);
     if (index < 0) {
       return undefined;
     }

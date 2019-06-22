@@ -8,6 +8,12 @@
 // 容器实例多例标识 - used
 exports.MULTITON = Symbol('DAZE#multiton');
 
+// Session Symboles - used
+exports.SESSION = {
+  FLASHS: 'daze__flashes',
+  FLASHED: 'daze__flashed',
+};
+
 exports.INJECT_CONTAINER_ARGS = '__DAZE_INJECT_CONTAINER_ARGS__';
 
 exports.MIDDLEWARES = '__DAZE_CONTROLLER_MIDDLEWARES__';
