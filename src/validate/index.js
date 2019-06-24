@@ -1,8 +1,7 @@
 const is = require('core-util-is');
 const Message = require('../foundation/support/message');
+const validators = require('./validators');
 const Container = require('../container');
-const libs = require('./lib');
-const validatorRulesFactory = require('./factory/validator-rules');
 
 class Validate {
   constructor(data = {}, rules = {}) {
@@ -80,8 +79,13 @@ class Validate {
     for (const field of fields) {
       const fieldRules = rules[field];
       for (const rule of fieldRules) {
-        const validatorRules = validatorRulesFactory(field, libs[rule[0]], rule[1], rule[2]);
-        res.push(validatorRules);
+        res.push({
+          field,
+          name: rule[0],
+          handler: validators[rule[0]],
+          args: rule[1],
+          options: rule[2],
+        });
       }
     }
     return res;

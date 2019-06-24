@@ -272,7 +272,6 @@ class Request {
    * 根据 ? 获取原始查询字符串（不包含 ？）
    */
   get querystring() {
-    if (!this.req) return '';
     return parse(this.req).query || '';
   }
 
@@ -392,30 +391,17 @@ class Request {
    */
   cookie(key, options = {}) {
     const sigName = `${key}.sig`;
-    const defaultOptions = this.app.get('config').get('cookie', {});
-
-    const _options = {
-      ...defaultOptions,
-      ...options,
-    };
-    const signed = _options && _options.signed !== undefined ? _options.signed : !!this.app.keys;
-
+    const _options = Object.assign(this.app.get('config').get('cookie', {}), options);
+    const signed = _options.signed && !!this.app.keys;
     if (!this.cookies) return undefined;
-    const value = this.cookies[key];
-
-    if (!signed) return value;
-
+    if (!signed) return this.cookies[key];
     const remote = this.cookie(sigName, { signed: false });
-
     if (!remote) return undefined;
-
-    // const data = `${key}=${value}`;
-
-    const index = this.app.keys.index(value, remote);
+    const index = this.app.keys.index(this.cookies[key], remote);
     if (index < 0) {
       return undefined;
     }
-    return value;
+    return this.cookies[key];
   }
 
   /**
@@ -426,6 +412,11 @@ class Request {
     return this.cookie(...params);
   }
 
+  /**
+   * session simple
+   * @param {String} key session key
+   * @param {Mixed} value session value
+   */
   session(key, value) {
     if (!this._session) {
       this._session = new Session(this);

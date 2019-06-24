@@ -388,6 +388,15 @@ describe('Request', () => {
       expect(instance.href).toBe('http://localhost/users?name=zewail');
       expect(instance.getHref()).toBe('http://localhost/users?name=zewail');
     });
+
+    it('should return url when url have protocol', () => {
+      const request = {
+        url: 'http://localhost/users?name=zewail',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.href).toBe('http://localhost/users?name=zewail');
+    });
   });
 
   describe('Request#path', () => {
@@ -412,6 +421,15 @@ describe('Request', () => {
       expect(instance.querystring).toBe('page=10&color=blue');
       expect(instance.getQuerystring()).toBe('page=10&color=blue');
     });
+
+    it('should return "" when no query', () => {
+      const request = {
+        url: '/users',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.querystring).toBe('');
+    });
   });
 
   describe('Request#search', () => {
@@ -423,6 +441,15 @@ describe('Request', () => {
       const instance = new Request(req, res);
       expect(instance.search).toBe('?page=10&color=blue');
       expect(instance.getSearch()).toBe('?page=10&color=blue');
+    });
+
+    it('should return "" when no query', () => {
+      const request = {
+        url: '/users',
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.search).toBe('');
     });
   });
 
@@ -737,6 +764,42 @@ describe('Request', () => {
       const instance = new Request(req, res);
       expect(instance.page).toBe('10');
       expect(instance.color).toBe('blue');
+    });
+  });
+
+  describe('Request#cookies', () => {
+    it('should return cookie object', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          cookie: 'name=dazejs;age=18',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      expect(instance.cookies).toEqual({
+        name: 'dazejs',
+        age: '18',
+      });
+    });
+
+    it('should not init cookies when cookies exist', () => {
+      const request = {
+        url: '/users?page=10&color=blue',
+        headers: {
+          cookie: 'name=dazejs;age=20',
+        },
+      };
+      const { req, res } = context(request);
+      const instance = new Request(req, res);
+      instance._cookies = {
+        name: 'dazejs',
+        age: '18',
+      };
+      expect(instance.cookies).toEqual({
+        name: 'dazejs',
+        age: '18',
+      });
     });
   });
 });

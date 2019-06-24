@@ -1,6 +1,7 @@
 
 const is = require('is-type-of');
 const Response = require('./');
+const symbols = require('../symbol');
 const Validate = require('../validate');
 const Container = require('../container');
 const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol');
@@ -110,27 +111,28 @@ class Redirect extends Response {
   }
 
   send(request) {
+    if (this.forceBack) {
+      const url = request.session().get(symbols.SESSION.PREVIOUS) || request.getHeader('Referrer') || this.alt || '/';
+      this.setUrl(url);
+    }
+
+    if (this.needWithInput) {
+      const old = request.param();
+      request.session().flash(symbols.SESSION.OLD_INPUT, old);
+    }
+
+    if (this.flashSessions) {
+      request.session().flash(this.flashSessions);
+    }
+
+    if (this.errors) {
+      if (this.errors instanceof Validate) {
+        request.session().flash(symbols.SESSION.ERRORS, this.errors.errors.format());
+      } else {
+        request.session().flash(symbols.SESSION.ERRORS, this.errors);
+      }
+    }
     this.setHeader('Location', this.getUrl());
-    // const session = Container.get('session', [ctx]);
-    // if (this.forceBack) {
-    //   const url = session.get(SESSION_PREVIOUS_URL) || this.ctx.get('Referrer') || this.alt || '/';
-    //   this.setUrl(url);
-    // }
-    // if (this.needWithInput) {
-    //   const old = ctx.params;
-    //   session.flash(SESSION_OLD_INPUT, old);
-    // }
-    // if (this.flashSessions) {
-    //   session.flash(this.flashSessions);
-    // }
-    // if (this.errors) {
-    //   if (this.errors instanceof Validate) {
-    //     session.flash(SESSION_ERRORS, this.errors.errors.format());
-    //   } else {
-    //     session.flash(SESSION_ERRORS, this.errors);
-    //   }
-    // }
-    // this.setHeader('Location', this.getUrl());
     super.send(request);
   }
 }

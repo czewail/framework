@@ -12,6 +12,10 @@ exports.MULTITON = Symbol('DAZE#multiton');
 exports.SESSION = {
   FLASHS: 'daze__flashes',
   FLASHED: 'daze__flashed',
+  PREVIOUS: 'daze__previous',
+  CURRENT: 'daze__current',
+  OLD_INPUT: 'daze__old_input',
+  ERRORS: 'daze__errors',
 };
 
 exports.INJECT_CONTAINER_ARGS = '__DAZE_INJECT_CONTAINER_ARGS__';

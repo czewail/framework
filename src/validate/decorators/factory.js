@@ -1,19 +1,17 @@
 
-const validatorRulesFactory = require('../factory/validator-rules');
-
-module.exports = function (validatorMethod, args = [], options = {}) {
+module.exports = function (validatorMethod, validatorMethodName, args = [], options = {}) {
   return function (elementDescriptor) {
     return {
       ...elementDescriptor,
       finisher(target) {
         const rules = Reflect.getMetadata('rules', target.prototype) || [];
-        const validatorRules = validatorRulesFactory(
-          elementDescriptor.key,
-          validatorMethod,
+        rules.push({
+          field: elementDescriptor.key,
+          name: validatorMethodName,
+          handler: validatorMethod,
           args,
           options,
-        );
-        rules.push(validatorRules);
+        });
         Reflect.setMetadata('rules', rules, target.prototype);
         return target;
       },

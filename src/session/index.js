@@ -1,3 +1,4 @@
+const is = require('core-util-is');
 const Container = require('../container');
 const { decode, encode } = require('./helpers');
 const symbols = require('../symbol');
@@ -120,11 +121,21 @@ class Session {
    * @param {String} key session key
    * @param {Mixed} value  session value
    */
-  flash(key, value) {
+  flash(name, value) {
+    if (!name) return this;
     if (!this.session) this.session = {};
     if (!this.session[symbols.SESSION.FLASHS]) this.session[symbols.SESSION.FLASHS] = [];
-    this.session[symbols.SESSION.FLASHS].push(key);
-    this.session[key] = value;
+
+    if (is.isObject(name)) {
+      Object.keys(name).forEach((key) => {
+        this.session[key] = name[key];
+        this.session[symbols.SESSION.FLASHS].push(key);
+      });
+    } else {
+      if (!value) return this;
+      this.session[name] = value;
+      this.session[symbols.SESSION.FLASHS].push(name);
+    }
     this.session[symbols.SESSION.FLASHED] = false;
     return this;
   }

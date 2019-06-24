@@ -13,6 +13,8 @@ module.exports = async (request, next) => {
   if (flashed === false) {
     request.session().set(symbols.SESSION.FLASHED, true);
   }
+  request.session().set(symbols.SESSION.PREVIOUS, request.session().get(symbols.SESSION.CURRENT) || '');
+  request.session().set(symbols.SESSION.CURRENT, request.url);
   const response = await next();
   await request.session().commit(response);
   return response;
