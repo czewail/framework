@@ -4,7 +4,7 @@ const validators = require('./validators');
 const Container = require('../container');
 
 class Validate {
-  constructor(data = {}, rules = {}) {
+  constructor(data, rules = {}) {
     /**
      * @var {Application} app Application instance
      */
@@ -24,26 +24,6 @@ class Validate {
      * @var {Message} message message instance
      */
     this.message = new Message();
-
-    /**
-     * @var {Object} errMessages default error messages
-     */
-    this.errMessages = {
-      accepted: '$field must be yes,on or 1',
-      required: '$field require',
-      email: '$field not a valid email address',
-      mobile: '$field not a valid mobile',
-      alpha: '$field must be alpha',
-      alphanumeric: '$field must be alpha-numeric',
-      ip: '$field not a valid ip',
-      equals: '$field must equal $1',
-      contains: '$field must contain $1',
-      confirm: '$field out of accord with $1',
-      notEmpty: '$field must not be empty',
-      length: 'size of $field must be $1 - $2',
-      minLength: 'min size of $field must be $1',
-      maxLength: 'max size of $field must be $1',
-    };
   }
 
   /**
@@ -81,7 +61,6 @@ class Validate {
       for (const rule of fieldRules) {
         res.push({
           field,
-          name: rule[0],
           handler: validators[rule[0]],
           args: rule[1],
           options: rule[2],
@@ -95,7 +74,7 @@ class Validate {
    * parse validate data
    * @param {Object} data data
    */
-  parseData(data) {
+  parseData(data = {}) {
     return data;
   }
 
@@ -121,9 +100,9 @@ class Validate {
   validateField(rule) {
     if (!rule) return;
     const {
-      field, name, args, handler, options,
+      field, args, handler, options,
     } = rule;
-    const msg = options.message || this.errMessages[name];
+    const msg = options.message;
     const property = this.data[field];
     try {
       const validated = handler(property, ...args);
@@ -131,7 +110,6 @@ class Validate {
         if (!validated(this)) this.message.add(field, this.generateMessage(msg, field, args));
       } else if (!validated) this.message.add(field, this.generateMessage(msg, field, args));
     } catch (err) {
-      // console.log(err);
       this.message.add(field, this.generateMessage(msg, field, args));
     }
   }
@@ -157,7 +135,7 @@ class Validate {
    * get validate errors
    */
   get errors() {
-    return this.message.messages;
+    return this.message.format();
   }
 }
 

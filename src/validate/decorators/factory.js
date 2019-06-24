@@ -1,5 +1,5 @@
 
-module.exports = function (validatorMethod, validatorMethodName, args = [], options = {}) {
+module.exports = function (validatorMethod, args = [], options = {}) {
   return function (elementDescriptor) {
     return {
       ...elementDescriptor,
@@ -7,7 +7,6 @@ module.exports = function (validatorMethod, validatorMethodName, args = [], opti
         const rules = Reflect.getMetadata('rules', target.prototype) || [];
         rules.push({
           field: elementDescriptor.key,
-          name: validatorMethodName,
           handler: validatorMethod,
           args,
           options,

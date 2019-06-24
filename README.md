@@ -40,6 +40,6 @@ $ npm start
 
 ## License
 
-[MIT]https://github.com/dazejs/daze/blob/master/LICENSE)
+[MIT](https://github.com/dazejs/daze/blob/master/LICENSE)
 
 Copyright (c) 2018-present, Zewail Chan

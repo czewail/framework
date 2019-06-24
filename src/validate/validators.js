@@ -101,10 +101,6 @@ exports.isFunction = function (value) {
   return isType.isFunction(value);
 };
 
-exports.isPrimitive = function (value) {
-  return isType.isPrimitive(value);
-};
-
 exports.isBuffer = function (value) {
   return isType.isBuffer(value);
 };
