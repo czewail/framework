@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@dazejs/framework.svg)](https://www.npmjs.com/package/@dazejs/framework)
 [![npm](https://img.shields.io/npm/dm/@dazejs/framework.svg)](https://www.npmjs.com/package/@dazejs/framework)
 [![npm](https://travis-ci.com/dazejs/framework.svg?branch=master)](https://travis-ci.org/dazejs/framework)
-[![codecov](https://codecov.io/gh/dazejs/framework/branch/1.0.0-pre/graph/badge.svg)](https://codecov.io/gh/dazejs/framework)
+[![codecov](https://codecov.io/gh/dazejs/framework/branch/master/graph/badge.svg)](https://codecov.io/gh/dazejs/framework)
 [![GitHub license](https://img.shields.io/github/license/dazejs/daze.svg)](https://github.com/dazejs/daze/blob/master/LICENSE)
 
 <div align="center">
@@ -11,15 +11,13 @@
     <img width="200" heigth="200" src="https://github.com/dazejs/daze/blob/master/logo.png">
   </a>  
   <h1>Daze.js</h1>
-  <h4>A Powerful Nodejs Web Framework</h4>
+  <h4>Web Framework for Nodejs </h4>
 </div>
 
 
-## Ecosystem
+> ## 🛠 Status: In Development
+> Dazejs is currently in development. It's on the fast track to a 1.0 release, so we encourage you to use it and give us your feedback, but there are things that haven't been finalized yet and you can expect some changes.
 
-| Project                                                  | Status                                                       | Description         |
-| -------------------------------------------------------- | ------------------------------------------------------------ | ------------------- |
-| [@dazejs/cli](https://www.npmjs.com/package/@dazejs/cli) | [![npm](https://img.shields.io/npm/v/@dazejs/cli.svg)](https://www.npmjs.com/package/@dazejs/cli) | Project scaffolding |
 
 ## Installation
 
