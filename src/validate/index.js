@@ -15,7 +15,7 @@ class Validate {
    * @param {Object} data
    * @param {Object | String} rules
    */
-  constructor(data, rules = {}) {
+  constructor(data, rules) {
     /**
      * @var {Application} app Application instance
      */
@@ -46,7 +46,7 @@ class Validate {
     if (is.isObject(rules)) {
       // if @Validator rules
       if (Reflect.getMetadata('type', rules) === 'validator') {
-        return Reflect.getMetadata('rules', rules) || [];
+        return Reflect.getMetadata('validator', rules) || [];
       }
       // independence object rules
       return this.parseIndependenceRules(rules);
@@ -55,7 +55,7 @@ class Validate {
     if (is.isString(rules)) {
       const containerKey = `validator.${rules}`;
       if (!this.app.has(containerKey)) return [];
-      return Reflect.getMetadata('rules', this.app.get(`validator.${rules}`)) || [];
+      return Reflect.getMetadata('validator', this.app.get(`validator.${rules}`)) || [];
     }
     return [];
   }
@@ -90,18 +90,22 @@ class Validate {
   }
 
   /**
-   * generate a display message
+   * replace special message fields
    * @param {String} message message
    * @param {String} field field
    * @param {Array} args validate args
    */
-  generateMessage(message, field, args) {
-    if (!message) return undefined;
-    let msg = message;
+  replaceSpecialMessageFields(value, rule = {}) {
+    const {
+      field,
+      args,
+      options,
+    } = rule;
+    let msg = options.message || '';
     for (const [index, val] of args.entries()) {
       msg = msg.replace(`$${index + 1}`, val);
     }
-    return msg.replace('$field', field);
+    return msg.replace('$field', field).replace('$value', value);
   }
 
   /**
@@ -111,17 +115,20 @@ class Validate {
   validateField(rule) {
     if (!rule) return;
     const {
-      field, args, handler, options,
+      field, args, handler,
     } = rule;
-    const msg = options.message;
     const property = this.data[field];
     try {
       const validated = handler(property, ...args);
       if (is.isFunction(validated)) {
-        if (!validated(this)) this.message.add(field, this.generateMessage(msg, field, args));
-      } else if (!validated) this.message.add(field, this.generateMessage(msg, field, args));
+        if (!validated(this)) {
+          this.message.add(field, this.replaceSpecialMessageFields(property, rule));
+        }
+      } else if (!validated) {
+        this.message.add(field, this.replaceSpecialMessageFields(property, rule));
+      }
     } catch (err) {
-      this.message.add(field, this.generateMessage(msg, field, args));
+      this.message.add(field, err.message);
     }
   }
 
