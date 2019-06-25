@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 const is = require('core-util-is');
 const validatorFactory = require('./factory');
 const validators = require('../validators');
@@ -102,15 +108,15 @@ exports.Max = function (max, options) {
 
 // MARK: Date
 
-exports.MinDate = function (min, options) {
-  return validatorFactory(validators.minDate, [min], {
+exports.AfterDate = function (date, options) {
+  return validatorFactory(validators.afterDate, [date], {
     message: '$field date must not be before than $1',
     ...options,
   });
 };
 
-exports.MaxDate = function (max, options) {
-  return validatorFactory(validators.maxDate, [max], {
+exports.BeforeDate = function (date, options) {
+  return validatorFactory(validators.beforeDate, [date], {
     message: '$field date must not be after than $1',
     ...options,
   });

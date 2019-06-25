@@ -1,9 +1,20 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 const is = require('core-util-is');
 const Message = require('../foundation/support/message');
 const validators = require('./validators');
 const Container = require('../container');
 
 class Validate {
+  /**
+   * Create Validate instance
+   * @param {Object} data
+   * @param {Object | String} rules
+   */
   constructor(data, rules = {}) {
     /**
      * @var {Application} app Application instance
@@ -135,7 +146,7 @@ class Validate {
    * get validate errors
    */
   get errors() {
-    return this.message.format();
+    return this.message.messages;
   }
 }
 
