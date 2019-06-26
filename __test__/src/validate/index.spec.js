@@ -1,4 +1,3 @@
-
 require('../../../src/helpers');
 const path = require('path');
 const Validate = require('../../../src/validate');
@@ -138,6 +137,130 @@ describe('Validate', () => {
         },
       };
       expect(instance.replaceSpecialMessageFields(100, rule)).toBe('username: 100 must be between 10 and 20');
+    });
+  });
+
+  describe('Validate#validateField', () => {
+    it('should return true and no message when rule validate passed', () => {
+      const instance = new Validate({
+        username: 'xxxxxxxxxxx',
+      });
+      const rule = {
+        field: 'username',
+        handler: validators.length,
+        args: [10, 20],
+        options: {
+          message: '$field: $value must be between $1 and $2',
+        },
+      };
+      const res = instance.validateField(rule);
+      expect(res).toBeTruthy();
+      expect(instance.message.messages.length).toBe(0);
+    });
+
+    it('should return false and message when rule validate failed', () => {
+      const instance = new Validate({
+        username: 'xxx',
+      });
+      const rule = {
+        field: 'username',
+        handler: validators.length,
+        args: [10, 20],
+        options: {
+          message: '$field: $value must be between $1 and $2',
+        },
+      };
+      const res = instance.validateField(rule);
+      expect(res).toBeFalsy();
+      expect(instance.message.messages.length).toBe(1);
+    });
+
+    it('should return false and no message when no rule param', () => {
+      const instance = new Validate({
+        username: 'xxx',
+      });
+      const res = instance.validateField();
+      expect(res).toBeFalsy();
+      expect(instance.message.messages.length).toBe(0);
+    });
+
+    it('should return false and message when handler err', () => {
+      const instance = new Validate({
+        username: 11111,
+      });
+      const rule = {
+        field: 'username',
+        handler: validators.length,
+        args: [10, 20],
+        options: {
+          message: '$field: $value must be between $1 and $2',
+        },
+      };
+      const res = instance.validateField(rule);
+      expect(res).toBeFalsy();
+      expect(instance.message.messages.length).toBe(1);
+    });
+  });
+
+  describe('Validate#passes', () => {
+    it('should return true when rules passed', () => {
+      const instance = new Validate({
+        username: 'xxxxxxxxxxxx',
+      }, {
+        username: [
+          ['length', [10, 20]],
+        ],
+      });
+      expect(instance.passes).toBeTruthy();
+    });
+
+    it('should return false when rules failed', () => {
+      const instance = new Validate({
+        username: 'xxx',
+      }, {
+        username: [
+          ['length', [10, 20]],
+        ],
+      });
+      expect(instance.passes).toBeFalsy();
+    });
+  });
+
+  describe('Validate#fails', () => {
+    it('should return false when rules passed', () => {
+      const instance = new Validate({
+        username: 'xxxxxxxxxxxx',
+      }, {
+        username: [
+          ['length', [10, 20]],
+        ],
+      });
+      expect(instance.fails).toBeFalsy();
+    });
+
+    it('should return true when rules failed', () => {
+      const instance = new Validate({
+        username: 'xxx',
+      }, {
+        username: [
+          ['length', [10, 20]],
+        ],
+      });
+      expect(instance.fails).toBeTruthy();
+    });
+  });
+
+  describe('Validate#errors', () => {
+    it('should return errors when validate failed', () => {
+      const instance = new Validate({
+        username: 'xxxxxxxxxxxx',
+      }, {
+        username: [
+          ['length', [10, 20]],
+        ],
+      });
+      instance.check();
+      expect(instance.errors).toBe(instance.message.messages);
     });
   });
 });

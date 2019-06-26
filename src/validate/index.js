@@ -112,33 +112,26 @@ class Validate {
    * @param {Object} rule rule
    */
   validateField(rule) {
-    if (!rule) return;
+    if (!rule) return false;
     const {
       field, args, handler,
     } = rule;
     const property = this.data[field];
     try {
       const validated = handler(property, ...args);
-      if (is.isFunction(validated)) {
-        if (!validated(this)) {
-          this.message.add(field, this.replaceSpecialMessageFields(property, rule));
-        }
-      } else if (!validated) {
-        this.message.add(field, this.replaceSpecialMessageFields(property, rule));
-      }
+      if (validated) return true;
+      this.message.add(field, this.replaceSpecialMessageFields(property, rule));
     } catch (err) {
       this.message.add(field, err.message);
     }
+    return false;
   }
 
   /**
    * check if validate data is passed
    */
   get passes() {
-    for (const rule of this.rules) {
-      this.validateField(rule);
-    }
-    return this.message.isEmpty();
+    return this.check();
   }
 
   /**
@@ -146,6 +139,16 @@ class Validate {
    */
   get fails() {
     return !this.passes;
+  }
+
+  /**
+   * check the rules
+   */
+  check() {
+    for (const rule of this.rules) {
+      this.validateField(rule);
+    }
+    return this.message.isEmpty();
   }
 
   /**
