@@ -126,7 +126,7 @@ describe('Validate', () => {
     });
   });
 
-  describe('Validate#generateMessage', () => {
+  describe('Validate#replaceSpecialMessageFields', () => {
     it('should replace predefine field with string', () => {
       const instance = new Validate();
       const rule = {

@@ -91,9 +91,8 @@ class Validate {
 
   /**
    * replace special message fields
-   * @param {String} message message
-   * @param {String} field field
-   * @param {Array} args validate args
+   * @param {String} value field value
+   * @param {Object} rule stuct rule
    */
   replaceSpecialMessageFields(value, rule = {}) {
     const {
