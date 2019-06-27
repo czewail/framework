@@ -4,19 +4,20 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-
+const assert = require('assert');
 const toIdentifier = require('toidentifier');
 const statuses = require('statuses');
 // const mime = require('mime');
 const Stream = require('stream');
 const { extname } = require('path');
-const is = require('is-type-of');
+const is = require('core-util-is');
 const contentDisposition = require('content-disposition');
 const Resource = require('../resource/resource');
 const Container = require('../container');
 const ResourceFactory = require('../resource/factory');
 const ViewFactory = require('../view/factory');
 const HttpError = require('../errors/http-error');
+const IllegalArgumentError = require('../errors/illegal-argument-error');
 const View = require('../view');
 const Cookie = require('../cookie');
 
@@ -171,7 +172,7 @@ class Response {
    * @param {number} code exception code
    */
   error(message, code) {
-    throw new HttpError(code, message);
+    throw new HttpError(code, message, this._header);
   }
 
   /**
@@ -187,9 +188,9 @@ class Response {
   /**
    * get http header
    */
-  getHeader(name = null) {
-    if (name) return this._header[name] || null;
-    return this._header;
+  getHeader(name) {
+    assert(is.isString(name), new IllegalArgumentError('header name must be string'));
+    return this._header[name.toLowerCase()];
   }
 
   /**
@@ -201,14 +202,8 @@ class Response {
    * @returns {this}
    */
   setHeader(name, value) {
-    if (is.object(name)) {
-      this._header = {
-        ...this._header,
-        ...name,
-      };
-    } else {
-      this._header[name] = value;
-    }
+    assert(is.isString(name), new IllegalArgumentError('header name must be string'));
+    this._header[name.toLowerCase()] = value;
     return this;
   }
 
@@ -218,7 +213,7 @@ class Response {
    * @returns {object} http headers
    */
   getHeaders() {
-    return this.getHeader();
+    return this._header;
   }
 
   /**
@@ -226,22 +221,27 @@ class Response {
    * @public
    * @returns {object} http headers
    */
-  setHeaders(...params) {
-    return this.setHeader(...params);
+  setHeaders(headers) {
+    assert(is.isObject(headers), new IllegalArgumentError('header name must be object'));
+    const keys = Object.keys(headers);
+    for (const key of keys) {
+      this.setHeader(key.toLowerCase(), headers[key]);
+    }
+    return this;
   }
 
-  /**
- * setHeader or getHeader alias
- * @public
- */
-  header(name, value) {
-    if ((name && value) || is.object(name)) {
-      return this.setHeader(name, value);
-    } if (name && !value) {
-      return this.getHeader(name);
-    }
-    return undefined;
-  }
+  //   /**
+  //  * setHeader or getHeader alias
+  //  * @public
+  //  */
+  //   header(name, value) {
+  //     if ((name && value) || is.object(name)) {
+  //       return this.setHeader(name, value);
+  //     } if (name && !value) {
+  //       return this.getHeader(name);
+  //     }
+  //     return undefined;
+  //   }
 
   /**
    * get http code

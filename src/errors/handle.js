@@ -1,6 +1,8 @@
 const statuses = require('statuses');
 const fs = require('fs');
 const path = require('path');
+const mime = require('mime-types');
+const typeis = require('type-is').is;
 const tracePage = require('@dazejs/trace-page');
 const Container = require('../container');
 const HttpError = require('./http-error');
@@ -41,15 +43,16 @@ class Handler {
     /**
      * @var {Number} code error code
      */
-    this.code = (this.error instanceof HttpError) ? this.error.statusCode : 500;
+    this.code = (this.error instanceof HttpError) ? this.error.code : 500;
   }
+
 
   /**
    * render error response
    * @public
    */
   render() {
-    const type = this.request.acceptsTypes('html', 'text', 'json') || 'text';
+    const type = typeis(this.error.headers['content-type'], ['html', 'text', 'json']) || this.request.acceptsTypes('html', 'text', 'json') || 'text';
     return this[type]();
   }
 
@@ -58,7 +61,7 @@ class Handler {
    * @private
    */
   text() {
-    const data = this.error.message || statuses[+this.error.statusCode];
+    const data = this.error.message || statuses[+this.error.code];
     return new Response(data, this.code);
   }
 
@@ -67,11 +70,11 @@ class Handler {
    * @private
    */
   json() {
-    const message = this.error.message || statuses[+this.error.statusCode];
+    const message = this.error.message || statuses[+this.error.code];
     const { errors } = this.error;
     const data = { data: message, errors };
     if (this.app.isDebug) {
-      if (this.error.statusCode >= 500) {
+      if (this.error.code >= 500) {
         data.stack = this.error.stack;
       }
     }

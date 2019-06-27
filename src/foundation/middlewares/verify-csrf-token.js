@@ -34,13 +34,12 @@ class VerifyCsrfToken extends Middleware {
       || this.inExcept(ctx)
       || this.tokenValidity(ctx)
     ) {
-      return ctx
-    } 
-      this.message.add('token', this.invalidTokenMessage)
-      // console.log(this.message.toJSON())
-      throw new HttpError(403, this.invalidTokenMessage)
-      // ctx.throw(403, this.invalidTokenMessage)
-    
+      return ctx;
+    }
+    this.message.add('token', this.invalidTokenMessage);
+    // console.log(this.message.toJSON())
+    throw new HttpError(403, this.invalidTokenMessage);
+    // ctx.throw(403, this.invalidTokenMessage)
   }
 
   /**

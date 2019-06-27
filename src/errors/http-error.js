@@ -1,18 +1,11 @@
 
 class HttpError extends Error {
-  constructor(statusCode = 500, message = '', errors = []) {
+  constructor(code = 500, message = '', headers = {}, errors = []) {
     super(message);
     Error.captureStackTrace(this, this.constructor);
-    this.status = statusCode;
+    this.code = code;
+    this.headers = headers;
     this.errors = errors;
-  }
-
-  get statusCode() {
-    return this.status;
-  }
-
-  get code() {
-    return this.status;
   }
 }
 
