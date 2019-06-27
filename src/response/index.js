@@ -426,17 +426,12 @@ class Response {
     // commit session
     // await request.session().commit(this);
     // send cookie
-    const cookies = [];
     // console.log(this.cookies);
     for (const _cookie of this.cookies) {
-      cookies.push(_cookie.serialize());
-      const sign = _cookie.sign();
-      if (sign) {
-        cookies.push(sign);
-      }
+      request.cookies.set(_cookie.getName(), _cookie.getValue(), _cookie.getOptions());
     }
 
-    this.setHeader('Set-Cookie', cookies);
+    await request.session().autoCommit();
 
     // headers
     if (!res.headersSent) {

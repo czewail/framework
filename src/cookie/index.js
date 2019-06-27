@@ -4,32 +4,11 @@
  * This software is released under the MIT License.
  * https: //opensource.org/licenses/MIT
  */
-
 const assert = require('assert');
-const cookie = require('cookie');
 const Container = require('../container');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Cookie {
-  app = Container.get('app');
-
-  options = {
-    maxAge: 0,
-    expires: '',
-    path: '/',
-    signed: true,
-    domain: '',
-    httpOnly: true,
-    overwrite: false,
-    secure: false,
-  };
-
-  /** @var {string} cookie name */
-  name = '';
-
-  /** @var {string} cookie value */
-  value = null;
-
   /**
    * Create Cookie instance
    * @param {String} name cookie name
@@ -38,9 +17,24 @@ class Cookie {
    */
   constructor(name, value, options = {}) {
     assert(!(/\s|,|;/).test(name), new IllegalArgumentError('Cookie name is not valid!'));
+    /**
+     * @var {object} app Application
+     */
+    this.app = Container.get('app');
+    /**
+     * @var {string} name cookie name
+     */
     this.name = name;
+
+    /**
+     * @var {string} value cookie value
+     */
     this.value = value;
-    this.options = Object.assign({}, this.options, this.app.get('config').get('cookie', {}), options);
+
+    /**
+     * @var {Object} options cookie options
+     */
+    this.options = Object.assign({}, this.app.get('config').get('cookie', {}), options);
   }
 
   /**
@@ -67,8 +61,10 @@ class Cookie {
    * @param {string} val cookie value
    * @returns {object} this
    */
-  setValue(val = null) {
-    this.value = val;
+  setValue(val) {
+    if (val) {
+      this.value = val;
+    }
     return this;
   }
 
@@ -176,25 +172,6 @@ class Cookie {
   setExpires(expires) {
     this.options.expires = expires;
     return this;
-  }
-
-  /**
-   * get serialize cookie
-   */
-  serialize() {
-    // const signed = this.options && this.options.signed;
-    // if (signed) {
-    //   const signedValue = this.app.keys.sign(this.value);
-    //   this.setValue(signedValue);
-    // }
-    return cookie.serialize(this.name, this.value, this.options);
-  }
-
-  sign() {
-    if (!this.options.signed || !this.app.keys) return undefined;
-    const name = `${this.name}.sig`;
-    const value = this.app.keys.sign(this.value);
-    return cookie.serialize(name, value, this.options);
   }
 }
 

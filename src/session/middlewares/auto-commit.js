@@ -1,7 +1,7 @@
 const is = require('core-util-is');
 const symbols = require('../../symbol');
 
-module.exports = async (request, next) => {
+module.exports = (request, next) => {
   const flashed = request.session().get(symbols.SESSION.FLASHED);
   const flashs = request.session().get(symbols.SESSION.FLASHS);
   if (flashed === true && is.isArray(flashs)) {
@@ -15,7 +15,5 @@ module.exports = async (request, next) => {
   }
   request.session().set(symbols.SESSION.PREVIOUS, request.session().get(symbols.SESSION.CURRENT) || '');
   request.session().set(symbols.SESSION.CURRENT, request.url);
-  const response = await next();
-  await request.session().commit(response);
-  return response;
+  return next();
 };

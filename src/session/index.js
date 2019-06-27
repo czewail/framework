@@ -58,7 +58,7 @@ class Session {
    * recover session from cookie store
    */
   recoverFromCookieStore() {
-    const cookie = this.request.cookieValue(this.options.key, this.options);
+    const cookie = this.request.cookies.get(this.options.key, this.options);
     if (!cookie) {
       this.generate();
       return;
@@ -140,9 +140,15 @@ class Session {
     return this;
   }
 
-  async commit(response) {
+  async commit() {
     const encodedSession = encode(this.session);
-    return response.cookie(this.options.key, encodedSession, this.options);
+    this.request.cookies.set(this.options.key, encodedSession, this.options);
+  }
+
+  async autoCommit() {
+    if (this.options.autoCommit === true) {
+      await this.commit();
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 require('../../../src/helpers');
 const path = require('path');
 const Accepts = require('accepts');
+const Cookies = require('cookies');
 const Request = require('../../../src/request');
 const context = require('../../common/context');
 
@@ -777,13 +778,10 @@ describe('Request', () => {
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
-      expect(instance.cookies).toEqual({
-        name: 'dazejs',
-        age: '18',
-      });
+      expect(instance.cookies).toBeInstanceOf(Cookies);
     });
 
-    it('should not init cookies when cookies exist', () => {
+    it('should return cookie value', () => {
       const request = {
         url: '/users?page=10&color=blue',
         headers: {
@@ -792,14 +790,7 @@ describe('Request', () => {
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
-      instance._cookies = {
-        name: 'dazejs',
-        age: '18',
-      };
-      expect(instance.cookies).toEqual({
-        name: 'dazejs',
-        age: '18',
-      });
+      expect(instance.cookies.get('name')).toBe('dazejs');
     });
   });
 });

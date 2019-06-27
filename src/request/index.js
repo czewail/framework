@@ -7,11 +7,12 @@
 const parse = require('parseurl');
 const qs = require('querystring');
 const typeis = require('type-is');
-const cookie = require('cookie');
+// const cookie = require('cookie');
+const Cookies = require('cookies');
 const accepts = require('accepts');
 const is = require('core-util-is');
-const vary = require('vary');
-const Keygrip = require('keygrip');
+// const vary = require('vary');
+// const Keygrip = require('keygrip');
 const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
@@ -379,7 +380,10 @@ class Request {
    */
   get cookies() {
     if (!this._cookies) {
-      this._cookies = cookie.parse(this.getHeader('Cookie'));
+      this._cookies = new Cookies(this.req, this.res, {
+        keys: this.app.keys,
+        secure: this.secure,
+      });
     }
     return this._cookies;
   }
@@ -390,24 +394,13 @@ class Request {
    * @param {Object} options cookie opts
    */
   cookie(key, options = {}) {
-    const sigName = `${key}.sig`;
-    const _options = Object.assign(this.app.get('config').get('cookie', {}), options);
-    const signed = _options.signed && !!this.app.keys;
-    if (!this.cookies) return undefined;
-    if (!signed) return this.cookies[key];
-    const remote = this.cookie(sigName, { signed: false });
-    if (!remote) return undefined;
-    const index = this.app.keys.index(this.cookies[key], remote);
-    if (index < 0) {
-      return undefined;
-    }
-    return this.cookies[key];
+    return this.cookies.get(key, options);
   }
 
   /**
    * alias this.cookie
    * @param  {...any} params this.cookie params
-   */
+  //  */
   cookieValue(...params) {
     return this.cookie(...params);
   }
@@ -443,7 +436,7 @@ class Request {
   // }
 
 
-  get isSsl() {
+  get secure() {
     return this.protocol === 'https';
   }
 
