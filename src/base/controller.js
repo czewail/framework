@@ -42,19 +42,13 @@ class Controller extends Base {
     return new Proxy({}, {
       get(target, p, receiver) {
         if (typeof p === 'symbol') return Reflect.get(target, p, receiver);
-        return that.app.get(`service.${p}`, [this.request]);
+        return that.app.get(`service.${p}`);
       },
     });
   }
 
-  get resource() {
-    const that = this;
-    return new Proxy({}, {
-      get(target, p, receiver) {
-        if (typeof p === 'symbol') return Reflect.get(target, p, receiver);
-        return that.app.get(`resource.${p}`, [this.request]);
-      },
-    });
+  resource(target) {
+    return this.app.get(`resource.${target}`);
   }
 
   get component() {

@@ -1,8 +1,8 @@
 
-const Base = require('./base')
+const Base = require('./base');
 
 class Middleware extends Base {
 
 }
 
-module.exports = Middleware
+module.exports = Middleware;

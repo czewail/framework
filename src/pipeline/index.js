@@ -1,11 +1,18 @@
-const Processor = require('./processor');
-
 /**
- * Pipeline
+ * Copyright (c) 2018 Chan Zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
  */
+const assert = require('assert');
+const is = require('core-util-is');
+const IllegalArgumentError = require('../errors/illegal-argument-error');
+
 class Pipeline {
-  constructor(processor = null, ...stages) {
-    this.processor = processor || new Processor();
+  constructor(...stages) {
+    /**
+     * @var {Array} stages pipe stages
+     */
     this.stages = stages;
   }
 
@@ -15,16 +22,16 @@ class Pipeline {
    * @returns {Pipeline} this
    */
   pipe(stage) {
-    if (typeof stage === 'function') {
-      this.stages.push(stage);
-    } else if (Array.isArray(stage)) {
-      for (const item of stage) {
-        this.pipe(item);
-      }
-    }
+    assert(is.isFunction(stage), new IllegalArgumentError('pipeline stage must be function'));
+    this.stages.push(stage);
     return this;
   }
 
+  /**
+   * send payloads
+   * @param  {...Mixed} payload
+   * @returns {Pipeline} this
+   */
   send(...payload) {
     this.payload = payload;
     return this;
@@ -37,7 +44,12 @@ class Pipeline {
    */
   async process(processor) {
     if (this.stages.length > 0) {
-      return this.processor.process(this.stages, processor, ...this.payload);
+      const callback = this.stages
+        .reduceRight(
+          (next, pipe) => async (...data) => pipe(...data, next.bind(null, ...data)),
+          async (...params) => processor(...params),
+        );
+      return callback(...this.payload);
     }
     return processor(...this.payload);
   }

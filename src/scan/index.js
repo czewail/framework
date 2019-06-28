@@ -46,7 +46,8 @@ class Scan {
   }
 
   registerMiddleware(middleware, file) {
-    console.log(middleware, file);
+    const type = Reflect.getMetadata('middleware', middleware.prototype);
+    this.app.bind(`middleware.${type || file}`, middleware);
   }
 
   registerController(controller, file) {
