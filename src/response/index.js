@@ -8,6 +8,7 @@ const assert = require('assert');
 const toIdentifier = require('toidentifier');
 const statuses = require('statuses');
 // const mime = require('mime');
+const getType = require('cache-content-type');
 const Stream = require('stream');
 const { extname } = require('path');
 const is = require('core-util-is');
@@ -172,7 +173,10 @@ class Response {
    * @param {number} code exception code
    */
   error(message, code) {
-    throw new HttpError(code, message, this._header);
+    // throw new HttpError(code, message, this._header);
+    this.setCode(code);
+    this.setData(message);
+    return this;
   }
 
   /**
@@ -302,8 +306,12 @@ class Response {
     return this;
   }
 
-  setType() {
-
+  setType(type) {
+    const _type = getType(type);
+    if (_type) {
+      this.setHeader('Content-Type', _type);
+    }
+    return this;
   }
 
   /**
@@ -420,18 +428,15 @@ class Response {
     return this;
   }
 
-  async end(request) {
-    const { req, res } = request;
-
-    // commit session
-    // await request.session().commit(this);
-    // send cookie
-    // console.log(this.cookies);
+  async commitCookies(request) {
     for (const _cookie of this.cookies) {
       request.cookies.set(_cookie.getName(), _cookie.getValue(), _cookie.getOptions());
     }
-
     await request.session().autoCommit();
+  }
+
+  async end(request) {
+    const { req, res } = request;
 
     // headers
     if (!res.headersSent) {

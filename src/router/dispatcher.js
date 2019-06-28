@@ -7,6 +7,7 @@ const Response = require('../response');
 const ResponseFactory = require('../response/manager');
 // const BaseController = require('../base/controller');
 const NotFoundHttpError = require('../errors/not-found-http-error');
+const HttpError = require('../errors/http-error');
 // const Pipeline = require('../pipeline');
 
 function type(file, ext) {
@@ -132,7 +133,10 @@ class Dispatcher {
    * dispatch request to controller
    */
   async dispatchToRoute() {
-    return this.route.middleware.handle(this.request, async request => this.route.resolve(request));
+    // return this.route.middleware
+    // .handle(this.request, async request => this.route.resolve(request));
+    return this.route.middleware
+      .handle(this.request, async request => this.route.resolve(request));
   }
 
   createNotFountError() {
