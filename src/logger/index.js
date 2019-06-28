@@ -5,51 +5,57 @@ const Container = require('../container');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Logger {
-  /**
-   * @var {Application} daze Application instance
-   */
-  app = Container.get('app');
+  constructor() {
+    /**
+     * @var {Application} daze Application instance
+     */
+    this.app = Container.get('app');
 
-  /**
-   * @var {Container} container winston container instance
-   */
-  container = new winston.Container();
+    /**
+     * @var {Container} container winston container instance
+     */
+    this.container = new winston.Container();
 
-  /**
-   * @var {Logger} logger log instance
-   */
-  logger = null;
+    /**
+      * @var {Logger} logger log instance
+      */
+    this.logger = null;
 
-  /**
-   * @var {Map} defaultDrivers
-   * default transports supported
-   */
-  defaultDrivers = new Map([
-    ['console', winston.transports.Console],
-    ['file', winston.transports.File],
-    ['http', winston.transports.Http],
-    ['stream', winston.transports.Stream],
-    ['mongodb', winston.transports.MongoDB],
-    ['dailyFile', winston.transports.DailyRotateFile],
-  ]);
+    /**
+     * @var {Map} defaultDrivers
+     * default transports supported
+     */
+    this.defaultDrivers = new Map([
+      ['console', winston.transports.Console],
+      ['file', winston.transports.File],
+      ['http', winston.transports.Http],
+      ['stream', winston.transports.Stream],
+      ['mongodb', winston.transports.MongoDB],
+      ['dailyFile', winston.transports.DailyRotateFile],
+    ]);
 
-  /**
-   * @var {Map} customDrivers
-   * custom transports supported
-   */
-  customDrivers = new Map();
+    /**
+      * @var {Map} customDrivers
+      * custom transports supported
+      */
+    this.customDrivers = new Map();
 
-  defaultFormat = (format) => format.combine(
+    /**
+     * @var {Function} defaultFormat default format
+     */
+    this.defaultFormat = format => format.combine(
       format.timestamp({
         format: 'YYYY-MM-DD HH:mm:ss',
       }),
       format.splat(),
-      format.printf(info => {
-        return `[${info.timestamp}] [${info.level.toUpperCase()}] - ${info.message}`
-      }),
+      format.printf(info => `[${info.timestamp}] [${info.level.toUpperCase()}] - ${info.message}`),
     );
+  }
 
-  constructor() {
+  /**
+   * resolve default channel
+   */
+  resolveDefaultChannel() {
     const defaultChannelName = this.getDefaultChannelName();
     this.resolve(defaultChannelName);
   }
