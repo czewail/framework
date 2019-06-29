@@ -94,7 +94,7 @@ class Middleware {
   async handle(request, dispatch) {
     return (new Pipeline())
       .send(request)
-      .pipe(this.middlewares)
+      .pipe(...this.middlewares)
       .process(dispatch);
   }
 }

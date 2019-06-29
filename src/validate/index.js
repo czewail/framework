@@ -24,7 +24,7 @@ class Validate {
     /**
      * @var {Object} data validate data
      */
-    this.data = this.parseData(data);
+    this.data = {};
 
     /**
      * @var {Array} rules validator rules
@@ -144,7 +144,8 @@ class Validate {
   /**
    * check the rules
    */
-  check() {
+  check(data) {
+    this.data = this.parseData(data);
     for (const rule of this.rules) {
       this.validateField(rule);
     }

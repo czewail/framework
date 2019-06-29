@@ -26,30 +26,12 @@ class Base {
     return Container.get('messenger');
   }
 
-  get response() {
-    if (!this._response) {
-      this._response = new Response();
-    }
-    return this._response;
+  response(...params) {
+    return new Response(...params);
   }
 
-  get redirect() {
-    if (!this._redirectResponse) {
-      this._redirectResponse = new RedirectResponse();
-    }
-    return this._redirectResponse;
-  }
-
-  get cookies() {
-    return this.cookie;
-  }
-
-  get cookie() {
-    return Container.get('cookie');
-  }
-
-  get session() {
-    return Container.get('session', [this.request]);
+  redirect(...params) {
+    return new RedirectResponse(...params);
   }
 
   get body() {
@@ -57,7 +39,7 @@ class Base {
   }
 
   get params() {
-    return this.ctx.params;
+    return this.request.param();
   }
 
   get query() {

@@ -53,9 +53,7 @@ class Factory {
     if (!data) return null;
     // 如果是字符串
     if (typeof formatter === 'string') {
-      const transformerFileName = this.getTransformerFilePath(formatter);
-      const transformerPath = path.join(this.app.transformerPath, transformerFileName);
-      const Transformer = this.app.craft(transformerPath);
+      const Transformer = this.app.get(`resource.${formatter}`);
       return Transformer.resolve(data);
     }
     // 如果是回调函数
@@ -65,13 +63,6 @@ class Factory {
     return data;
   }
 
-  /**
-  * get ttansfromer file path
-  * @param {string} formatter formatter value (filename)
-  */
-  getTransformerFilePath(formatter) {
-    return formatter.slice(-3) === '.js' ? formatter : `${formatter}.js`;
-  }
 
   /**
    * serialize Rource data

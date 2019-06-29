@@ -21,9 +21,11 @@ class Pipeline {
    * @param {Function} stage pipe stage
    * @returns {Pipeline} this
    */
-  pipe(stage) {
-    assert(is.isFunction(stage), new IllegalArgumentError('pipeline stage must be function'));
-    this.stages.push(stage);
+  pipe(...stages) {
+    for (const stage of stages) {
+      assert(is.isFunction(stage), new IllegalArgumentError('pipe stage must be function'));
+      this.stages.push(stage);
+    }
     return this;
   }
 

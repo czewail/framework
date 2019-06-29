@@ -13,19 +13,19 @@ class Factory {
     const defaultVars = {};
     // const defaultVars = {
     //   get session() {
-    //     return session;
+    //     return request.session();
     //   },
-    //   get __token__() {
-    //     return token;
-    //   },
+    //   // get __token__() {
+    //   //   return token;
+    //   // },
     //   get errors() {
-    //     return session.getErrors();
+    //     return request.session().getErrors();
     //   },
-    //   token() {
-    //     return `<input type="hidden" name="_token" value="${token}" />`;
-    //   },
+    //   // token() {
+    //   //   return `<input type="hidden" name="_token" value="${token}" />`;
+    //   // },
     //   old(name, defValue = '') {
-    //     const oldInput = session.getOldInput();
+    //     const oldInput = request.session().getOldInput();
     //     if (!name) return oldInput;
     //     return oldInput && oldInput[name] ? oldInput[name] : defValue;
     //   },
