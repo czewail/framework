@@ -1,3 +1,4 @@
+const path = require('path');
 const winston = require('winston');
 require('winston-mongodb');
 require('winston-daily-rotate-file');
@@ -181,7 +182,7 @@ class Logger {
    */
   composeDriverCreator(channel) {
     const { channels } = channel;
-    if (!this.isComposeChannel(channel)) return;
+    if (!this.isComposeChannel(channel)) return undefined;
     let res = [];
     for (const _channel of channels) {
       const transports = this.getTransports(_channel);

@@ -8,7 +8,10 @@
 const Resource = require('./resource');
 
 class Item extends Resource {
-
+  constructor(data, formatter = null, key = null) {
+    super(data, formatter, key);
+    this.type = 'item';
+  }
 }
 
 module.exports = Item;

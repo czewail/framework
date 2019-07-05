@@ -9,7 +9,7 @@
  * defer function based on promise
  * 基于 promise 的延迟函数
  */
-exports.defer = function defer() {
+exports.defer = function () {
   const result = {};
   result.promise = new Promise((resolve, reject) => {
     result.resolve = resolve;
@@ -21,6 +21,23 @@ exports.defer = function defer() {
 /**
  * Determine whether the target can be traversed
  */
-exports.iterable = function iterable(target) {
+exports.iterable = function (target) {
   return !!target[Symbol.iterator];
+};
+
+/**
+ * proxy `__get__` method
+ */
+exports.getMethodProxy = function (klass) {
+  return new Proxy(klass, {
+    construct(target, argArray, newTarget) {
+      const instance = Reflect.construct(target, argArray, newTarget);
+      return new Proxy(instance, {
+        get(t, p, r) {
+          if (Reflect.has(t, p)) return Reflect.get(t, p, r);
+          return Reflect.apply(t.__get__, t, [p]);
+        },
+      });
+    },
+  });
 };

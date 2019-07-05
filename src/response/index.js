@@ -15,7 +15,7 @@ const is = require('core-util-is');
 const contentDisposition = require('content-disposition');
 const Resource = require('../resource/resource');
 const Container = require('../container');
-const ResourceFactory = require('../resource/factory');
+// const ResourceFactory = require('../resource/DEPRECATED_factory');
 const ViewFactory = require('../view/factory');
 const HttpError = require('../errors/http-error');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
@@ -408,7 +408,8 @@ class Response {
   handleData(request) {
     const data = this.getData();
     if (data instanceof Resource) {
-      return (new ResourceFactory(data)).output(request);
+      return data.output();
+      // return (new ResourceFactory(data)).output(request);
     }
     if (data instanceof View) {
       return (new ViewFactory(data)).output(request);

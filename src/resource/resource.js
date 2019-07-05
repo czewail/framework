@@ -7,6 +7,7 @@
 
 const is = require('is-type-of');
 const Container = require('../container');
+// const ResourceFactory = require('./factory');
 
 const DEFAULT_KEY = 'data';
 
@@ -40,6 +41,11 @@ class Resource {
    * @var {mixed} meta resource meta data
    */
   meta = null;
+
+  /**
+   * resource type
+   */
+  type = null;
 
   /**
    * Create Resource
@@ -161,6 +167,109 @@ class Resource {
   withoutKey() {
     this.key = null;
     return this;
+  }
+
+  /**
+   * transform resource meta object
+   * @param {object} resource resource instance
+   */
+  transformResourceMeta() {
+    return this.useTransformer(this.metaFormatter, this.meta);
+  }
+
+  /**
+   * transform resource data object or array
+   * @param {object} resource resource instance
+   */
+  transformResourceData() {
+    if (this.type === 'item') {
+      return this.useTransformer(this.formatter, this.data);
+    }
+    if (this.type === 'collection') {
+      return this.data.map(i => this.useTransformer(this.formatter, i));
+    }
+    return this.data;
+  }
+
+  /**
+   * use tansformer transform data or meta
+   * @param {string|function} formatter resource formatter
+   * @param {object|array} data resource meta or data
+   */
+  useTransformer(formatter, data) {
+    if (!data) return null;
+    // 如果是字符串
+    if (typeof formatter === 'string') {
+      const Transformer = this.app.get(`resource.${formatter}`);
+      return Transformer.resolve(data);
+    }
+    // 如果是回调函数
+    if (typeof formatter === 'function') {
+      return formatter(data);
+    }
+    return data;
+  }
+
+  /**
+    * serialize Rource data
+    * @param {boolean} isWrapCollection is collection use wrap key
+    */
+  serializeResourceData(isWrapCollection = true) {
+    const data = this.transformResourceData();
+    if (this.type === 'collection') {
+      if (this.key) {
+        return {
+          [this.key]: data,
+        };
+      }
+      return isWrapCollection ? {
+        data,
+      } : data;
+    }
+    if (this.type === 'item') {
+      if (this.key) {
+        return {
+          [this.key]: data,
+        };
+      }
+      return data;
+    }
+    if (this.key) {
+      return {
+        [this.key]: null,
+      };
+    }
+    return null;
+  }
+
+  /**
+    * serialize resource meta
+    */
+  serializeResourceMeta() {
+    const meta = this.transformResourceMeta();
+    return meta ? {
+      meta,
+    } : null;
+  }
+
+  /**
+   * transform data
+   */
+  transform() {
+    const data = this.serializeResourceData();
+    const meta = this.serializeResourceMeta();
+
+    if (meta) {
+      return { data, meta };
+    }
+    return data;
+  }
+
+  /**
+   * output result
+   */
+  output() {
+    return this.transform();
   }
 }
 
