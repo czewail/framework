@@ -125,7 +125,7 @@ it('Container inject class', () => {
   };
   Container.bind(App, App);
   Container.bind('request', r => r, true, true);
-  Metadata.set('needInject', true, App.prototype);
+  Metadata.set('injectable', true, App.prototype);
   Metadata.set('constructorInjectors', [
     ['request', ['request']],
   ], App.prototype);

@@ -1,16 +1,16 @@
 const path = require('path');
 require('../../../src/helpers');
 const Config = require('../../../src/config');
-const appConfig = require('../../config/app');
-const appConfig2 = require('../../config/app.test');
-const customConfig = require('../../config/custom');
+const appConfig = require('../../daze/src/config/app');
+const appConfig2 = require('../../daze/src/config/app.test');
+const customConfig = require('../../daze/src/config/custom');
 const Container = require('../../../src/container');
 const IllegalArgumentError = require('../../../src/errors/illegal-argument-error');
 
 Container.bind('app', class {
   constructor() {
-    this.appPath = path.resolve(__dirname, '../../');
-    this.configPath = path.resolve(__dirname, '../../config');
+    this.appPath = path.resolve(__dirname, '../../daze/src');
+    this.configPath = path.resolve(__dirname, '../../daze/src/config');
   }
 });
 

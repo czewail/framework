@@ -126,8 +126,7 @@ class Logger {
     }
 
     if (this.isDefaultDriverSupported(driverName)) {
-      const driverCreator = this[`${driverName}DriverCreator`];
-      return driverCreator(config);
+      return this[`${driverName}DriverCreator`](config);
     }
 
     throw new IllegalArgumentError(`Logger Driver [${driverName}] is not supported.`);
@@ -214,8 +213,12 @@ class Logger {
    * @param {object} options channel configure
    */
   fileDriverCreator(options) {
-    const { driver, ...restOpts } = options;
-    return [new winston.transports.File(restOpts)];
+    const { driver, filename, ...restOpts } = options;
+    const _filename = path.resolve(this.app.appPath, '../../logs', filename);
+    return [new winston.transports.File({
+      filename: _filename,
+      ...restOpts,
+    })];
   }
 
   /**

@@ -31,7 +31,7 @@ class Application extends Container {
    *
    * @var {string}
    */
-  VERSION = '0.9.0';
+  VERSION = '1.0.0';
 
   /**
    * The config instance
@@ -68,9 +68,6 @@ class Application extends Container {
    */
   runtimeCalls = [];
 
-  modules = [];
-
-
   /**
    * Create a Dazejs Application insstance
    *
@@ -106,16 +103,9 @@ class Application extends Container {
     this.publicPath = path.resolve(this.rootPath, paths.public || '../public');
     /** log file path */
     this.logPath = path.resolve(this.rootPath, paths.log || '../logs');
-    // /** controller file path */
-    // this.controllerPath = path.resolve(this.rootPath, this.appPath, paths.controller || 'controller');
-    // /** middleware file path */
-    // this.middlewarePath = path.resolve(this.rootPath, this.appPath, paths.middleware || 'middleware');
-    // /** service file path */
-    // this.servicePath = path.resolve(this.rootPath, this.appPath, paths.service || 'service');
-    // /** validate file path */
-    // this.validatePath = path.resolve(this.rootPath, this.appPath, paths.validate || 'validate');
-    // /** transformer file path */
-    // this.transformerPath = path.resolve(this.rootPath, this.appPath, paths.validate || 'transformer');
+    /** provider file path */
+    this.providerPath = path.resolve(this.rootPath, paths.provider || 'provider');
+
 
     return this;
   }
@@ -126,10 +116,6 @@ class Application extends Container {
     this.isDebug = this.config.get('app.debug', false);
 
     return this;
-  }
-
-  loadModule(mdl) {
-    this.modules.push(mdl);
   }
 
   /**

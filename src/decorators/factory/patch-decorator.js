@@ -14,6 +14,8 @@ exports.patchClass = function patchClass(type, params, elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
+      Reflect.setMetadata('injectable', true, target.prototype);
+      Metadata.set('needInject', true, target.prototype);
       const injectors = Metadata.get('constructorInjectors', target.prototype) || [];
       Metadata.set('constructorInjectors', [
         ...injectors,
@@ -32,6 +34,7 @@ exports.patchProperty = function patchProperty(type, params, elementDescriptor) 
   return {
     ...elementDescriptor,
     finisher(target) {
+      Reflect.setMetadata('injectable', true, target.prototype);
       Metadata.set('needInject', true, target.prototype);
       const injectors = Metadata.get('propertyInjectors', target.prototype) || {};
       injectors[elementDescriptor.key] = [type, params];
@@ -51,6 +54,7 @@ exports.patchMethod = function patchMethod(type, params, elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
+      Reflect.setMetadata('injectable', true, target.prototype);
       Metadata.set('needInject', true, target.prototype);
       const injectors = Metadata.get('methodInjectors', target.prototype) || {};
       const items = injectors[elementDescriptor.key] || [];

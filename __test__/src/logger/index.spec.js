@@ -4,8 +4,9 @@ const Logger = require('../../../src/logger');
 const Application = require('../../../src/foundation/application');
 const IllegalArgumentError = require('../../../src/errors/illegal-argument-error');
 
-const app = new Application(path.resolve(__dirname, '../../'));
+const app = new Application(path.resolve(__dirname, '../../daze/src'));
 app.initialize();
+
 const log = new Logger();
 describe('src/logger', () => {
   it('Logger#isDefaultDriverSupported', () => {

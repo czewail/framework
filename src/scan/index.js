@@ -8,11 +8,11 @@ class Scan {
   }
 
   resolve() {
-    const files = this.sanAppDir();
-    this.sortingFiles(files);
+    this.resolveAppFiles(this.scanAppDir());
+    this.resolveProviderFiles(this.scanProviderDir());
   }
 
-  sortingFiles(files = []) {
+  resolveAppFiles(files = []) {
     for (const file of files) {
       // eslint-disable-next-line
       const target = require(file)
@@ -39,7 +39,24 @@ class Scan {
     return this;
   }
 
-  sanAppDir() {
+  resolveProviderFiles(files = []) {
+    for (const file of files) {
+      // eslint-disable-next-line
+      const target = require(file)
+      if (typeof target === 'function') {
+        this.registerProvider(target, file);
+      }
+    }
+    return this;
+  }
+
+  scanProviderDir() {
+    return glob.sync(path.resolve(this.app.rootPath, 'provider', '**'), {
+      nodir: true,
+    });
+  }
+
+  scanAppDir() {
     return glob.sync(path.resolve(this.app.appPath, '**'), {
       nodir: true,
     });
@@ -56,6 +73,10 @@ class Scan {
 
   registerComponent(component, file) {
     this.app.get('component').register(component, file);
+  }
+
+  registerProvider(Provider) {
+    this.app.register(new Provider(this.app));
   }
 }
 

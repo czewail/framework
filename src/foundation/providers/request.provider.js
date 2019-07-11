@@ -19,7 +19,7 @@ class RequestProvider {
    */
   register() {
     // bind request callback
-    this.app.singleton('request', (req, res) => {
+    this.app.multiton('request', (req, res) => {
       if (!req.request) {
         req.request = new Request(req, res);
       }
@@ -27,45 +27,45 @@ class RequestProvider {
     }, true);
 
     // for @HttpRequest
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.REQUEST,
       request => request,
       true,
     );
 
     // for @HttpResponse
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.RESPONSE,
       request => request.response,
       true,
     );
 
     // for @Req
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.REQ,
       request => request.req,
       true,
     );
 
     // for @Res
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.RES,
       request => request.res,
       true,
     );
 
     // for @HttpQuery
-    this.app.singleton(symbols.INJECTORS.QUERY, request => request.query, true);
+    this.app.multiton(symbols.INJECTORS.QUERY, request => request.query, true);
 
     // for @HttpParams
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.PARAMS,
       (name, request) => (name ? request.param(name) : request.param()),
       true,
     );
 
     // for @HttpHeaders
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.HEADERS,
       (key, request) => {
         if (key) {
@@ -77,21 +77,21 @@ class RequestProvider {
     );
 
     // for @HttpBody
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.BODY,
       request => request.body,
       true,
     );
 
     // for @CookieValue
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.COOKIE,
       (key, request) => (key ? request.cookie(key) : request.cookies),
       true,
     );
 
     // for @SessionValue
-    this.app.singleton(
+    this.app.multiton(
       symbols.INJECTORS.SESSION,
       (key, request) => (key ? request.session(key) : request.session()),
       true,

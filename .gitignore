@@ -4,6 +4,7 @@ package-lock.json
 coverage
 .idea
 .vscode
-logs
+logs/*.log
+**/logs/**.log
 DEPRECATED_*
 __debug__

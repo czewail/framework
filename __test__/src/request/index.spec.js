@@ -7,7 +7,7 @@ const context = require('../../common/context');
 
 const Application = require('../../../src/foundation/application');
 
-const app = new Application(path.resolve(__dirname, '../../'));
+const app = new Application(path.resolve(__dirname, '../../daze/src'));
 app.initialize();
 
 describe('Request', () => {

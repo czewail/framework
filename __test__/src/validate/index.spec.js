@@ -4,7 +4,7 @@ const Validate = require('../../../src/validate');
 const validators = require('../../../src/validate/validators');
 const Application = require('../../../src/foundation/application');
 
-const app = new Application(path.resolve(__dirname, '../../'));
+const app = new Application(path.resolve(__dirname, '../../daze/src'));
 app.initialize();
 
 describe('Validate', () => {
