@@ -107,7 +107,7 @@ it('Container#setBinds', () => {
 it('Container#callable', () => {
   const callableFn = () => 'callable';
 
-  Container.bind('callable', callableFn, true, true);
+  Container.bind('callable', callableFn, false, true);
 
   expect(Container.get('callable')).toBe('callable');
 });
@@ -124,7 +124,7 @@ it('Container inject class', () => {
     }
   };
   Container.bind(App, App);
-  Container.bind('request', r => r, true, true);
+  Container.bind('request', r => r, false, true);
   Metadata.set('injectable', true, App.prototype);
   Metadata.set('constructorInjectors', [
     ['request', ['request']],
