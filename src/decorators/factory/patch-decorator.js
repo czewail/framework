@@ -5,6 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 const Metadata = require('../../foundation/support/metadata');
+const { INJECTABLE_KINDS, INJECT_ABLE } = require('../../symbol');
 
 /**
  * CONSTRUCTOR_INJECTORS
@@ -14,10 +15,9 @@ exports.patchClass = function patchClass(type, params, elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata('injectable', true, target.prototype);
-      Metadata.set('needInject', true, target.prototype);
-      const injectors = Metadata.get('constructorInjectors', target.prototype) || [];
-      Metadata.set('constructorInjectors', [
+      Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
+      const injectors = Metadata.get(INJECTABLE_KINDS.CONSTRUCTOR, target.prototype) || [];
+      Metadata.set(INJECTABLE_KINDS.CONSTRUCTOR, [
         ...injectors,
         [type, params],
       ], target.prototype);
@@ -34,11 +34,10 @@ exports.patchProperty = function patchProperty(type, params, elementDescriptor) 
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata('injectable', true, target.prototype);
-      Metadata.set('needInject', true, target.prototype);
-      const injectors = Metadata.get('propertyInjectors', target.prototype) || {};
+      Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
+      const injectors = Metadata.get(INJECTABLE_KINDS.PROPERTY, target.prototype) || {};
       injectors[elementDescriptor.key] = [type, params];
-      Metadata.set('propertyInjectors', injectors, target.prototype);
+      Metadata.set(INJECTABLE_KINDS.PROPERTY, injectors, target.prototype);
       return target;
     },
   };
@@ -54,13 +53,12 @@ exports.patchMethod = function patchMethod(type, params, elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata('injectable', true, target.prototype);
-      Metadata.set('needInject', true, target.prototype);
-      const injectors = Metadata.get('methodInjectors', target.prototype) || {};
+      Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
+      const injectors = Metadata.get(INJECTABLE_KINDS.METHOD, target.prototype) || {};
       const items = injectors[elementDescriptor.key] || [];
       items.push([type, params]);
       injectors[elementDescriptor.key] = items;
-      Metadata.set('methodInjectors', injectors, target.prototype);
+      Metadata.set(INJECTABLE_KINDS.METHOD, injectors, target.prototype);
       return target;
     },
   };

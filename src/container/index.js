@@ -157,7 +157,7 @@ class Container extends EventEmitter {
       if (callable) {
         // 普通函数
         obj = this.invokeFunction(abstract, args);
-      } else if (Reflect.getMetadata('injectable', concrete.prototype) === true) {
+      } else if (Reflect.getMetadata(symbols.INJECT_ABLE, concrete.prototype) === true) {
         // 可注入的class
         obj = this.invokeInjectAbleClass(abstract, args);
       } else {
@@ -200,11 +200,11 @@ class Container extends EventEmitter {
     const that = this;
     const bindParams = [];
     // 需要构造方法注入参数
-    const constructorInjectors = Reflect.getMetadata('constructorInjectors', Concrete.prototype) || [];
+    const constructorInjectors = Reflect.getMetadata(symbols.INJECTABLE_KINDS.CONSTRUCTOR, Concrete.prototype) || [];
     // 需要成员方法注入参数
-    const methodInjectors = Reflect.getMetadata('methodInjectors', Concrete.prototype) || {};
+    const methodInjectors = Reflect.getMetadata(symbols.INJECTABLE_KINDS.METHOD, Concrete.prototype) || {};
     // 需要成员变量注入参数
-    const propertyInjectors = Reflect.getMetadata('propertyInjectors', Concrete.prototype) || {};
+    const propertyInjectors = Reflect.getMetadata(symbols.INJECTABLE_KINDS.PROPERTY, Concrete.prototype) || {};
 
     for (const [type, params = []] of constructorInjectors) {
       const injectedParam = this.make(type, [...params, ...args]);

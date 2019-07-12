@@ -18,6 +18,7 @@ exports.SESSION = {
   ERRORS: 'daze__errors',
 };
 
+
 exports.INJECT_CONTAINER_ARGS = '__DAZE_INJECT_CONTAINER_ARGS__';
 
 exports.MIDDLEWARES = '__DAZE_CONTROLLER_MIDDLEWARES__';
@@ -62,6 +63,20 @@ exports.INJECTORS = {
   SESSION: '__DAZE_INJECT_SESSION__',
   RESOURCE: '__DAZE_INJECT_RESOURCE_',
   COMPONENT: '__DAZE_INJECT_COMPONENT__',
+};
+
+/**
+ * inject able - used
+ */
+exports.INJECT_ABLE = '__DAZE_INJECT_ABLE__';
+
+/**
+ * inject able class kinds - used
+ */
+exports.INJECTABLE_KINDS = {
+  METHOD: '__DAZE_INJECT_ABLE_KIND_METHOD__',
+  PROPERTY: '__DAZE_INJECT_ABLE_KIND_PROPERTY__',
+  CONSTRUCTOR: '__DAZE_INJECT_ABLE_KIND_CONSTRUCTOR__',
 };
 
 /**

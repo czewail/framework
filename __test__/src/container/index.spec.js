@@ -2,6 +2,7 @@
 require('../../../src/helpers');
 const Container = require('../../../src/container');
 const Metadata = require('../../../src/foundation/support/metadata');
+const symbols = require('../../../src/symbol');
 
 it('Container.setInstance', () => {
   const App = class { };
@@ -125,14 +126,14 @@ it('Container inject class', () => {
   };
   Container.bind(App, App);
   Container.bind('request', r => r, false, true);
-  Metadata.set('injectable', true, App.prototype);
-  Metadata.set('constructorInjectors', [
+  Metadata.set(symbols.INJECT_ABLE, true, App.prototype);
+  Metadata.set(symbols.INJECTABLE_KINDS.CONSTRUCTOR, [
     ['request', ['request']],
   ], App.prototype);
-  Metadata.set('propertyInjectors', {
+  Metadata.set(symbols.INJECTABLE_KINDS.PROPERTY, {
     prop: ['request', ['request']],
   }, App.prototype);
-  Metadata.set('methodInjectors', {
+  Metadata.set(symbols.INJECTABLE_KINDS.METHOD, {
     index: [
       ['request', ['request']],
     ],
