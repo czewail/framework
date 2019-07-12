@@ -10,7 +10,7 @@
     "test": "jest",
     "test:coverage": "jest --detectOpenHandles --runInBand --forceExit --coverage",
     "debugger": "node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --no-watchman --detectOpenHandles",
-    "commit": "npx git-cz"
+    "commit": "git-cz"
   },
   "keywords": [
     "dazejs",

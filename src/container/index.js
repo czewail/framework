@@ -101,17 +101,7 @@ class Container extends EventEmitter {
   [BIND](abstract, concrete = null, shared = false, callable = false) {
     if (!abstract || !concrete) return undefined;
     const isShared = concrete[symbols.MULTITON] === true ? false : shared;
-    // console.log(concrete)
     if (typeof concrete === 'function') {
-      // 单例的普通函数，保存函数返回结果为单例
-      if (isShared && callable) {
-        this.instances.set(abstract, {
-          concrete: concrete(this),
-          shared: true,
-          callable,
-        });
-        return this;
-      }
       this.binds.set(abstract, {
         concrete,
         shared: isShared,
@@ -124,6 +114,7 @@ class Container extends EventEmitter {
       shared: true,
       callable,
     });
+    this.emit('binding', this.instances.get(abstract), this);
     return this;
   }
 
@@ -173,6 +164,7 @@ class Container extends EventEmitter {
         // 构造函数（class 和 function）
         obj = this.invokeConstructor(abstract, args);
       }
+      this.emit('resolving', obj, this);
     }
     // 如果是单例，保存实例到容器
     if (shared && obj) {
