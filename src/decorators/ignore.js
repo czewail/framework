@@ -5,13 +5,13 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { INJECT_ABLE } = require('../symbol');
+const { AUTO_SCAN_IGNORE } = require('../symbol');
 
 function decorateClass(elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
+      Reflect.setMetadata(AUTO_SCAN_IGNORE, true, target.prototype);
       return target;
     },
   };

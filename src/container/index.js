@@ -65,7 +65,9 @@ class Container extends EventEmitter {
    */
   isShared(abstract) {
     return this.instances.has(abstract) || (
-      this.binds.get(abstract) && Reflect.has(this.binds.get(abstract), 'shared') && this.binds.get(abstract).shared === true
+      this.binds.get(abstract)
+      && Reflect.has(this.binds.get(abstract), 'shared')
+      && this.binds.get(abstract).shared === true
     );
   }
 
@@ -200,11 +202,17 @@ class Container extends EventEmitter {
     const that = this;
     const bindParams = [];
     // 需要构造方法注入参数
-    const constructorInjectors = Reflect.getMetadata(symbols.INJECTABLE_KINDS.CONSTRUCTOR, Concrete.prototype) || [];
+    const constructorInjectors = Reflect.getMetadata(
+      symbols.INJECTABLE_KINDS.CONSTRUCTOR, Concrete.prototype,
+    ) || [];
     // 需要成员方法注入参数
-    const methodInjectors = Reflect.getMetadata(symbols.INJECTABLE_KINDS.METHOD, Concrete.prototype) || {};
+    const methodInjectors = Reflect.getMetadata(
+      symbols.INJECTABLE_KINDS.METHOD, Concrete.prototype,
+    ) || {};
     // 需要成员变量注入参数
-    const propertyInjectors = Reflect.getMetadata(symbols.INJECTABLE_KINDS.PROPERTY, Concrete.prototype) || {};
+    const propertyInjectors = Reflect.getMetadata(
+      symbols.INJECTABLE_KINDS.PROPERTY, Concrete.prototype,
+    ) || {};
 
     for (const [type, params = []] of constructorInjectors) {
       const injectedParam = this.make(type, [...params, ...args]);

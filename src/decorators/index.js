@@ -12,6 +12,7 @@ const Multiton = require('./multiton');
 const Resource = require('./resource');
 const Component = require('./component');
 const Validator = require('./validator');
+const Ignore = require('./ignore');
 const useMiddleware = require('./use-middleware');
 const Verbs = require('./verb');
 const Contexts = require('./contexts');
@@ -19,6 +20,7 @@ const HttpCode = require('./http-code');
 const Middleware = require('./middleware');
 const CrossOrigin = require('./cross-origin');
 const ValidateDecorators = require('../validate/decorators');
+const InjectAble = require('./injectable');
 
 const Http = {
   Code: HttpCode,
@@ -37,6 +39,8 @@ module.exports = {
   useMiddleware,
   Http,
   CrossOrigin,
+  Ignore,
+  InjectAble,
   ...Contexts,
   ...ValidateDecorators,
 };

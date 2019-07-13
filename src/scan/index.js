@@ -1,6 +1,7 @@
 const path = require('path');
 const glob = require('glob');
 const Container = require('../container');
+const { AUTO_SCAN_IGNORE } = require('../symbol');
 
 class Scan {
   constructor() {
@@ -17,6 +18,8 @@ class Scan {
       // eslint-disable-next-line
       const target = require(file)
       if (target && target.prototype) {
+        const isIgnore = Reflect.getMetadata(AUTO_SCAN_IGNORE, target.prototype);
+        if (isIgnore === true) return this;
         const type = Reflect.getMetadata('type', target.prototype);
         switch (type) {
           case 'controller':
@@ -44,6 +47,8 @@ class Scan {
       // eslint-disable-next-line
       const target = require(file)
       if (typeof target === 'function') {
+        const isIgnore = Reflect.getMetadata(AUTO_SCAN_IGNORE, target.prototype);
+        if (isIgnore === true) return this;
         this.registerProvider(target, file);
       }
     }
