@@ -4,16 +4,17 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-
 const { formatPrefix } = require('./helpers');
+const proxy = require('../base/proxy');
+const BaseController = require('../base/controller');
 
-function injectClass(elementDescriptor, prefix) {
+function decoratorClass(elementDescriptor, prefix) {
   return {
     ...elementDescriptor,
     finisher(target) {
       Reflect.setMetadata('type', 'controller', target.prototype);
       Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
-      return target;
+      return proxy(target, BaseController);
     },
   };
 }
@@ -21,7 +22,7 @@ function injectClass(elementDescriptor, prefix) {
 function handle(elementDescriptor, prefix) {
   const { kind } = elementDescriptor;
   if (kind === 'class') {
-    return injectClass(elementDescriptor, prefix);
+    return decoratorClass(elementDescriptor, prefix);
   }
   return elementDescriptor;
 }

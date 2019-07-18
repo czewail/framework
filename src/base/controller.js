@@ -1,9 +1,41 @@
+/**
+ * Copyright (c) 2018 Chan Zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 const Base = require('./base');
 const View = require('../view');
 const Resource = require('../resource');
 const Validate = require('../validate');
+const Response = require('../response');
+const RedirectResponse = require('../response/redirect');
 
 class Controller extends Base {
+  /**
+   * Create Controller base context
+   * @param {Object} request
+   */
+  constructor(request) {
+    super();
+    this._request = request;
+  }
+
+  /**
+   * @var {Object} request request instance
+   */
+  get request() {
+    return this._request;
+  }
+
+  response(...params) {
+    return new Response(...params);
+  }
+
+  redirect(...params) {
+    return new RedirectResponse(...params);
+  }
+
   /**
    * render view template
    * @param  {...any} params

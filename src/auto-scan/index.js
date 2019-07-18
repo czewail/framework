@@ -1,9 +1,8 @@
 const path = require('path');
 const glob = require('glob');
 const Container = require('../container');
-const { AUTO_SCAN_IGNORE } = require('../symbol');
 
-class Scan {
+class AutoScan {
   constructor() {
     this.app = Container.get('app');
   }
@@ -18,7 +17,7 @@ class Scan {
       // eslint-disable-next-line
       const target = require(file)
       if (target && target.prototype) {
-        const isIgnore = Reflect.getMetadata(AUTO_SCAN_IGNORE, target.prototype);
+        const isIgnore = Reflect.getMetadata('ignore', target.prototype);
         if (isIgnore === true) return this;
         const type = Reflect.getMetadata('type', target.prototype);
         switch (type) {
@@ -47,7 +46,7 @@ class Scan {
       // eslint-disable-next-line
       const target = require(file)
       if (typeof target === 'function') {
-        const isIgnore = Reflect.getMetadata(AUTO_SCAN_IGNORE, target.prototype);
+        const isIgnore = Reflect.getMetadata('ignore', target.prototype);
         if (isIgnore === true) return this;
         this.registerProvider(target, file);
       }
@@ -70,6 +69,7 @@ class Scan {
   registerMiddleware(middleware, file) {
     const type = Reflect.getMetadata('middleware', middleware.prototype);
     this.app.bind(`middleware.${type || file}`, middleware);
+    return this;
   }
 
   registerController(controller, file) {
@@ -85,4 +85,4 @@ class Scan {
   }
 }
 
-module.exports = Scan;
+module.exports = AutoScan;

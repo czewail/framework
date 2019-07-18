@@ -5,6 +5,8 @@
  * https://opensource.org/licenses/MIT
  */
 const { formatPrefix } = require('./helpers');
+const proxy = require('../base/proxy');
+const BaseController = require('../base/controller');
 
 const rest = {
   index: { uri: '/', method: 'get' },
@@ -27,7 +29,7 @@ function injectClass(elementDescriptor, prefix) {
         ...routes,
         ...rest,
       }, target.prototype);
-      return target;
+      return proxy(target, BaseController);
     },
   };
 }

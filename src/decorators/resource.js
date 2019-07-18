@@ -5,8 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { Item, Collection } = require('../resource');
+// const { Item, Collection } = require('../resource');
 // const ResourceFactory = require('../resource/DEPRECATED_factory');
+const proxy = require('../base/proxy');
+const BaseResource = require('../base/resource');
 
 function injectClass(elementDescriptor, name) {
   return {
@@ -14,30 +16,7 @@ function injectClass(elementDescriptor, name) {
     finisher(target) {
       Reflect.setMetadata('type', 'resource', target.prototype);
       Reflect.setMetadata('resource', name, target.prototype);
-      target.prototype.collection = function (data, formatter) {
-        const resource = new Collection(data, formatter);
-        return resource.withoutKey().output();
-      };
-      target.prototype.item = function (data, formatter) {
-        const resource = new Item(data, formatter);
-        return resource.withoutKey().output();
-      };
-      target.prototype.resource = function (formatter) {
-        return {
-          item(data) {
-            const resource = new Item(data, formatter);
-            return resource.withoutKey().output();
-          },
-          collection(data) {
-            const resource = Collection(data, formatter);
-            return resource.withoutKey().output();
-          },
-        };
-      };
-      target.resolve = function (data) {
-        return data;
-      };
-      return target;
+      return proxy(target, BaseResource);
     },
   };
 }

@@ -11,7 +11,7 @@ const Container = require('../container');
 const Middleware = require('../middleware');
 const BaseController = require('../base/controller');
 const Response = require('../response');
-const autoCommitSessionMiddleware = require('../session/middlewares/auto-commit');
+const flashSessionMiddleware = require('../session/middlewares/flash-session');
 
 class Route {
   /**
@@ -78,7 +78,7 @@ class Route {
    * register default route middlewares
    */
   registerDefaultMiddlewares() {
-    this.middleware.register(autoCommitSessionMiddleware);
+    this.middleware.register(flashSessionMiddleware);
   }
 
   /**
@@ -158,23 +158,10 @@ class Route {
 
   async resolve(request) {
     const controller = this.app.get(this.controller, [request]);
-    const proxyController = this.combineBaseController(controller, request);
     const routeParams = this.getParams(request.path);
-    const res = await proxyController[this.action](...routeParams);
+    const res = await controller[this.action](...routeParams);
     if (res instanceof Response) return res;
     return (new Response()).setData(res);
-  }
-
-  combineBaseController(controller, request) {
-    const baseController = new BaseController(request);
-    return new Proxy(controller, {
-      get(target, p, receiver) {
-        if (Reflect.has(target, p)) {
-          return Reflect.get(target, p, receiver);
-        }
-        return baseController[p];
-      },
-    });
   }
 }
 

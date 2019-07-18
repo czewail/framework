@@ -5,13 +5,11 @@
  * https://opensource.org/licenses/MIT
  */
 
-const { AUTO_SCAN_IGNORE } = require('../symbol');
-
 function decorateClass(elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata(AUTO_SCAN_IGNORE, true, target.prototype);
+      Reflect.setMetadata('ignore', true, target.prototype);
       return target;
     },
   };

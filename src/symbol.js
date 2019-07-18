@@ -71,11 +71,6 @@ exports.INJECTORS = {
 exports.INJECT_ABLE = '__DAZE_INJECT_ABLE__';
 
 /**
- * auto scan ignore - used
- */
-exports.AUTO_SCAN_IGNORE = '__DAZE_AUTO_SCAN_IGNORE__';
-
-/**
  * inject able class kinds - used
  */
 exports.INJECTABLE_KINDS = {

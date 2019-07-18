@@ -6,14 +6,8 @@
  */
 
 const Container = require('../container');
-const Response = require('../response');
-const RedirectResponse = require('../response/redirect');
 
 class Base {
-  constructor(request) {
-    this.request = request;
-  }
-
   get app() {
     return Container.get('app');
   }
@@ -24,30 +18,6 @@ class Base {
 
   get messenger() {
     return Container.get('messenger');
-  }
-
-  response(...params) {
-    return new Response(...params);
-  }
-
-  redirect(...params) {
-    return new RedirectResponse(...params);
-  }
-
-  get body() {
-    return this.request.body;
-  }
-
-  get params() {
-    return this.request.param();
-  }
-
-  get query() {
-    return this.request.query;
-  }
-
-  get headers() {
-    return this.request.headers;
   }
 }
 

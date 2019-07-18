@@ -8,7 +8,7 @@ const defualtOpts = {
   // overwrite: true,
   httpOnly: true,
   signed: false,
-  // autoCommit: true,
+  autoCommit: true,
 };
 
 const ONE_DAY = 86400000;

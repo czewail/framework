@@ -1,4 +1,4 @@
-const Scan = require('../../scan');
+const AutoScan = require('../../auto-scan');
 
 class AppProvider {
   constructor(app) {
@@ -6,7 +6,7 @@ class AppProvider {
   }
 
   register() {
-    this.app.bind('scan', Scan);
+    this.app.bind('scan', AutoScan);
   }
 
   launch() {

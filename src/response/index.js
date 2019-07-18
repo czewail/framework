@@ -17,7 +17,7 @@ const Resource = require('../resource/resource');
 const Container = require('../container');
 // const ResourceFactory = require('../resource/DEPRECATED_factory');
 const ViewFactory = require('../view/factory');
-const HttpError = require('../errors/http-error');
+// const HttpError = require('../errors/http-error');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
 const View = require('../view');
 const Cookie = require('../cookie');
@@ -314,6 +314,11 @@ class Response {
     return this;
   }
 
+  setLength(length) {
+    this.setHeader('Content-Length', length);
+    return this;
+  }
+
   /**
    * LastModified
    * @public
@@ -436,7 +441,7 @@ class Response {
     await request.session().autoCommit();
   }
 
-  async end(request) {
+  async end(request, data) {
     const { req, res } = request;
 
     // headers
@@ -454,15 +459,11 @@ class Response {
       }
     }
 
-    const data = this.handleData();
-
-    // data
     if (Buffer.isBuffer(data) || typeof data === 'string') {
       return res.end(data);
     }
-    if (typeof body === 'string') return res.end(data);
+
     if (data instanceof Stream) {
-      // console.log(this.getCode());
       return data.pipe(res);
     }
 
@@ -471,6 +472,7 @@ class Response {
     if (!res.headersSent) {
       res.setHeader('Content-Length', Buffer.byteLength(jsonData));
     }
+
     res.end(jsonData);
     return undefined;
   }
@@ -481,7 +483,26 @@ class Response {
    * @public
    */
   async send(request) {
-    return this.end(request);
+    const data = this.handleData();
+
+    const shouldSetType = !this.getHeader('content-type');
+
+    if (Buffer.isBuffer(data)) {
+      if (shouldSetType) this.setType('bin');
+      this.setLength(data.length);
+    }
+
+    if (typeof data === 'string') {
+      if (shouldSetType) this.setType(/^\s*</.test(data) ? 'html' : 'text');
+      this.setLength(Buffer.byteLength(data));
+    }
+    if (data instanceof Stream) {
+      if (shouldSetType) this.setType('bin');
+    }
+
+    this.setType('json');
+
+    return this.end(request, data);
   }
 }
 
