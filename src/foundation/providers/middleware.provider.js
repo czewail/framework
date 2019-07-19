@@ -20,7 +20,7 @@ class MiddlewareProvider {
   }
 
   launch() {
-    const middleware = this.app.make('middleware');
+    const middleware = this.app.get('middleware', [this.app]);
 
     middleware.register((request, next) => {
       const { res } = request;

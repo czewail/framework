@@ -1,12 +1,22 @@
-const path = require('path');
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 const is = require('core-util-is');
-const Container = require('../container');
 const Pipeline = require('../pipeline');
-// const Response = require('../response');
 
 class Middleware {
-  constructor() {
-    this.app = Container.get('app');
+  /**
+   * Create Middleware Instance
+   * @param {object} app Application instance
+   */
+  constructor(app) {
+    /**
+     * @var {object} app Application
+     */
+    this.app = app;
 
     /**
      * @var {Array} middlewares middlewares stack
@@ -52,10 +62,10 @@ class Middleware {
    * @param {String} middleware
    */
   parseStringMiddleware(middleware) {
-    const middlewarePath = require.resolve(path.join(this.app.middlewarePath, middleware));
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const middlewareRequired = require(middlewarePath);
-    this.parseFunctionMiddleware(middlewareRequired);
+    const _middleware = this.app.get(`middleware.${middleware}`);
+    if (!_middleware) return this;
+    this.parseClassInstanceMiddleware(_middleware);
+    return this;
   }
 
   /**
@@ -65,7 +75,8 @@ class Middleware {
   parseFunctionMiddleware(middleware) {
     // 使用了 @Middleware 装饰器
     if (Reflect.getMetadata('type', middleware.prototype) === 'middleware') {
-      this.parseClassMiddleware(middleware);
+      const _middleware = Reflect.construct(middleware);
+      this.parseClassInstanceMiddleware(_middleware);
     } else {
       this.middlewares.push(middleware);
     }
@@ -75,14 +86,8 @@ class Middleware {
    * parse middle if middleware type is class type
    * @param {Class} middleware
    */
-  parseClassMiddleware(middleware) {
-    if (!this.app.has(middleware)) {
-      this.app.bind(middleware, middleware);
-    }
-    this.middlewares.push(async (request, next) => {
-      const injectedMiddleware = this.app.get(middleware, [request]);
-      return injectedMiddleware.resolve(request, next);
-    });
+  parseClassInstanceMiddleware(middleware) {
+    this.middlewares.push(async (request, next) => middleware.resolve(request, next));
   }
 
   /**

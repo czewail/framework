@@ -62,7 +62,7 @@ class Handler {
    */
   text() {
     const data = this.error.message || statuses[+this.error.code];
-    return new Response(data, this.code, this.error.headers);
+    return new Response(data, this.code, this.error.headers).setType('txt');
   }
 
   /**
@@ -78,7 +78,7 @@ class Handler {
         data.stack = this.error.stack;
       }
     }
-    return new Response(data, this.code, this.error.headers);
+    return new Response(data, this.code, this.error.headers).setType('json');
   }
 
   /**
@@ -108,7 +108,7 @@ class Handler {
     const page = tracePage(this.error, this.request, {
       logo: `${fs.readFileSync(path.resolve(__dirname, './views/assets/logo.svg'))}<span style="vertical-align: top;line-height: 50px;margin-left: 10px;">Daze.js</span>`,
     });
-    return new Response(page, this.code, this.error.headers);
+    return new Response(page, this.code, this.error.headers).setType('html');
   }
 
   /**
@@ -125,18 +125,18 @@ class Handler {
       const view = (new View()).render(temps[this.error.status] || 'errors/error.njk', {
         err: this.error,
       });
-      return new Response(view, this.code, this.error.headers);
+      return new Response(view, this.code, this.error.headers).setType('html');
     }
     if (temps.error) {
       const view = (new View()).render(temps.error || 'errors/error.njk', {
         err: this.error,
       });
-      return new Response(view, this.code, this.error.headers);
+      return new Response(view, this.code, this.error.headers).setType('html');
     }
     const view = (new View()).render('errors/error.njk', {
       err: this.error,
     });
-    return new Response(view, this.code, this.error.headers);
+    return new Response(view, this.code, this.error.headers).setType('html');
   }
 }
 

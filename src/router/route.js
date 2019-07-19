@@ -9,7 +9,6 @@ const pathToRegExp = require('path-to-regexp');
 const is = require('core-util-is');
 const Container = require('../container');
 const Middleware = require('../middleware');
-const BaseController = require('../base/controller');
 const Response = require('../response');
 const flashSessionMiddleware = require('../session/middlewares/flash-session');
 
@@ -22,7 +21,7 @@ class Route {
    * @param {String} action controller action
    * @param {Array} middlewares route middlewares
    */
-  constructor(uri, methods = [], controller = null, action = '') {
+  constructor(uri, methods = [], controller = null, action = '', middlewares = []) {
     this.app = Container.get('app');
     /**
      * @var {Array} keys route params keys
@@ -57,7 +56,7 @@ class Route {
     /**
      * @var {Middleware} middleware Middleware instance
      */
-    this.middleware = Reflect.getMetadata('middleware', controller.prototype) || new Middleware();
+    this.middleware = new Middleware();
 
     /**
      * register Middlewares in Middleware instance
@@ -72,6 +71,8 @@ class Route {
     }
 
     this.registerDefaultMiddlewares();
+
+    this.registerControllerMiddlewares(middlewares);
   }
 
   /**

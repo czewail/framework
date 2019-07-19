@@ -10,7 +10,7 @@
 const proxy = require('../base/proxy');
 const BaseResource = require('../base/resource');
 
-function injectClass(elementDescriptor, name) {
+function decoratorClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,
     finisher(target) {
@@ -23,7 +23,7 @@ function injectClass(elementDescriptor, name) {
 
 function handle(elementDescriptor, name) {
   if (elementDescriptor.kind === 'class') {
-    return injectClass(elementDescriptor, name);
+    return decoratorClass(elementDescriptor, name);
   }
   return elementDescriptor;
 }

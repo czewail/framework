@@ -6,7 +6,7 @@
  */
 
 
-function injectClass(elementDescriptor, name) {
+function decoratorClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,
     finisher(target) {
@@ -20,7 +20,7 @@ function injectClass(elementDescriptor, name) {
 function handle(elementDescriptor, name) {
   const { kind } = elementDescriptor;
   if (kind === 'class') {
-    return injectClass(elementDescriptor, name);
+    return decoratorClass(elementDescriptor, name);
   }
   return elementDescriptor;
 }

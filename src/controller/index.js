@@ -52,7 +52,9 @@ class Controller {
   resolve(controller) {
     const routes = Reflect.getMetadata('routes', controller.prototype) || {};
     const prefix = Reflect.getMetadata('prefix', controller.prototype) || '';
-    this.registerRoutes(controller, routes, prefix);
+    const controllerMiddlewares = Reflect.getMetadata('controllerMiddlewares', controller.prototype) || [];
+    const routeMiddlewares = Reflect.getMetadata('routeMiddlewares', controller.prototype) || {};
+    this.registerRoutes(controller, routes, prefix, controllerMiddlewares, routeMiddlewares);
   }
 
   /**
@@ -62,11 +64,12 @@ class Controller {
    * @param {String} prefix routes prifix
    * @private
    */
-  registerRoutes(controller, routes, prefix) {
+  registerRoutes(controller, routes, prefix, controllerMiddlewares, routeMiddlewares) {
     const Router = this.app.get('router');
     for (const key of Object.keys(routes)) {
       const { uri, method } = routes[key];
-      Router.register(`${prefix}${uri}`, [method], controller, key);
+      const actionMiddlewares = routeMiddlewares[key] || [];
+      Router.register(`${prefix}${uri}`, [method], controller, key, [...controllerMiddlewares, ...actionMiddlewares]);
     }
   }
 }

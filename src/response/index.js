@@ -490,17 +490,14 @@ class Response {
     if (Buffer.isBuffer(data)) {
       if (shouldSetType) this.setType('bin');
       this.setLength(data.length);
-    }
-
-    if (typeof data === 'string') {
+    } else if (typeof data === 'string') {
       if (shouldSetType) this.setType(/^\s*</.test(data) ? 'html' : 'text');
       this.setLength(Buffer.byteLength(data));
-    }
-    if (data instanceof Stream) {
+    } else if (data instanceof Stream) {
       if (shouldSetType) this.setType('bin');
+    } else {
+      this.setType('json');
     }
-
-    this.setType('json');
 
     return this.end(request, data);
   }

@@ -7,12 +7,12 @@
  * https://opensource.org/licenses/MIT
  */
 
-function injectClass(elementDescriptor, name) {
+function decoratorClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,
     finisher(target) {
       Reflect.setMetadata('type', 'middleware', target.prototype);
-      Reflect.setMetadata('middleware', name, target.prototype);
+      Reflect.setMetadata('middlewareName', name, target.prototype);
       return target;
     },
   };
@@ -21,7 +21,7 @@ function injectClass(elementDescriptor, name) {
 function handle(elementDescriptor, name) {
   const { kind } = elementDescriptor;
   if (kind === 'class') {
-    return injectClass(elementDescriptor, name);
+    return decoratorClass(elementDescriptor, name);
   }
   throw new TypeError('@Middleware must use on class');
 }

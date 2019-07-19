@@ -1,17 +1,61 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 const path = require('path');
 const glob = require('glob');
-const Container = require('../container');
 
 class AutoScan {
-  constructor() {
-    this.app = Container.get('app');
+  /**
+   * Create AutoScan Instance
+   * @param {Application} app Applidation Instance
+   */
+  constructor(app) {
+    /**
+     * @var {object} app Application
+     */
+    this.app = app;
+
+    /**
+     * @var {array} controllers controllers
+     */
+    this.controllers = [];
+
+    /**
+     * @var {array} middlewares middlewares
+     */
+    this.middlewares = [];
+
+    /**
+     * @var {array} components components
+     */
+    this.components = [];
   }
 
+  /**
+   * resolve auto scan
+   */
   resolve() {
+    // load src/app dir files
     this.resolveAppFiles(this.scanAppDir());
+    // load provider dir files
     this.resolveProviderFiles(this.scanProviderDir());
+
+    // register middlewares
+    // middlewares must be registed before controller
+    this.registerMiddlewares();
+    // register components
+    this.registerComponents();
+    // register controllers
+    this.registerControllers();
   }
 
+  /**
+   * resolve app dir files
+   * @param {array} files app dir files
+   */
   resolveAppFiles(files = []) {
     for (const file of files) {
       // eslint-disable-next-line
@@ -22,16 +66,16 @@ class AutoScan {
         const type = Reflect.getMetadata('type', target.prototype);
         switch (type) {
           case 'controller':
-            this.registerController(target, file);
+            this.controllers.push(target);
             break;
           case 'middleware':
-            this.registerMiddleware(target, file);
+            this.middlewares.push(target);
             break;
           case 'service':
           case 'resource':
           case 'validator':
           case 'component':
-            this.registerComponent(target, file);
+            this.components.push(target);
             break;
           default:
             break;
@@ -41,6 +85,10 @@ class AutoScan {
     return this;
   }
 
+  /**
+   * resolve provider dir files
+   * @param {array} files provider dir files
+   */
   resolveProviderFiles(files = []) {
     for (const file of files) {
       // eslint-disable-next-line
@@ -54,32 +102,56 @@ class AutoScan {
     return this;
   }
 
+  /**
+   * auto scan provider dir
+   */
   scanProviderDir() {
     return glob.sync(path.resolve(this.app.rootPath, 'provider', '**'), {
       nodir: true,
     });
   }
 
+  /**
+   * auto scan app dir
+   */
   scanAppDir() {
     return glob.sync(path.resolve(this.app.appPath, '**'), {
       nodir: true,
     });
   }
 
-  registerMiddleware(middleware, file) {
-    const type = Reflect.getMetadata('middleware', middleware.prototype);
-    this.app.bind(`middleware.${type || file}`, middleware);
-    return this;
+  /**
+   * register middlewares
+   */
+  registerMiddlewares() {
+    for (const middleware of this.middlewares) {
+      const type = Reflect.getMetadata('middlewareName', middleware.prototype);
+      this.app.bind(`middleware.${type}`, middleware);
+    }
   }
 
-  registerController(controller, file) {
-    this.app.get('controller').register(controller, file);
+  /**
+   * register controllers
+   */
+  registerControllers() {
+    for (const controller of this.controllers) {
+      this.app.get('controller').register(controller);
+    }
   }
 
-  registerComponent(component, file) {
-    this.app.get('component').register(component, file);
+  /**
+   * register components
+   */
+  registerComponents() {
+    for (const component of this.components) {
+      this.app.get('component').register(component);
+    }
   }
 
+  /**
+   * register provider
+   * @param {class} Provider provider
+   */
   registerProvider(Provider) {
     this.app.register(new Provider(this.app));
   }

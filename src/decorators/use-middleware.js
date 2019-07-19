@@ -4,38 +4,24 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-// const Meta = require('../foundation/support/meta');
-const Middleware = require('../middleware');
-const Metadata = require('../foundation/support/metadata');
 
-function injectClass(elementDescriptor, middleware) {
+function decoratorClass(elementDescriptor, middleware) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      // -------------- new -----------
-      if (!Metadata.has('middleware', target.prototype)) {
-        Metadata.set('middleware', new Middleware(), target.prototype);
-      }
-      const _Middleware = Metadata.get('middleware', target.prototype);
-
-      _Middleware.register(middleware);
-
-      // // -------------- old -----------
-      // const middlewares = getMiddlewares(target.prototype);
-      // (target.prototype, [
-      //   ...middlewares,
-      //   middleware,
-      // ]);
+      const middlewares = Reflect.getMetadata('controllerMiddlewares', target.prototype) || [];
+      middlewares.push(middleware);
+      Reflect.setMetadata('controllerMiddlewares', middlewares, target.prototype);
       return target;
     },
   };
 }
 
-function injectMethod(elementDescriptor, middleware) {
+function decoratorMethod(elementDescriptor, middleware) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const middlewares = Reflect.getMetadata('routeMiddlewares', target.prototype);
+      const middlewares = Reflect.getMetadata('routeMiddlewares', target.prototype) || {};
       if (!middlewares[elementDescriptor.key]) {
         middlewares[elementDescriptor.key] = [];
       }
@@ -49,9 +35,12 @@ function injectMethod(elementDescriptor, middleware) {
 function handle(elementDescriptor, middleware) {
   const { kind } = elementDescriptor;
   if (kind === 'class') {
-    return injectClass(elementDescriptor, middleware);
+    return decoratorClass(elementDescriptor, middleware);
   }
-  return injectMethod(elementDescriptor, middleware);
+  if (kind === 'method') {
+    return decoratorMethod(elementDescriptor, middleware);
+  }
+  throw new TypeError('@useMiddleware must use on class or method!');
 }
 
 module.exports = function useMiddleware(middleware) {
