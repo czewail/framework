@@ -13,7 +13,7 @@ function decoratorClass(elementDescriptor, name) {
     finisher(target) {
       Reflect.setMetadata('type', 'validator', target.prototype);
       Reflect.setMetadata('validator', name, target.prototype);
-      return proxy(proxy, BaseValidator);
+      return proxy(target, BaseValidator);
     },
   };
 }
