@@ -112,6 +112,7 @@ class Master {
       const index = hash(connection.remoteAddress || '') % this.options.works;
       let current = -1;
       getAlivedWorkers().some((worker) => {
+        // eslint-disable-next-line no-plusplus
         if (index === ++current) {
           worker.send('daze-sticky-connection', connection);
           return true;

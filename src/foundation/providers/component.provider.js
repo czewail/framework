@@ -20,25 +20,24 @@ class ComponentProvider {
     // bind component in container
     this.app.singleton('component', Component);
 
-
     // for @useService
     this.app.singleton(
       symbols.INJECTORS.SERVICE,
-      (name, request) => this.app.get(`service.${name}`, [request]),
+      name => this.app.get(`service.${name}`),
       true,
     );
 
     // for @useService
     this.app.singleton(
       symbols.INJECTORS.RESOURCE,
-      (name, request) => this.app.get(`resource.${name}`, [request]),
+      name => this.app.get(`resource.${name}`),
       true,
     );
 
     // for @useService
     this.app.singleton(
       symbols.INJECTORS.COMPONENT,
-      (name, request) => this.app.get(`component.${name}`, [request]),
+      name => this.app.get(`component.${name}`),
       true,
     );
   }

@@ -56,13 +56,14 @@ class Worker {
   close() {
     // Close the process timeout
     // 关闭进程超时时间
+    let timer = null;
     const killTimeout = 10 * 1000;
     if (killTimeout > 0) {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         debug(`process exit by killed(timeout: ${killTimeout}ms), pid: ${process.pid}`);
+        // eslint-disable-next-line no-process-exit
         process.exit(1);
       }, killTimeout);
-      timer.unref && timer.unref();
     }
     const { worker } = cluster;
     debug((`start close server, pid: ${process.pid}`));
@@ -70,6 +71,7 @@ class Worker {
       debug(`server closed, pid: ${process.pid}`);
       try {
         worker.disconnect();
+        clearTimeout(timer);
       } catch (e) {
         debug(`already disconnect, pid:${process.pid}`);
       }

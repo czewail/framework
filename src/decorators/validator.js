@@ -4,7 +4,8 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-
+const proxy = require('../base/proxy');
+const BaseValidator = require('../base/validator');
 
 function decoratorClass(elementDescriptor, name) {
   return {
@@ -12,7 +13,7 @@ function decoratorClass(elementDescriptor, name) {
     finisher(target) {
       Reflect.setMetadata('type', 'validator', target.prototype);
       Reflect.setMetadata('validator', name, target.prototype);
-      return target;
+      return proxy(proxy, BaseValidator);
     },
   };
 }
