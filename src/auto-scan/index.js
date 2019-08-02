@@ -6,17 +6,18 @@
  */
 const path = require('path');
 const glob = require('glob');
+const Container = require('../container');
 
 class AutoScan {
   /**
    * Create AutoScan Instance
    * @param {Application} app Applidation Instance
    */
-  constructor(app) {
+  constructor() {
     /**
      * @var {object} app Application
      */
-    this.app = app;
+    this.app = Container.get('app');
 
     /**
      * @var {array} controllers controllers

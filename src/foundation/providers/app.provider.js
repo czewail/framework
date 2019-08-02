@@ -10,7 +10,7 @@ class AppProvider {
   }
 
   launch() {
-    const scan = this.app.get('scan', [this.app]);
+    const scan = this.app.get('scan');
     scan.resolve();
   }
 }
