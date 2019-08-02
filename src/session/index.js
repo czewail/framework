@@ -1,4 +1,3 @@
-const is = require('core-util-is');
 const Container = require('../container');
 const { decode, encode } = require('./helpers');
 const symbols = require('../symbol');
@@ -80,9 +79,9 @@ class Session {
   generate(data = {}) {
     if (!this.session) this.session = {};
     const maxAge = this.options.maxAge ? this.options.maxAge : ONE_DAY;
+    this.session = data;
     this.session._expire = maxAge + Date.now();
     this.session._maxAge = maxAge;
-    this.session = data;
     return this.session;
   }
 
@@ -90,9 +89,9 @@ class Session {
    * get session value
    * @param {String} key session key
    */
-  get(key) {
+  get(key, defaulVal) {
     if (!key) return this.session;
-    return this.session[key];
+    return this.session[key] || defaulVal;
   }
 
   /**
@@ -117,30 +116,53 @@ class Session {
   }
 
   /**
+   * push session value in array session
+   * @param {string} key
+   * @param {mixed} value
+   */
+  push(key, value) {
+    const arr = this.get(key, []);
+    arr.push(value);
+    this.set(key, arr);
+    return this;
+  }
+
+  /**
    * set a flash session
    * @param {String} key session key
    * @param {Mixed} value  session value
    */
-  flash(name, value) {
-    if (!name) return this;
-    if (!this.session) this.session = {};
-    if (!this.session[symbols.SESSION.FLASHS]) this.session[symbols.SESSION.FLASHS] = [];
+  flash(key, value) {
+    this.set(key, value);
+    this.push(symbols.SESSION.NEW_FLASHS, key);
+    this.updateOldFlashSession(key);
+  }
 
-    if (is.isObject(name)) {
-      Object.keys(name).forEach((key) => {
-        this.session[key] = name[key];
-        this.session[symbols.SESSION.FLASHS].push(key);
-      });
-    } else {
-      if (!value) return this;
-      this.session[name] = value;
-      this.session[symbols.SESSION.FLASHS].push(name);
+  /**
+   * age flash session value
+   */
+  ageFlashSession() {
+    const oldFlashs = this.get(symbols.SESSION.OLD_FLASHS, []);
+    for (const old of oldFlashs) {
+      this.remove(old);
     }
-    this.session[symbols.SESSION.FLASHED] = false;
+    this.set(symbols.SESSION.OLD_FLASHS, this.get(symbols.SESSION.NEW_FLASHS, []));
+    this.set(symbols.SESSION.NEW_FLASHS, []);
+  }
+
+  /**
+   * update old flash session
+   * @param  {...string} keys session keys
+   */
+  updateOldFlashSession(...keys) {
+    const oldFlashs = this.get(symbols.SESSION.OLD_FLASHS, []);
+    const _keys = oldFlashs.filter(key => !keys.includes(key));
+    this.set(symbols.SESSION.OLD_FLASHS, _keys);
     return this;
   }
 
   async commit() {
+    this.ageFlashSession();
     const encodedSession = encode(this.session);
     this.request.cookies.set(this.options.key, encodedSession, this.options);
   }

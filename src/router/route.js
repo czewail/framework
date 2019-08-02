@@ -70,7 +70,7 @@ class Route {
       this.methods.push('HEAD');
     }
 
-    this.registerDefaultMiddlewares();
+    // this.registerDefaultMiddlewares();
 
     this.registerControllerMiddlewares(middlewares);
   }

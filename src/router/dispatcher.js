@@ -1,14 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
+const is = require('core-util-is');
 const mime = require('mime-types');
 const Container = require('../container');
 const Response = require('../response');
-const ResponseFactory = require('../response/manager');
+// const ResponseFactory = require('../response/manager');
 // const BaseController = require('../base/controller');
 const NotFoundHttpError = require('../errors/not-found-http-error');
 const HttpError = require('../errors/http-error');
 // const Pipeline = require('../pipeline');
+const symbols = require('../symbol');
+const ErrorHandler = require('../errors/handle');
+const ResponseFactory = require('../response/manager');
 
 function type(file, ext) {
   return ext !== '' ? path.extname(path.basename(file, ext)) : path.extname(file);
@@ -55,7 +59,7 @@ class Dispatcher {
    */
   async dispatchToStaticServer() {
     // create response instance
-    const response = new Response();
+    const response = new Response().staticServer();
     const { maxage } = this.publicOptions;
     if (this.isStaticServerRequest()) {
       let filePath = this.getStaticFilePath();
@@ -91,7 +95,7 @@ class Dispatcher {
         }
         response.setHeader('Content-Type', mime.lookup(type(filePath, encodingExt)));
         response.setData(fs.createReadStream(filePath));
-        return response;
+        return new ResponseFactory(response).output(this.request);
       }
     }
     throw this.createNotFountError();
@@ -136,7 +140,31 @@ class Dispatcher {
     // return this.route.middleware
     // .handle(this.request, async request => this.route.resolve(request));
     return this.route.middleware
-      .handle(this.request, async request => this.route.resolve(request));
+      .handle(this.request, async request => this.route.resolve(request))
+      .then(this.responseFilter())
+      .then(async response => this.output(this.request, response))
+      .catch((error) => {
+        this.app.emit('error', error);
+        const err = new ErrorHandler(this.request, error);
+        return this.output(this.request, err.render());
+      });
+  }
+
+  responseFilter() {
+    return (response) => {
+      const code = response.getCode();
+      const data = response.getData();
+      const headers = response.getHeaders();
+
+      if (code >= 400) {
+        throw new HttpError(code, data, headers);
+      }
+      return response;
+    };
+  }
+
+  async output(request, response) {
+    return new ResponseFactory(response).output(request);
   }
 
   createNotFountError() {

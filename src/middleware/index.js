@@ -1,22 +1,10 @@
-/**
- * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
- *
- * This software is released under the MIT License.
- * https://opensource.org/licenses/MIT
- */
 const is = require('core-util-is');
+const Container = require('../container');
 const Pipeline = require('../pipeline');
 
 class Middleware {
-  /**
-   * Create Middleware Instance
-   * @param {object} app Application instance
-   */
-  constructor(app) {
-    /**
-     * @var {object} app Application
-     */
-    this.app = app;
+  constructor() {
+    this.app = Container.get('app');
 
     /**
      * @var {Array} middlewares middlewares stack

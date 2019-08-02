@@ -15,5 +15,8 @@ module.exports = (request, next) => {
   }
   request.session().set(symbols.SESSION.PREVIOUS, request.session().get(symbols.SESSION.CURRENT) || '');
   request.session().set(symbols.SESSION.CURRENT, request.url);
+
+  console.log(request.session().session, flashed, flashs, '===flashmiddleware');
+
   return next();
 };

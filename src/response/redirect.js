@@ -3,8 +3,8 @@ const is = require('is-type-of');
 const Response = require('./');
 const symbols = require('../symbol');
 const Validate = require('../validate');
-const Container = require('../container');
-const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol');
+// const Container = require('../container');
+// const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol');
 
 class Redirect extends Response {
   /**
@@ -116,13 +116,16 @@ class Redirect extends Response {
       this.setUrl(url);
     }
 
-    if (this.needWithInput) {
-      const old = request.param();
-      request.session().flash(symbols.SESSION.OLD_INPUT, old);
-    }
+    // if (this.needWithInput) {
+    //   const old = request.param();
+    //   request.session().flash(symbols.SESSION.OLD_INPUT, old);
+    // }
 
     if (this.flashSessions) {
-      request.session().flash(this.flashSessions);
+      const flashKeys = Object.keys(this.flashSessions);
+      for (const key of flashKeys) {
+        request.session().flash(key, this.flashSessions[key]);
+      }
     }
 
     if (this.errors) {

@@ -12,6 +12,8 @@ exports.MULTITON = Symbol('DAZE#multiton');
 exports.SESSION = {
   FLASHS: 'daze__flashes',
   FLASHED: 'daze__flashed',
+  NEW_FLASHS: 'daze__new_flashes',
+  OLD_FLASHS: 'daze__old_flashes',
   PREVIOUS: 'daze__previous',
   CURRENT: 'daze__current',
   OLD_INPUT: 'daze__old_input',

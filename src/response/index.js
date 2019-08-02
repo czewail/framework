@@ -54,6 +54,8 @@ class Response {
      */
     this._charset = 'utf-8';
 
+    this._isStaticServer = false;
+
     /**
      * 默认 contentType
      * @var string
@@ -165,6 +167,11 @@ class Response {
         this[name] = message => this.success(message || statuses[code], code);
       }
     });
+  }
+
+  staticServer() {
+    this._isStaticServer = true;
+    return this;
   }
 
   /**
@@ -443,6 +450,8 @@ class Response {
 
   async end(request, data) {
     const { req, res } = request;
+
+    await this.commitCookies(request);
 
     // headers
     if (!res.headersSent) {

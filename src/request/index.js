@@ -18,7 +18,6 @@ const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
 const Session = require('../session');
 
-
 class Request {
   constructor(req, res) {
     /**
@@ -563,9 +562,9 @@ const requestProxy = new Proxy(Request, {
   construct(Target, args, extended) {
     const instance = Reflect.construct(Target, args, extended);
     return new Proxy(instance, {
-      get(t, prop) {
+      get(t, prop, receiver) {
         if (Reflect.has(t, prop) || typeof prop === 'symbol') {
-          return t[prop];
+          return Reflect.get(t, prop, receiver);
         }
         return t.param(prop);
       },

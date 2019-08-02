@@ -5,6 +5,9 @@
  * https://opensource.org/licenses/MIT
  */
 
+const proxy = require('../base/proxy');
+const BaseService = require('../base/service');
+
 const TYPE = 'service';
 
 function injectClass(elementDescriptor, name) {
@@ -13,7 +16,7 @@ function injectClass(elementDescriptor, name) {
     finisher(target) {
       Reflect.setMetadata('type', TYPE, target.prototype);
       Reflect.setMetadata(TYPE, name, target.prototype);
-      return target;
+      return proxy(target, BaseService);
     },
   };
 }

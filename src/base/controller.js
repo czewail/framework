@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018 Chan Zewail
+ * Copyright (c) 2019 zewail
  *
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
@@ -18,6 +18,10 @@ class Controller extends Base {
    */
   constructor(request) {
     super();
+
+    /**
+     * @var {Request} _request Request instance
+     */
     this._request = request;
   }
 
@@ -28,10 +32,18 @@ class Controller extends Base {
     return this._request;
   }
 
+  /**
+   * create response instancw
+   * @param  {...any} params response constructor params
+   */
   response(...params) {
     return new Response(...params);
   }
 
+  /**
+   *  create redirect instancw
+   * @param  {...any} params redirect constructor params
+   */
   redirect(...params) {
     return new RedirectResponse(...params);
   }

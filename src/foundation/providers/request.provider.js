@@ -18,13 +18,13 @@ class RequestProvider {
    * Provider request Hook
    */
   register() {
-    // bind request callback
-    this.app.multiton('request', (req, res) => {
-      if (!req.request) {
-        req.request = new Request(req, res);
-      }
-      return req.request;
-    }, true);
+    // // bind request callback
+    // this.app.multiton('request', (req, res) => {
+    //   if (!req.request) {
+    //     req.request = new Request(req, res);
+    //   }
+    //   return req.request;
+    // }, true);
 
     // for @HttpRequest
     this.app.multiton(
