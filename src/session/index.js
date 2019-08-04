@@ -1,16 +1,21 @@
+const uuid = require('uuid/v4');
 const Container = require('../container');
 const { decode, encode } = require('./helpers');
 const symbols = require('../symbol');
 
 const defualtOpts = {
+  store: 'cookie',
   key: 'dazejs:sess',
-  // overwrite: true,
   httpOnly: true,
   signed: false,
   autoCommit: true,
 };
 
 const ONE_DAY = 86400000;
+
+const EXTRA_STROES = new Set([
+  'redis',
+]);
 
 class Session {
   constructor(request, options = {}) {
@@ -32,7 +37,7 @@ class Session {
     /**
      * @var {Object | Null} store the other store
      */
-    this.store = null;
+    this.store = this.loadStore();
 
     /**
      * @var {Object | Null} session session Object
@@ -40,36 +45,92 @@ class Session {
     this.session = null;
 
     /**
-     * recover session from store
+     * @var {String} sessionID session id
      */
-    this.recoverSession();
+    this.sessionID = null;
+  }
+
+  async start() {
+    await this.loadSession();
+  }
+
+  loadStore() {
+    if (!EXTRA_STROES.has(this.options.store)) {
+      return null;
+    }
+    // eslint-disable-next-line
+    return require(`./stores/${this.options.store}`);
+  }
+
+  // /**
+  //  * recover session from store
+  //  * default from cookie
+  //  */
+  // loadSession() {
+  //   // this.session = {
+  //   //   ...this.session,
+  //   //   ...this.loadFromStore(),
+  //   // };
+  //   // if (!this.store) return this.recoverFromCookieStore();
+  //   // return this.revocerFromExtraStore();
+  // }
+
+  async loadSession() {
+    if (this.store) {
+      await this.loadFromExtraStore();
+    }
+    this.loadFromCookieStore();
+    // if (EXTRA_STROES.has(this.options.store)) {
+    //   return null;
+    // }
+    // // eslint-disable-next-line
+    // const Store = require(`./stores/${this.options.store}`);
+
+    // if (this.options.stroe === 'cookie')
   }
 
   /**
-   * recover session from store
-   * default from cookie
+   * load session from cookie store
    */
-  recoverSession() {
-    if (!this.store) this.recoverFromCookieStore();
-  }
-
-  /**
-   * recover session from cookie store
-   */
-  recoverFromCookieStore() {
+  loadFromCookieStore() {
     const cookie = this.request.cookies.get(this.options.key, this.options);
     if (!cookie) {
-      this.generate();
-      return;
+      return this.generate();
     }
     let json = {};
     try {
       json = decode(cookie);
     } catch (err) {
-      this.generate();
-      return;
+      return this.generate();
     }
-    this.generate(json);
+
+    if (!this.verify(json)) {
+      return this.generate();
+    }
+    return this.generate(json);
+  }
+
+  /**
+   * recover session from extra store
+   */
+  async loadFromExtraStore() {
+    const sessionID = this.request.cookies.get(this.options.key, this.options);
+    if (!sessionID) return this.generate();
+    const json = await this.store.get(sessionID, this.options.maxAge);
+    if (!this.verify(json)) {
+      return this.generate();
+    }
+    return this.generate(json);
+  }
+
+  /**
+   * verify session validity
+   * @param {object} session
+   */
+  verify(session) {
+    if (!session) return false;
+    if (session._expire && session._expire < Date.now()) return false;
+    return true;
   }
 
   /**
@@ -82,7 +143,15 @@ class Session {
     this.session = data;
     this.session._expire = maxAge + Date.now();
     this.session._maxAge = maxAge;
+    if (this.store) this.sessionID = this.generateSessionId();
     return this.session;
+  }
+
+  /**
+   * create sessionid
+   */
+  generateSessionId() {
+    return uuid();
   }
 
   /**

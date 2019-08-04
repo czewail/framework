@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const redis = require('redis');
 
-module.exports = function rds(options) {
+module.exports = function (options) {
   const client = redis.createClient(options);
   const getAsync = promisify(client.get).bind(client);
   const setAsync = promisify(client.set).bind(client);
