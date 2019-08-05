@@ -63,7 +63,8 @@ class Middleware {
   parseFunctionMiddleware(middleware) {
     // 使用了 @Middleware 装饰器
     if (Reflect.getMetadata('type', middleware.prototype) === 'middleware') {
-      const _middleware = Reflect.construct(middleware);
+      const MiddlewareClass = middleware;
+      const _middleware = new MiddlewareClass();
       this.parseClassInstanceMiddleware(_middleware);
     } else {
       this.middlewares.push(middleware);

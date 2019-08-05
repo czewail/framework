@@ -142,6 +142,9 @@ class Application extends Container {
     // register middleware provider
     await this.register(new providers.Middleware(this));
 
+    // register session provider
+    await this.register(new providers.Session(this));
+
     // register router provider
     await this.register(new providers.Router(this));
 

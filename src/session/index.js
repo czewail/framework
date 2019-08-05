@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4');
+const is = require('core-util-is');
 const Container = require('../container');
 const { decode, encode } = require('./helpers');
 const symbols = require('../symbol');
@@ -12,12 +13,16 @@ const defualtOpts = {
 };
 
 const ONE_DAY = 86400000;
-
 const EXTRA_STROES = new Set([
   'redis',
 ]);
 
 class Session {
+  /**
+   * Create Session instance
+   * @param {Request} request
+   * @param {Object} options
+   */
   constructor(request, options = {}) {
     /**
      * @var {Application} app Application instance
@@ -37,7 +42,7 @@ class Session {
     /**
      * @var {Object | Null} store the other store
      */
-    this.store = this.loadStore();
+    this.store = null;
 
     /**
      * @var {Object | Null} session session Object
@@ -47,46 +52,30 @@ class Session {
     /**
      * @var {String} sessionID session id
      */
-    this.sessionID = null;
+    this.id = null;
+
+    // initialize Store
+    this.initializeStore();
   }
 
-  async start() {
-    await this.loadSession();
-  }
-
-  loadStore() {
-    if (!EXTRA_STROES.has(this.options.store)) {
-      return null;
-    }
+  /**
+   * initialize Store
+   */
+  initializeStore() {
+    if (!this.options.store || this.options.store === 'cookie' || !EXTRA_STROES.has(this.options.store)) return;
     // eslint-disable-next-line
-    return require(`./stores/${this.options.store}`);
+    const Store =  require(`./stores/${this.options.store.toLowerCase()}`);
+    this.store = new Store(this.app);
   }
 
-  // /**
-  //  * recover session from store
-  //  * default from cookie
-  //  */
-  // loadSession() {
-  //   // this.session = {
-  //   //   ...this.session,
-  //   //   ...this.loadFromStore(),
-  //   // };
-  //   // if (!this.store) return this.recoverFromCookieStore();
-  //   // return this.revocerFromExtraStore();
-  // }
-
+  /**
+   * load session from store or cookie
+   */
   async loadSession() {
     if (this.store) {
       await this.loadFromExtraStore();
     }
     this.loadFromCookieStore();
-    // if (EXTRA_STROES.has(this.options.store)) {
-    //   return null;
-    // }
-    // // eslint-disable-next-line
-    // const Store = require(`./stores/${this.options.store}`);
-
-    // if (this.options.stroe === 'cookie')
   }
 
   /**
@@ -114,9 +103,8 @@ class Session {
    * recover session from extra store
    */
   async loadFromExtraStore() {
-    const sessionID = this.request.cookies.get(this.options.key, this.options);
-    if (!sessionID) return this.generate();
-    const json = await this.store.get(sessionID, this.options.maxAge);
+    this.id = this.request.cookies.get(this.options.key, this.options) || this.generateSessionId();
+    const json = await this.store.get(this.id, this.options.maxAge);
     if (!this.verify(json)) {
       return this.generate();
     }
@@ -128,7 +116,7 @@ class Session {
    * @param {object} session
    */
   verify(session) {
-    if (!session) return false;
+    if (!session || !is.isObject(session)) return false;
     if (session._expire && session._expire < Date.now()) return false;
     return true;
   }
@@ -143,7 +131,7 @@ class Session {
     this.session = data;
     this.session._expire = maxAge + Date.now();
     this.session._maxAge = maxAge;
-    if (this.store) this.sessionID = this.generateSessionId();
+    // if (this.store && !this.id) this.id = this.generateSessionId();
     return this.session;
   }
 
@@ -232,8 +220,13 @@ class Session {
 
   async commit() {
     this.ageFlashSession();
-    const encodedSession = encode(this.session);
-    this.request.cookies.set(this.options.key, encodedSession, this.options);
+    if (!this.store) {
+      const encodedSession = encode(this.session);
+      this.request.cookies.set(this.options.key, encodedSession, this.options);
+    } else {
+      await this.store.set(this.id, this.session);
+      this.request.cookies.set(this.options.key, this.id, this.options);
+    }
   }
 
   async autoCommit() {

@@ -27,14 +27,14 @@ class ComponentProvider {
       true,
     );
 
-    // for @useService
+    // for @useResource
     this.app.singleton(
       symbols.INJECTORS.RESOURCE,
       name => this.app.get(`resource.${name}`),
       true,
     );
 
-    // for @useService
+    // for @useComponent
     this.app.singleton(
       symbols.INJECTORS.COMPONENT,
       name => this.app.get(`component.${name}`),
