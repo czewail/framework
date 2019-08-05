@@ -1,16 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
-const is = require('core-util-is');
 const mime = require('mime-types');
 const Container = require('../container');
 const Response = require('../response');
-// const ResponseFactory = require('../response/manager');
-// const BaseController = require('../base/controller');
 const NotFoundHttpError = require('../errors/not-found-http-error');
 const HttpError = require('../errors/http-error');
-// const Pipeline = require('../pipeline');
-// const symbols = require('../symbol');
 const ErrorHandler = require('../errors/handle');
 const ResponseFactory = require('../response/manager');
 
@@ -45,13 +40,6 @@ class Dispatcher {
       return this.dispatchToRoute();
     }
     return this.dispatchToStaticServer();
-    // let res;
-    // if (this.route) {
-    //   res = await this.dispatchToRoute();
-    // } else {
-    //   res = await this.dispatchToStaticServer();
-    // }
-    // return (new ResponseFactory(res)).output(this.request);
   }
 
   /**
@@ -137,8 +125,6 @@ class Dispatcher {
    * dispatch request to controller
    */
   async dispatchToRoute() {
-    // return this.route.middleware
-    // .handle(this.request, async request => this.route.resolve(request));
     return this.route.middleware
       .handle(this.request, async request => this.route.resolve(request))
       .then(this.responseFilter())
