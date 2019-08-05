@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-const is = require('is-type-of');
+const is = require('core-util-is');
 const Container = require('../container');
 // const ResourceFactory = require('./factory');
 
@@ -151,10 +151,10 @@ class Resource {
    */
   addMeta(name, value, formatter = null) {
     if (!this.meta) this.meta = {};
-    if (is.object(name)) {
+    if (is.isObject(name)) {
       if (value) this.metaFormatter = value;
       this.meta = Object.assign({}, this.meta, name);
-    } else if (is.string(name)) {
+    } else if (is.isString(name)) {
       this.metaFormatter = formatter;
       this.meta[name] = value;
     }

@@ -10,7 +10,7 @@ const Response = require('../response');
 const NotFoundHttpError = require('../errors/not-found-http-error');
 const HttpError = require('../errors/http-error');
 // const Pipeline = require('../pipeline');
-const symbols = require('../symbol');
+// const symbols = require('../symbol');
 const ErrorHandler = require('../errors/handle');
 const ResponseFactory = require('../response/manager');
 

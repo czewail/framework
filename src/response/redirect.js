@@ -1,5 +1,5 @@
 
-const is = require('is-type-of');
+const is = require('core-util-is');
 const Response = require('./');
 const symbols = require('../symbol');
 const Validate = require('../validate');
@@ -90,7 +90,7 @@ class Redirect extends Response {
   with(name, value) {
     if (!name || !value) return this;
     if (!this.flashSessions) this.flashSessions = {};
-    if (is.object(name)) {
+    if (is.isObject(name)) {
       Object.keys(name).forEach((key) => {
         this.flashSessions[key] = name[key];
       });

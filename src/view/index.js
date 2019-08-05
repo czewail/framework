@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const is = require('is-type-of');
+const is = require('core-util-is');
 const Container = require('../container');
 
 const FINAL_VARS = Symbol('View#finalVars');
@@ -33,7 +33,7 @@ class View {
    * @param {mixed} value variable value
    */
   assign(name, value) {
-    if (is.object(name)) {
+    if (is.isObject(name)) {
       this.vars = Object.assign(this.vars, name);
     } else if (typeof name === 'string') {
       this.vars[name] = value;
@@ -51,7 +51,7 @@ class View {
     // 解析控制器时，如果带此参数则直接 return 出去
     let newTemplate = template;
     let newVars = vars;
-    if (is.object(newTemplate)) {
+    if (is.isObject(newTemplate)) {
       newVars = newTemplate;
       newTemplate = null;
     }
