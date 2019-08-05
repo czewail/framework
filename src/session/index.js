@@ -131,8 +131,6 @@ class Session {
     this.session = data;
     this.session._expire = maxAge + Date.now();
     this.session._maxAge = maxAge;
-    // if (this.store && !this.id) this.id = this.generateSessionId();
-    console.log(this.session, this.request.url, 'sdasdasdas');
     return this.session;
   }
 
