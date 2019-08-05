@@ -1,5 +1,5 @@
 
-const LoadSessionMiddleware = require('../../session/middleware/load-session');
+// const LoadSessionMiddleware = require('../../session/middleware/load-session');
 
 class SessionProvider {
   /**
@@ -24,7 +24,7 @@ class SessionProvider {
    * Provider launch Hook
    */
   launch() {
-    this.app.get('middleware').register(LoadSessionMiddleware);
+    // this.app.get('middleware').register(LoadSessionMiddleware);
   }
 }
 

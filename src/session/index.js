@@ -73,9 +73,9 @@ class Session {
    */
   async loadSession() {
     if (this.store) {
-      await this.loadFromExtraStore();
+      return this.loadFromExtraStore();
     }
-    this.loadFromCookieStore();
+    return this.loadFromCookieStore();
   }
 
   /**
@@ -132,6 +132,7 @@ class Session {
     this.session._expire = maxAge + Date.now();
     this.session._maxAge = maxAge;
     // if (this.store && !this.id) this.id = this.generateSessionId();
+    console.log(this.session, this.request.url, 'sdasdasdas');
     return this.session;
   }
 

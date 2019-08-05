@@ -10,6 +10,7 @@ const is = require('core-util-is');
 const Container = require('../container');
 const Middleware = require('../middleware');
 const Response = require('../response');
+const LoadSessionMiddleware = require('../session/middleware/load-session');
 
 class Route {
   /**
@@ -69,7 +70,7 @@ class Route {
       this.methods.push('HEAD');
     }
 
-    // this.registerDefaultMiddlewares();
+    this.registerDefaultMiddlewares();
 
     this.registerControllerMiddlewares(middlewares);
   }
@@ -78,7 +79,7 @@ class Route {
    * register default route middlewares
    */
   registerDefaultMiddlewares() {
-    //
+    this.middleware.register(LoadSessionMiddleware);
   }
 
   /**
