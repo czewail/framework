@@ -1,5 +1,7 @@
 const path = require('path');
 require('../../../src/helpers');
+require('../../daze/src/app/controller/example');
+require('../../daze/src/provider/app');
 const { createComponent } = require('../../common/helpers');
 const Component = require('../../../src/component');
 const Application = require('../../../src/foundation/application');

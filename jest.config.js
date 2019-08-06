@@ -157,9 +157,12 @@ module.exports = {
   //  environment. It is reflected in properties such as location.href
   // testURL: "about:blank",
   // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
-  // timers: "real",
+  // timers: 'fake',
   // A map from regular expressions to paths to transformers
   // transform: null,
+  // transform: {
+  //   '^.+\\.js$': 'babel-jest',
+  // },
   // An array of regexp pattern strings that
   // are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [

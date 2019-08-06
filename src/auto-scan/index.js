@@ -60,7 +60,7 @@ class AutoScan {
   resolveAppFiles(files = []) {
     for (const file of files) {
       // eslint-disable-next-line
-      const target = require(file)
+      const target = require(file);
       if (target && target.prototype) {
         const isIgnore = Reflect.getMetadata('ignore', target.prototype);
         if (isIgnore === true) return this;
@@ -93,7 +93,7 @@ class AutoScan {
   resolveProviderFiles(files = []) {
     for (const file of files) {
       // eslint-disable-next-line
-      const target = require(file)
+      const target = require(file);
       if (typeof target === 'function') {
         const isIgnore = Reflect.getMetadata('ignore', target.prototype);
         if (isIgnore === true) return this;
