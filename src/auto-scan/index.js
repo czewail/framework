@@ -39,9 +39,9 @@ class AutoScan {
    */
   resolve() {
     // load src/app dir files
-    this.resolveAppFiles(this.scanAppDir());
+    this.resolveFiles(this.scanAppDir());
     // load provider dir files
-    this.resolveProviderFiles(this.scanProviderDir());
+    this.resolveFiles(this.scanProviderDir());
 
     // register middlewares
     // middlewares must be registed before controller
@@ -53,53 +53,56 @@ class AutoScan {
   }
 
   /**
-   * resolve app dir files
-   * @param {array} files app dir files
+   * load file with filepath
+   * @param {string} filePath
    */
-  resolveAppFiles(files = []) {
-    for (const file of files) {
-      // eslint-disable-next-line
-      const target = require(file);
-      if (target && target.prototype) {
-        const isIgnore = Reflect.getMetadata('ignore', target.prototype);
-        if (isIgnore === true) return this;
-        const type = Reflect.getMetadata('type', target.prototype);
-        switch (type) {
-          case 'controller':
-            this.controllers.push(target);
-            break;
-          case 'middleware':
-            this.middlewares.push(target);
-            break;
-          case 'service':
-          case 'resource':
-          case 'validator':
-          case 'component':
-            this.components.push(target);
-            break;
-          default:
-            break;
-        }
-      }
-    }
-    return this;
+  loadFile(filePath) {
+    const realPath = require.resolve(filePath);
+    // eslint-disable-next-line
+    const target = require(realPath);
+    if (!target || !target.prototype) return;
+    const isIgnore = Reflect.getMetadata('ignore', target.prototype);
+    if (isIgnore === true) return;
+    const type = Reflect.getMetadata('type', target.prototype);
+    this.parseModule(target, type);
   }
 
   /**
-   * resolve provider dir files
-   * @param {array} files provider dir files
+   * parse file module
+   * @param {mixed} target
+   * @param {string} type controller | middleware | service | resource | validator | component
    */
-  resolveProviderFiles(files = []) {
-    for (const file of files) {
-      // eslint-disable-next-line
-      const target = require(file);
-      if (typeof target === 'function') {
-        const isIgnore = Reflect.getMetadata('ignore', target.prototype);
-        if (isIgnore === true) return this;
-        this.registerProvider(target, file);
-      }
+  parseModule(target, type) {
+    switch (type) {
+      case 'controller':
+        this.controllers.push(target);
+        break;
+      case 'middleware':
+        this.middlewares.push(target);
+        break;
+      case 'service':
+      case 'resource':
+      case 'validator':
+      case 'component':
+        this.components.push(target);
+        break;
+      case 'provider':
+        this.registerProvider(target);
+        break;
+      default:
+        break;
     }
-    return this;
+  }
+
+  /**
+   * resolve files
+   * @param {string[]} files app dir files
+   * @returns this
+   */
+  resolveFiles(files = []) {
+    for (const file of files) {
+      this.loadFile(file);
+    }
   }
 
   /**

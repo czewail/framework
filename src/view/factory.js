@@ -10,26 +10,19 @@ class Factory {
   combineVars(request) {
     // const session = Container.get('session', [ctx]);
     // const token = ctx._csrf;
-    const defaultVars = {};
-    // const defaultVars = {
-    //   get session() {
-    //     return request.session();
-    //   },
-    //   // get __token__() {
-    //   //   return token;
-    //   // },
-    //   get errors() {
-    //     return request.session().getErrors();
-    //   },
-    //   // token() {
-    //   //   return `<input type="hidden" name="_token" value="${token}" />`;
-    //   // },
-    //   old(name, defValue = '') {
-    //     const oldInput = request.session().getOldInput();
-    //     if (!name) return oldInput;
-    //     return oldInput && oldInput[name] ? oldInput[name] : defValue;
-    //   },
-    // };
+    const defaultVars = {
+      session(key) {
+        return request.session().get(key);
+      },
+      // token() {
+      //   return `<input type="hidden" name="_token" value="${token}" />`;
+      // },
+      // old(name, defValue = '') {
+      //   const oldInput = request.session().getOldInput();
+      //   if (!name) return oldInput;
+      //   return oldInput && oldInput[name] ? oldInput[name] : defValue;
+      // },
+    };
     return Object.assign({}, defaultVars, this.view.getVars());
   }
 
