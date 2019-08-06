@@ -11,7 +11,6 @@ const Container = require('../container');
 class AutoScan {
   /**
    * Create AutoScan Instance
-   * @param {Application} app Applidation Instance
    */
   constructor() {
     /**
