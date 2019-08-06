@@ -150,6 +150,7 @@ class Dispatcher {
   }
 
   async output(request, response) {
+    await response.commitCookies(request);
     return new ResponseFactory(response).output(request);
   }
 

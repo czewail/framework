@@ -47,7 +47,7 @@ class Session {
     /**
      * @var {Object | Null} session session Object
      */
-    this.session = null;
+    this.session = {};
 
     /**
      * @var {String} sessionID session id
@@ -73,9 +73,10 @@ class Session {
    */
   async loadSession() {
     if (this.store) {
-      return this.loadFromExtraStore();
+      await this.loadFromExtraStore();
+      return;
     }
-    return this.loadFromCookieStore();
+    this.loadFromCookieStore();
   }
 
   /**

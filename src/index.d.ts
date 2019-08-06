@@ -1,5 +1,6 @@
 declare module "@dazejs/framework" {
 
+
   declare class Container {
     constructor()
     /**
@@ -116,6 +117,10 @@ declare module "@dazejs/framework" {
     get(name: string, def: any): any
     has(name: string): boolean
     env: string
+  }
+
+  declare class Application extends Container {
+    constructor()
   }
 
   interface Decorators {

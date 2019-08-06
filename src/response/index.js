@@ -451,8 +451,6 @@ class Response {
   async end(request, data) {
     const { req, res } = request;
 
-    await this.commitCookies(request);
-
     // headers
     if (!res.headersSent) {
       const headers = this.getHeaders();
