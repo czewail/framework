@@ -21,6 +21,8 @@
 
 ## Installation
 
+**使用 `@next` 安装, 尝鲜 `Beta` 版本！**
+
 ```bash
 $ npm install -g @dazejs/cli@next
 ```
