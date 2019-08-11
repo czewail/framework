@@ -483,12 +483,32 @@ class Request {
     return this._params;
   }
 
+  /**
+   * request body params getter
+   */
   get body() {
     return this._body?.fields ?? {};
   }
 
+  /**
+   * get request body params
+   */
+  getBody() {
+    return this.body;
+  }
+
+  /**
+   * request files getter
+   */
   get files() {
     return this._body?.files ?? [];
+  }
+
+  /**
+   * get request files
+   */
+  getFiles() {
+    return this.files;
   }
 
   /**
