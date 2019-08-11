@@ -135,6 +135,7 @@ class Application extends Container {
     await this.register(new providers.App(this));
 
     await this.register(new providers.Controller(this));
+
     await this.register(new providers.Component(this));
     // // register module provioder
     // await this.register(new providers.Module(this));
@@ -149,30 +150,13 @@ class Application extends Container {
     await this.register(new providers.Router(this));
 
     // register request provider
-    await this.register(new providers.Request(this));
+    // await this.register(new providers.Request(this));
 
     // register response provider
     await this.register(new providers.Response(this));
 
     // register template provider
     await this.register(new providers.Template(this));
-    // await this.register(new providers.Service(this));
-
-    // this.register(new providers.Response(this))
-
-    // this.register(new providers.View(this))
-
-    // this.register(new providers.Session(this))
-
-    // this.register(new providers.Cookie(this))
-
-    // this.register(new providers.Logger(this))
-
-    // this.register(new providers.KoaServices(this))
-
-    // this.register(new providers.Template(this))
-
-    // this.register(new providers.Middleware(this))
   }
 
   // /**

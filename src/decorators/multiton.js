@@ -7,20 +7,24 @@
 
 const { MULTITON } = require('../symbol');
 
-function createMultitonClass(klass) {
-  klass[MULTITON] = true;
-  return klass;
+function createMultitonClass(elementDescriptor) {
+  return {
+    ...elementDescriptor,
+    finisher(target) {
+      target[MULTITON] = true;
+      return target;
+    },
+  };
 }
 
-function handle(argsClass) {
-  if (argsClass.length === 1) {
-    return createMultitonClass(...argsClass);
+function handle(elementDescriptor) {
+  const { kind } = elementDescriptor;
+  if (kind === 'class') {
+    return createMultitonClass(elementDescriptor);
   }
-  throw new Error('@Multiton must be used on class');
+  return elementDescriptor;
 }
 
 module.exports = function Multiton() {
-  return function (...argsClass) {
-    return handle(argsClass);
-  };
+  return elementDescriptor => handle(elementDescriptor);
 };

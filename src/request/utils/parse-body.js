@@ -34,19 +34,16 @@ function parseForm(req, opts = {}) {
   }));
 }
 
-module.exports = function Body() {
-  return async function bodyParse(request, next) {
-    let body = {};
-    if (request.is('json')) {
-      body = await buddy.json(request.req);
-    } else if (request.is('urlencoded')) {
-      body = await buddy.form(request.req);
-    } else if (request.is('text')) {
-      body = await buddy.text(request.req);
-    } else if (request.is('multipart')) {
-      body = await parseForm(request.req);
-    }
-    request.req.body = body;
-    await next();
-  };
+module.exports = async (request) => {
+  let body = {};
+  if (request.is('json')) {
+    body = await buddy.json(request.req);
+  } else if (request.is('urlencoded')) {
+    body = await buddy.form(request.req);
+  } else if (request.is('text')) {
+    body = await buddy.text(request.req);
+  } else if (request.is('multipart')) {
+    body = await parseForm(request.req);
+  }
+  return body;
 };

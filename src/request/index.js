@@ -17,6 +17,7 @@ const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
 const Session = require('../session');
+const parseBody = require('./utils/parse-body');
 
 class Request {
   constructor(req, res) {
@@ -49,6 +50,13 @@ class Request {
      * @var {Object} _accept accepts
      */
     this._accepts = null;
+  }
+
+  /**
+   * initialize request
+   */
+  async initialize() {
+    this._body = await parseBody(this);
   }
 
   /**
@@ -469,14 +477,18 @@ class Request {
     if (!this._params) {
       this._params = {
         ...this.query,
-        ...this.body || {},
+        ...this.body,
       };
     }
     return this._params;
   }
 
   get body() {
-    return this.req.body;
+    return this._body?.fields ?? {};
+  }
+
+  get files() {
+    return this._body?.files ?? [];
   }
 
   /**

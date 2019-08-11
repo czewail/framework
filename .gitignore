@@ -6,5 +6,5 @@ coverage
 .vscode
 logs/*.log
 **/logs/**.log
-DEPRECATED_*
+**DEPRECATED_*
 __debug__
