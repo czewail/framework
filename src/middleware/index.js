@@ -16,11 +16,11 @@ class Middleware {
    * register a middleware
    * @param {String | Function | Class} middleware
    */
-  register(middleware) {
+  register(middleware, args) {
     if (is.isString(middleware)) {
-      this.parseStringMiddleware(middleware);
+      this.parseStringMiddleware(middleware, args);
     } else if (is.isFunction(middleware)) {
-      this.parseFunctionMiddleware(middleware);
+      this.parseFunctionMiddleware(middleware, args);
     }
     return this;
   }
@@ -49,8 +49,8 @@ class Middleware {
    * parse middle if middleware type is string type
    * @param {String} middleware
    */
-  parseStringMiddleware(middleware) {
-    const _middleware = this.app.get(`middleware.${middleware}`);
+  parseStringMiddleware(middleware, args = []) {
+    const _middleware = this.app.get(`middleware.${middleware}`, args);
     if (!_middleware) return this;
     this.parseClassInstanceMiddleware(_middleware);
     return this;
@@ -60,11 +60,11 @@ class Middleware {
    * parse middle if middleware type is function type
    * @param {Function} middleware
    */
-  parseFunctionMiddleware(middleware) {
+  parseFunctionMiddleware(middleware, args = []) {
     // 使用了 @Middleware 装饰器
     if (Reflect.getMetadata('type', middleware.prototype) === 'middleware') {
       const MiddlewareClass = middleware;
-      const _middleware = new MiddlewareClass();
+      const _middleware = new MiddlewareClass(...args);
       this.parseClassInstanceMiddleware(_middleware);
     } else {
       this.middlewares.push(middleware);

@@ -1,26 +1,54 @@
+const is = require('core-util-is');
 const Response = require('../../response');
-const Middleware = require('../../decorators/middleware');
+const { Middleware } = require('../../decorators');
+
+const defaultOptions = {
+  origin: '*',
+  maxAge: 5,
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+};
 
 @Middleware('cors')
 class CORSMiddleware {
+  constructor(options) {
+    this.options = this.parseOptions(options);
+  }
+
+  parseOptions(options) {
+    if (is.isString(options)) {
+      return {
+        ...defaultOptions,
+        origin: options,
+      };
+    } if (is.isObject(options)) {
+      return {
+        ...defaultOptions,
+        ...options,
+      };
+    }
+    return defaultOptions;
+  }
+
   get origin() {
-    return '*';
+    return this.options.origin ?? '*';
   }
 
   get maxAge() {
-    return 5;
+    return this.options.maxAge ?? 5;
   }
 
   get credentials() {
-    return true;
+    return this.options.credentials ?? true;
   }
 
   get allowMethods() {
-    return ['GET', 'POST', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'];
+    return this.options.allowMethods ?? ['GET', 'POST', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'];
   }
 
   get allowHeaders() {
-    return ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'];
+    return this.options.allowHeaders ?? ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'];
   }
 
   async resolve(request, next) {

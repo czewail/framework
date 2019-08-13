@@ -86,9 +86,9 @@ class Route {
    * register route middleware
    * @param {Function} middleware
    */
-  registerMiddleware(middleware) {
+  registerMiddleware(middleware, args) {
     if (middleware && is.isFunction(middleware)) {
-      this.middleware.register(middleware);
+      this.middleware.register(middleware, args);
     }
     return this;
   }

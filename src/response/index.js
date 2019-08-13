@@ -330,7 +330,7 @@ class Response {
     const varyHeader = this.getHeader('Vary') ?? '';
     const varys = varyHeader.split(',');
     varys.push(field);
-    this.setHeader('Vary', varys.join(','));
+    this.setHeader('Vary', varys.filter(v => !!v).join(','));
   }
 
   /**

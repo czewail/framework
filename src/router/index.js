@@ -44,7 +44,7 @@ class Router {
     const route = new Route(uri, methods, controller, action, middlewares);
     const corses = Reflect.getMetadata('crossOrigin', controller.prototype) || {};
     if (corses[action]) {
-      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware);
+      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware, [corses[action]]);
     }
     this.collection.add(route);
     return route;

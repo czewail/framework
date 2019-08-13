@@ -19,7 +19,7 @@ function injectClass(elementDescriptor, options) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const corses = Reflect.getMetadata('crossOrigin', target.prototype);
+      const corses = Reflect.getMetadata('crossOrigin', target.prototype) ?? {};
       for (const element of elementDescriptor.elements) {
         if (element.kind === 'method') {
           if (!corses[element.key]) {
@@ -41,7 +41,7 @@ function injectMethod(elementDescriptor, options) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const corses = Reflect.getMetadata('crossOrigin', target.prototype);
+      const corses = Reflect.getMetadata('crossOrigin', target.prototype) ?? {};
       // console.log(elementDescriptor);
       corses[elementDescriptor.key] = {
         ...defaultOptions,
