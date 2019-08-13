@@ -8,8 +8,6 @@ const Base = require('./base');
 const View = require('../view');
 const Resource = require('../resource');
 const Validate = require('../validate');
-const Response = require('../response');
-const RedirectResponse = require('../response/redirect');
 
 class Controller extends Base {
   /**
@@ -30,22 +28,6 @@ class Controller extends Base {
    */
   get request() {
     return this._request;
-  }
-
-  /**
-   * create response instancw
-   * @param  {...any} params response constructor params
-   */
-  response(...params) {
-    return new Response(...params);
-  }
-
-  /**
-   *  create redirect instancw
-   * @param  {...any} params redirect constructor params
-   */
-  redirect(...params) {
-    return new RedirectResponse(...params);
   }
 
   /**

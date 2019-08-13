@@ -9,6 +9,10 @@ const is = require('core-util-is');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
 
 class Pipeline {
+  /**
+   * Create Pipeline Instance
+   * @param  {...Function} stages
+   */
   constructor(...stages) {
     /**
      * @var {Array} stages pipe stages
@@ -18,7 +22,7 @@ class Pipeline {
 
   /**
    * add pipe stage
-   * @param {Function} stage pipe stage
+   * @param {...Function} stages pipe stages
    * @returns {Pipeline} this
    */
   pipe(...stages) {

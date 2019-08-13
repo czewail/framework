@@ -1,11 +1,7 @@
-
-// const cors = require('koa2-cors');
-const vary = require('vary');
-// const Middleware = require('../../base/middleware');
 const Response = require('../../response');
 const Middleware = require('../../decorators/middleware');
 
-@Middleware()
+@Middleware('cors')
 class CORSMiddleware {
   get origin() {
     return '*';
@@ -55,13 +51,9 @@ class CORSMiddleware {
       return response.NoContent();
     }
 
-    let response = await next();
+    const response = await next();
 
-    // todo response==undefined
-
-    if (!(response instanceof Response)) {
-      response = (new Response()).setData(response);
-    }
+    response.setVary('Origin');
 
     response.setHeader('Access-Control-Allow-Origin', this.origin);
 

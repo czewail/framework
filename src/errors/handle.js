@@ -72,7 +72,7 @@ class Handler {
   json() {
     const message = this.error.message || statuses[+this.error.code];
     const { errors } = this.error;
-    const data = { data: message, errors };
+    const data = { message, errors };
     if (this.app.isDebug) {
       if (this.error.code >= 500) {
         data.stack = this.error.stack;

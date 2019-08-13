@@ -7,12 +7,9 @@
 const parse = require('parseurl');
 const qs = require('querystring');
 const typeis = require('type-is');
-// const cookie = require('cookie');
 const Cookies = require('cookies');
 const accepts = require('accepts');
 const is = require('core-util-is');
-// const vary = require('vary');
-// const Keygrip = require('keygrip');
 const Container = require('../container');
 const Validate = require('../validate');
 const ValidateError = require('../errors/validate-error');
@@ -64,6 +61,13 @@ class Request {
    */
   get headers() {
     return this.req.headers;
+  }
+
+  /**
+   * Return request header.
+   */
+  getHeaders() {
+    return this.headers;
   }
 
   /**

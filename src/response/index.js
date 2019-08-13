@@ -159,14 +159,14 @@ class Response {
    */
   patchCodeMethods() {
     const { codes } = statuses;
-    codes.forEach((code) => {
+    for (const code of codes) {
       const name = toIdentifier(statuses[code]);
       if (code >= 400) {
         this[name] = message => this.error(message || statuses[code], code);
       } else {
         this[name] = message => this.success(message || statuses[code], code);
       }
-    });
+    }
   }
 
   staticServer() {
@@ -326,6 +326,13 @@ class Response {
     return this;
   }
 
+  setVary(field) {
+    const varyHeader = this.getHeader('Vary') ?? '';
+    const varys = varyHeader.split(',');
+    varys.push(field);
+    this.setHeader('Vary', varys.join(','));
+  }
+
   /**
    * LastModified
    * @public
@@ -429,6 +436,10 @@ class Response {
     return data;
   }
 
+  /**
+   * response with cookie instance
+   * @param {Cookie} _cookie
+   */
   withCookie(_cookie) {
     if (_cookie instanceof Cookie) {
       this.cookies.push(_cookie);
@@ -436,8 +447,38 @@ class Response {
     return this;
   }
 
+  /**
+   * response with cookie
+   * @param {String} key
+   * @param {Mixed} value
+   * @param {Object} options
+   */
   cookie(key, value, options = {}) {
     this.withCookie(new Cookie(key, value, options));
+    return this;
+  }
+
+  /**
+   * set json response type
+   */
+  json() {
+    this.setType('json');
+    return this;
+  }
+
+  /**
+   * set html response type
+   */
+  html() {
+    this.setType('html');
+    return this;
+  }
+
+  /**
+   * set html response type
+   */
+  text() {
+    this.setType('text');
     return this;
   }
 
