@@ -6,6 +6,8 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+const proxy = require('../base/proxy');
+const Basemiddleware = require('../base//middleware');
 
 function decoratorClass(elementDescriptor, name) {
   return {
@@ -13,7 +15,7 @@ function decoratorClass(elementDescriptor, name) {
     finisher(target) {
       Reflect.setMetadata('type', 'middleware', target.prototype);
       Reflect.setMetadata('middlewareName', name, target.prototype);
-      return target;
+      return proxy(target, Basemiddleware);
     },
   };
 }

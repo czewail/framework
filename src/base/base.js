@@ -5,6 +5,9 @@
  * https://opensource.org/licenses/MIT
  */
 const Container = require('../container');
+const Response = require('../response');
+const RedirectResponse = require('../response/redirect');
+
 
 class Base {
   /**
@@ -26,6 +29,22 @@ class Base {
    */
   get messenger() {
     return Container.get('messenger');
+  }
+
+  /**
+   * create response instancw
+   * @param  {...any} params response constructor params
+   */
+  response(...params) {
+    return new Response(...params);
+  }
+
+  /**
+   *  create redirect instancw
+   * @param  {...any} params redirect constructor params
+   */
+  redirect(...params) {
+    return new RedirectResponse(...params);
   }
 }
 
