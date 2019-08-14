@@ -569,12 +569,14 @@ describe('Request', () => {
     it('shoud return body value', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.param('name')).toBe('dazejs');
     });
 
@@ -599,12 +601,14 @@ describe('Request', () => {
     it('should return all param object whitout name', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.param()).toEqual({
         page: '10',
         color: 'blue',
@@ -617,12 +621,14 @@ describe('Request', () => {
     it('should return only object', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.only('name', 'page')).toEqual({
         name: 'dazejs',
         page: '10',
@@ -632,12 +638,14 @@ describe('Request', () => {
     it('should return only object when array param', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.only(['name', 'page'])).toEqual({
         name: 'dazejs',
         page: '10',
@@ -647,12 +655,14 @@ describe('Request', () => {
     it('should return only object when invalid param', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.only(['name', 'page', 'age'])).toEqual({
         name: 'dazejs',
         page: '10',
@@ -666,12 +676,14 @@ describe('Request', () => {
     it('should return only object when invalid type', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.only(['name', 'page', 'age'], {})).toEqual({
         name: 'dazejs',
         page: '10',
@@ -687,12 +699,14 @@ describe('Request', () => {
     it('should return left object', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.except('color')).toEqual({
         name: 'dazejs',
         page: '10',
@@ -702,12 +716,14 @@ describe('Request', () => {
     it('should return left object when array param', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.except(['color'])).toEqual({
         name: 'dazejs',
         page: '10',
@@ -717,12 +733,14 @@ describe('Request', () => {
     it('should return left object when invalid param', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.except(['color', 'age'])).toEqual({
         name: 'dazejs',
         page: '10',
@@ -736,12 +754,14 @@ describe('Request', () => {
     it('should return left object when invalid type', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.except(['color', 'age'], {})).toEqual({
         name: 'dazejs',
         page: '10',
@@ -757,12 +777,14 @@ describe('Request', () => {
     it('shoud return param value', () => {
       const request = {
         url: '/users?page=10&color=blue',
-        body: {
-          name: 'dazejs',
-        },
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
+      instance._body = {
+        fields: {
+          name: 'dazejs',
+        },
+      };
       expect(instance.page).toBe('10');
       expect(instance.color).toBe('blue');
     });
