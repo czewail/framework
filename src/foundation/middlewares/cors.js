@@ -74,7 +74,7 @@ class CORSMiddleware {
         response.setHeader('Access-Control-Allow-Methods', this.allowMethods);
       }
 
-      response.setHeader('Access-Control-Request-Headers', this.allowHeaders || request.getHeader('Access-Control-Request-Headers'));
+      response.setHeader('Access-Control-Allow-Headers', this.allowHeaders || request.getHeader('Access-Control-Request-Headers'));
 
       return response.NoContent();
     }

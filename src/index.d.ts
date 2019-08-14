@@ -1,7 +1,15 @@
 declare module "@dazejs/framework" {
 
 
-  declare class Container {
+  class Config {
+    constructor(configPath: string)
+    set(name: string | object, value: any): object
+    get(name: string, def: any): any
+    has(name: string): boolean
+    env: string
+  }
+
+  class Container {
     constructor()
     /**
      * Bind a singleton to the container
@@ -72,6 +80,7 @@ declare module "@dazejs/framework" {
      * @static
      */
     static get(abstract: any, args: any[]): object
+    static get(abstract: 'config', args: any[]): Config
     /**
      * bind an abstract in container
      *
@@ -111,25 +120,19 @@ declare module "@dazejs/framework" {
     static setInstance(instance: object): void
   }
   
-  declare class Config {
-    constructor(configPath: string)
-    set(name: string | object, value: any): object
-    get(name: string, def: any): any
-    has(name: string): boolean
-    env: string
-  }
+  
 
-  declare class Application extends Container {
-    constructor()
+  class Application extends Container {
   }
 
   interface Decorators {
-    Router: any
+    Controller: Function
   }
 
-  declare const Decorators: Decorators
+  const Decorators: Decorators
 
-  declare class Controller {
+  class Controller {
     
   }
+
 }

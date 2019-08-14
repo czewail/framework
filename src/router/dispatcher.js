@@ -83,10 +83,12 @@ class Dispatcher {
         }
         response.setHeader('Content-Type', mime.lookup(type(filePath, encodingExt)));
         response.setData(fs.createReadStream(filePath));
+        // return response;
         return new ResponseFactory(response).output(this.request);
       }
     }
-    throw this.createNotFountError();
+    const error = this.createNotFountError();
+    this.errorCatch(error);
   }
 
   /**
@@ -121,6 +123,12 @@ class Dispatcher {
     return this.request.isHead() || this.request.isGet();
   }
 
+  errorCatch(error) {
+    this.app.emit('error', error);
+    const err = new ErrorHandler(this.request, error);
+    return this.output(this.request, err.render());
+  }
+
   /**
    * dispatch request to controller
    */
@@ -128,11 +136,12 @@ class Dispatcher {
     return this.route.middleware
       .handle(this.request, async request => this.route.resolve(request))
       .then(this.responseFilter())
-      .then(async response => this.output(this.request, response))
+      .then(async (response) => {
+        await response.commitCookies(this.request);
+        return this.output(this.request, response);
+      })
       .catch((error) => {
-        this.app.emit('error', error);
-        const err = new ErrorHandler(this.request, error);
-        return this.output(this.request, err.render());
+        this.errorCatch(error);
       });
   }
 
@@ -150,7 +159,6 @@ class Dispatcher {
   }
 
   async output(request, response) {
-    await response.commitCookies(request);
     return new ResponseFactory(response).output(request);
   }
 
