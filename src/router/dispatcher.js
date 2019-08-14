@@ -88,7 +88,7 @@ class Dispatcher {
       }
     }
     const error = this.createNotFountError();
-    this.errorCatch(error);
+    return this.errorCatch(error);
   }
 
   /**
