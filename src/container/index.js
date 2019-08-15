@@ -183,7 +183,7 @@ class Container extends EventEmitter {
    */
   invokeFunction(abstract, args) {
     const { concrete } = this.binds.get(abstract);
-    return concrete(...args);
+    return concrete(...args, this);
   }
 
   /**
@@ -191,7 +191,7 @@ class Container extends EventEmitter {
    */
   invokeConstructor(abstract, args) {
     const { concrete: Concrete } = this.binds.get(abstract);
-    return new Concrete(...args);
+    return new Concrete(...args, this);
   }
 
   /**
@@ -246,7 +246,7 @@ class Container extends EventEmitter {
         });
       },
     });
-    return Reflect.construct(ConcreteProxy, [...bindParams, ...args]);
+    return Reflect.construct(ConcreteProxy, [...bindParams, ...args, this]);
   }
 
   /**
