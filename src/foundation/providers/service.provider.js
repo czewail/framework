@@ -1,14 +1,21 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const path = require('path');
 const symbols = require('../../symbol');
 
 class ServiceProvider {
   /**
    * create Service Provider
-   * @param {object} app Application
+   * @param {Object} app Application
    */
   constructor(app) {
     /**
-     * @var {object} app Application
+     * @var {Object} app Application
      */
     this.app = app;
   }

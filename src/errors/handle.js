@@ -1,7 +1,13 @@
+/**
+ * Copyright (c) 2018 Chan Zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const statuses = require('statuses');
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
 const typeis = require('type-is').is;
 const tracePage = require('@dazejs/trace-page');
 const Container = require('../container');
@@ -10,8 +16,6 @@ const ValidateError = require('./validate-error');
 const Response = require('../response');
 const RedirectResponse = require('../response/redirect');
 const View = require('../view');
-
-// const { SESSION_PREVIOUS_URL } = require('../symbol');
 
 const defaultHttpErrorTemplate = {
   401: 'errors/401.njk',
@@ -26,22 +30,22 @@ class Handler {
    */
   constructor(request, error) {
     /**
-     * @var {Application} app Application instance
+     * @type {Application} app Application instance
      */
     this.app = Container.get('app');
 
     /**
-     * @var {Request} request request instance
+     * @type {Request} request request instance
      */
     this.request = request;
 
     /**
-     * @var {Error} error thrown Error
+     * @type {HttpError} error thrown Error
      */
     this.error = error;
 
     /**
-     * @var {Number} code error code
+     * @type {Number} code error code
      */
     this.code = (this.error instanceof HttpError) ? this.error.code : 500;
   }

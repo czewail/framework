@@ -98,7 +98,7 @@ class Controller extends Base {
 
   /**
    * validate a data
-   * @param {Mixed} data
+   * @param {*} data
    * @param {Object | String} validator
    */
   validate(data, validator) {
@@ -106,8 +106,9 @@ class Controller extends Base {
   }
 
   /**
-   * create item resouce instance
-   * @param  {...any} params
+   * create item resource instance
+   * @param  {*} data
+   * @param  {Function} resourceName
    */
   item(data, resourceName) {
     return new Resource.Item(data, resourceName);
@@ -115,7 +116,8 @@ class Controller extends Base {
 
   /**
    * create collection resouce instance
-   * @param  {...any} params
+   * @param  {*} data
+   * @param  {Function} resourceName
    */
   collection(data, resourceName) {
     return new Resource.Collection(data, resourceName);

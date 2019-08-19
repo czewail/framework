@@ -32,7 +32,7 @@ class Worker {
     worker[WORKER_DYING] = true;
     debug('worker disconnect');
     if (refork) {
-      // You need to refork the new work process
+      // You need to re-fork the new work process
       // 需要重新 fork 新的工作进程
       // Send notification to the main process: the work process is closing
       // 给主进程发送通知：工作进程即将关闭
@@ -107,7 +107,7 @@ class Worker {
         // event with the connection master sent to us
         // 通过使用发送给我们的连接主发送事件，模拟服务器上的连接事件
         this.server.emit('connection', connection);
-        // resume as we already catched the conn
+        // resume as we already caught the conn
         // 从一个暂停的套接字开始读数据
         connection.resume();
       });

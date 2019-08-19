@@ -90,7 +90,7 @@ class Master {
     const { workers } = this.options;
     const promises = [];
     const env = Object.assign({}, this.env);
-    for (let i = 0; i < workers; i++) {
+    for (let i = 0; i < workers; i += 1) {
       promises.push(this.forkWorker(env));
     }
     return Promise.all(promises);

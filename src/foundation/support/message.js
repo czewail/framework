@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 
 const MESSAGES = Symbol('Message#messages');
 
@@ -16,7 +22,7 @@ class Message {
 
   /**
    * add message
-   * @param {string} key message key
+   * @param {string} field message key
    * @param {string} message message content
    */
   add(field, message) {
@@ -69,17 +75,6 @@ class Message {
   get messages() {
     return this[MESSAGES];
   }
-
-  // /**
-  //  * many format messages
-  //  */
-  // many() {
-  //   return {
-  //     all: this.all(),
-  //     first: this.first(),
-  //     format: this.format(),
-  //   };
-  // }
 
   /**
    * Message iterator

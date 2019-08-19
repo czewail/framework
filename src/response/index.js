@@ -7,7 +7,6 @@
 const assert = require('assert');
 const toIdentifier = require('toidentifier');
 const statuses = require('statuses');
-// const mime = require('mime');
 const getType = require('cache-content-type');
 const Stream = require('stream');
 const { extname } = require('path');
@@ -15,9 +14,7 @@ const is = require('core-util-is');
 const contentDisposition = require('content-disposition');
 const Resource = require('../resource/resource');
 const Container = require('../container');
-// const ResourceFactory = require('../resource/DEPRECATED_factory');
 const ViewFactory = require('../view/factory');
-// const HttpError = require('../errors/http-error');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
 const View = require('../view');
 const Cookie = require('../cookie');
@@ -26,39 +23,44 @@ class Response {
   constructor(data = null, code = 200, header = {}) {
     /**
      * Application
-     * @var Application
+     * @type Application
      */
     this.app = Container.get('app');
 
     /**
      * status code
-     * @var number
+     * @type {number}
      */
     this._code = code;
 
     /**
      * original data
-     * @var mixed
+     * @type {*}
      */
     this._data = data;
 
     /**
      * http headers
-     * @var object
+     * @type {object}
      */
     this._header = header;
 
     /**
+     * FIXME unused vars
+     *
      * 默认字符集
-     * @var string
+     * @type {string}
      */
     this._charset = 'utf-8';
 
+    // FIXME unused vars
     this._isStaticServer = false;
 
     /**
+     * FIXME unused vars
+     *
      * 默认 contentType
-     * @var string
+     * @type {string}
      */
     this._contentType = 'text/html';
 
@@ -180,7 +182,6 @@ class Response {
    * @param {number} code exception code
    */
   error(message, code) {
-    // throw new HttpError(code, message, this._header);
     this.setCode(code);
     this.setData(message);
     return this;
@@ -188,7 +189,8 @@ class Response {
 
   /**
    * set success data in ctx.body
-   * @param {mixed} data data
+   * @param {*} data data
+   * @param {number} code http code
    */
   success(data, code = 200) {
     this.setCode(code);
@@ -209,7 +211,7 @@ class Response {
    * The original response headers are merged when the name is passed in as object
    *
    * @param {object|string} name Response header parameter name
-   * @param {mixed} value Response header parameter value
+   * @param {*} value Response header parameter value
    * @returns {this}
    */
   setHeader(name, value) {
@@ -240,19 +242,6 @@ class Response {
     }
     return this;
   }
-
-  //   /**
-  //  * setHeader or getHeader alias
-  //  * @public
-  //  */
-  //   header(name, value) {
-  //     if ((name && value) || is.object(name)) {
-  //       return this.setHeader(name, value);
-  //     } if (name && !value) {
-  //       return this.getHeader(name);
-  //     }
-  //     return undefined;
-  //   }
 
   /**
    * get http code
@@ -296,7 +285,7 @@ class Response {
   /**
    * get return data
    * @public
-   * @returns {mixed} data
+   * @returns {*} data
    */
   getData() {
     return this._data;
@@ -305,7 +294,7 @@ class Response {
   /**
    * Set the returned data
    * @public
-   * @param {mixed} data Returned data
+   * @param {*} data Returned data
    * @returns this
    */
   setData(data) {
@@ -358,7 +347,7 @@ class Response {
   /**
    * ETag
    * @public
-   * @param {string} time time
+   * @param {string} eTag eTag
    * @returns this
    */
   eTag(eTag) {
@@ -400,6 +389,8 @@ class Response {
   }
 
   /**
+   * FIXME 选填参数应跟在必填后边
+   *
    * Contents-dispositions are set as "attachments" to indicate that the client prompts to download.
    * Optionally, specify the filename to be downloaded.
    * @public
@@ -413,6 +404,8 @@ class Response {
   }
 
   /**
+   * FIXME 选填参数应跟在必填后边
+   *
    * attachment alias
    * @public
    * @param {string} filename
@@ -428,7 +421,6 @@ class Response {
     const data = this.getData();
     if (data instanceof Resource) {
       return data.output();
-      // return (new ResourceFactory(data)).output(request);
     }
     if (data instanceof View) {
       return (new ViewFactory(data)).output(request);
@@ -450,7 +442,7 @@ class Response {
   /**
    * response with cookie
    * @param {String} key
-   * @param {Mixed} value
+   * @param {*} value
    * @param {Object} options
    */
   cookie(key, value, options = {}) {
@@ -527,7 +519,7 @@ class Response {
 
   /**
    * send data
-   * @param {*} ctx
+   * @param {*} request
    * @public
    */
   async send(request) {

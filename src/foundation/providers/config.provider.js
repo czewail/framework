@@ -1,13 +1,20 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const Config = require('../../config');
 
 class ConfigProvider {
   /**
    * create Config Provider
-   * @param {object} app Application
+   * @param {Object} app Application
    */
   constructor(app) {
     /**
-     * @var {object} app Application
+     * @var {Object} app Application
      */
     this.app = app;
   }

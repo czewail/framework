@@ -13,8 +13,6 @@ const Container = require('../container');
 const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
 const HttpError = require('../errors/http-error');
-// const Module = require('../module');
-// const Middleware = require('../middleware');
 
 const DEFAULT_PORT = 8000;
 
@@ -73,7 +71,7 @@ class Application extends Container {
    *
    * @param {string} rootPath application root path
    * @param {object} paths application usage paths
-   * @returns {void]}
+   * @returns {void}
    */
   constructor(rootPath, paths = {}) {
     super();
@@ -106,7 +104,6 @@ class Application extends Container {
     /** provider file path */
     this.providerPath = path.resolve(this.rootPath, paths.provider || 'provider');
 
-
     return this;
   }
 
@@ -137,7 +134,7 @@ class Application extends Container {
     await this.register(new providers.Controller(this));
 
     await this.register(new providers.Component(this));
-    // // register module provioder
+    // // register module provider
     // await this.register(new providers.Module(this));
 
     // register middleware provider
@@ -158,14 +155,6 @@ class Application extends Container {
     // register template provider
     await this.register(new providers.Template(this));
   }
-
-  // /**
-  //  * register app provider
-  //  * @private
-  //  */
-  // async registerAppProvider() {
-  //   await this.register(new providers.App(this));
-  // }
 
   /**
    * register provider in App
@@ -238,10 +227,6 @@ class Application extends Container {
       createServer: (...args) => this.startServer(...args),
     });
   }
-
-  // use(...params) {
-  //   this.get('koa').use(...params);
-  // }
 
   /**
    * 自动配置框架运行环境
@@ -360,8 +345,7 @@ class Application extends Container {
 
   /**
    * Gets the binding dependency from the container
-   * @param {string} group group name
-   * @param {array} args Depends on instantiated parameters
+   * @param {string} tag tag name
    */
   tagged(tag) {
     if (!this.tags[tag]) return [];
@@ -373,7 +357,7 @@ class Application extends Container {
   /**
    * set abstract in groups
    * @param {string} abstract Object identifier
-   * @param {string} group group name
+   * @param {string} tag tag name
    */
   tag(abstract, tag) {
     if (!abstract || !tag) return undefined;
@@ -384,8 +368,9 @@ class Application extends Container {
 
   /**
    * Gets the binding dependency from the container
-   * @param {mixed} abstract Dependent identification
+   * @param {*} abstract Dependent identification
    * @param {array} args Depends on instantiated parameters
+   * @param {boolean} [force=false] forced instantiation
    */
   get(abstract, args = [], force = false) {
     return this.make(abstract, args, force);
@@ -393,9 +378,10 @@ class Application extends Container {
 
   /**
    * Bind dependencies to the container
-   * @param {mixed} abstract Dependent identification
-   * @param {mixed} concrete Dependent
+   * @param {*} abstract Dependent identification
+   * @param {*} concrete Dependent
    * @param {*} shared singleton or multiton
+   * @param {Boolean} [callable=false] Generic Functions
    */
   bind(abstract, concrete = null, shared = true, callable = false) {
     return shared
@@ -405,7 +391,7 @@ class Application extends Container {
 
   /**
    * Check that the dependency id is bound to the container
-   * @param {mixed} abstract Dependent identification
+   * @param {*} abstract Dependent identification
    */
   has(abstract) {
     return this.bound(abstract);
@@ -413,7 +399,8 @@ class Application extends Container {
 
   /**
    * bind and get file path
-   * @param {string} abstractFilePath file path
+   * @param {*} abstract Dependent identification
+   * @param {*} [shared=true] singleton or multiton
    */
   craft(abstract, shared = true) {
     if (typeof abstract === 'string') {

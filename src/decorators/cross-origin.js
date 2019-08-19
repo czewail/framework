@@ -1,11 +1,9 @@
-
-// const Cors = function () {
-//   return useMiddleware(CorsMiddleware);
-// };
-
-// module.exports = {
-//   Cors,
-// };
+/**
+ * Copyright (c) 2018 Chan Zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 
 const defaultOptions = {
   origin: '*',
@@ -42,7 +40,6 @@ function injectMethod(elementDescriptor, options) {
     ...elementDescriptor,
     finisher(target) {
       const corses = Reflect.getMetadata('crossOrigin', target.prototype) ?? {};
-      // console.log(elementDescriptor);
       corses[elementDescriptor.key] = {
         ...defaultOptions,
         ...options,

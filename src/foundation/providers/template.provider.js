@@ -1,15 +1,22 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const nunjucks = require('nunjucks');
 const path = require('path');
 
 class TemplateProvider {
   /**
-   * @var {object} app Application
+   * @var {Object} app Application
    */
   app = null;
 
   /**
    * create Config Provider
-   * @param {object} app Application
+   * @param {Object} app Application
    */
   constructor(app) {
     this.app = app;

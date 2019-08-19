@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2018 Chan Zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const EventEmitter = require('events');
 const cluster = require('cluster');
 const { getAlivedWorkers } = require('./helpers');
