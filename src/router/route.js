@@ -17,51 +17,46 @@ class Route {
    * Create Route
    * @param {String} uri route URI
    * @param {Array} methods route methods
-   * @param {Controller | Function} handler controller
+   * @param {Controller | Function} controller controller
    * @param {String} action controller action
    * @param {Array} middlewares route middlewares
    */
   constructor(uri, methods = [], controller = null, action = '', middlewares = []) {
     this.app = Container.get('app');
     /**
-     * @var {Array} keys route params keys
+     * @type {Array} keys route params keys
      */
     this.keys = [];
 
     /**
-     * @var {String} uri URI
+     * @type {String} uri URI
      */
     this.uri = uri;
 
     /**
-     * @var {Array} methods upper case method name
+     * @type {Array} methods upper case method name
      */
     this.methods = this.parseMethods(methods);
 
     /**
-     * @var {RegExp} regexp path RegExp
+     * @type {RegExp} regexp path RegExp
      */
     this.regexp = pathToRegExp(uri, this.keys);
 
     /**
-     * @var {Controller | Function} controller controller
+     * @type {Controller | Function} controller controller
      */
     this.controller = controller;
 
     /**
-     * @var {String} action controller action name
+     * @type {String} action controller action name
      */
     this.action = action;
 
     /**
-     * @var {Middleware} middleware Middleware instance
+     * @type {Middleware} middleware Middleware instance
      */
     this.middleware = new Middleware();
-
-    /**
-     * register Middlewares in Middleware instance
-     */
-    // this.parseHandler();
 
     /**
      * patch HEAD method with GET method
@@ -69,10 +64,6 @@ class Route {
     if (this.methods.includes('GET') && !this.methods.includes('HEAD')) {
       this.methods.push('HEAD');
     }
-
-    // if (!this.methods.includes('OPTIONS')) {
-    //   this.methods.push('OPTIONS');
-    // }
 
     this.registerDefaultMiddlewares();
 
@@ -83,6 +74,7 @@ class Route {
    * register default route middlewares
    */
   registerDefaultMiddlewares() {
+    // FIXME 入参不符
     this.middleware.register(LoadSessionMiddleware);
   }
 
@@ -119,14 +111,6 @@ class Route {
     return [...new Set(_methods)];
   }
 
-
-  // parseControllerMiddleware() {
-  //   const middlewares = getMiddlewares(this.handler.prototype);
-  //   const routeMiddlewares = getControllerRouteMiddlewares(this.handler.prototype);
-  //   this.registerControllerMiddlewares(middlewares);
-  //   this.registerControllerMiddlewares(routeMiddlewares[this.action]);
-  // }
-
   /**
    * get route params
    * @param {String} path request path
@@ -135,19 +119,13 @@ class Route {
     return path.match(this.regexp).slice(1);
   }
 
-  // /**
-  //  * get route controller
-  //  */
-  // getController() {
-  //   return this.handler;
-  // }
-
   /**
    * register Middlewares in Middleware instance
    */
   registerControllerMiddlewares(middlewares) {
     if (!Array.isArray(middlewares)) return this;
     for (const middleware of middlewares) {
+      // FIXME 入参不符
       this.middleware.register(middleware);
     }
     return this;

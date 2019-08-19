@@ -4,7 +4,7 @@ const Container = require('../container');
 const { decode, encode } = require('./helpers');
 const symbols = require('../symbol');
 
-const defualtOpts = {
+const defaultOpts = {
   store: 'cookie',
   key: 'dazejs:sess',
   httpOnly: true,
@@ -25,32 +25,32 @@ class Session {
    */
   constructor(request, options = {}) {
     /**
-     * @var {Application} app Application instance
+     * @type {Application} app Application instance
      */
     this.app = Container.get('app');
 
     /**
-     * @var {Request} request Request instance
+     * @type {Request} request Request instance
      */
     this.request = request;
 
     /**
-     * @var {Object} options
+     * @type {Object} options
      */
-    this.options = Object.assign(defualtOpts, this.app.get('config').get('session', {}), options);
+    this.options = Object.assign(defaultOpts, this.app.get('config').get('session', {}), options);
 
     /**
-     * @var {Object | Null} store the other store
+     * @type {Object | Null} store the other store
      */
     this.store = null;
 
     /**
-     * @var {Object | Null} session session Object
+     * @type {Object | Null} session session Object
      */
     this.session = {};
 
     /**
-     * @var {String} sessionID session id
+     * @type {String} sessionID session id
      */
     this.id = null;
 
@@ -136,25 +136,26 @@ class Session {
   }
 
   /**
-   * create sessionid
+   * create sessionId
    */
   generateSessionId() {
     return uuid();
   }
 
   /**
+   * FIXME defaultVal 应该做成选填参数
    * get session value
    * @param {String} key session key
    */
-  get(key, defaulVal) {
+  get(key, defaultVal) {
     if (!key) return this.session;
-    return this.session[key] || defaulVal;
+    return this.session[key] || defaultVal;
   }
 
   /**
    * set a session
    * @param {String} key session key
-   * @param {Mixed} value session value
+   * @param {*} value session value
    */
   set(key, value) {
     if (!this.session) this.session = {};
@@ -175,7 +176,7 @@ class Session {
   /**
    * push session value in array session
    * @param {string} key
-   * @param {mixed} value
+   * @param {*} value
    */
   push(key, value) {
     const arr = this.get(key, []);
@@ -187,7 +188,7 @@ class Session {
   /**
    * set a flash session
    * @param {String} key session key
-   * @param {Mixed} value  session value
+   * @param {*} value  session value
    */
   flash(key, value) {
     this.set(key, value);

@@ -1,10 +1,14 @@
+/**
+ * Copyright (c) 2019 zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 
 const is = require('core-util-is');
 const Response = require('./');
 const symbols = require('../symbol');
 const Validate = require('../validate');
-// const Container = require('../container');
-// const { SESSION_ERRORS, SESSION_OLD_INPUT, SESSION_PREVIOUS_URL } = require('../symbol');
 
 class Redirect extends Response {
   /**
@@ -13,12 +17,12 @@ class Redirect extends Response {
   needWithInput = false;
 
   /**
-   *  @var {mixed} errors in session
+   *  @var {*} errors in session
    */
   errors = null;
 
   /**
-   *  @var {mixed} sessions in session
+   *  @var {*} sessions in session
    */
   flashSessions = null;
 
@@ -40,7 +44,6 @@ class Redirect extends Response {
   /**
    * 设置重定向地址
    * @param {string} url
-   * @param {number} code
    */
   setUrl(url) {
     this.setData(url);
@@ -85,7 +88,7 @@ class Redirect extends Response {
   /**
    * 保存一次性 session
    * @param {object|string} name
-   * @param {mixed} value
+   * @param {*} value
    */
   with(name, value) {
     if (!name || !value) return this;
@@ -102,7 +105,7 @@ class Redirect extends Response {
 
   /**
    * withErrors
-   * @param {Validate|mixed} val errors
+   * @param {Validate|*} val errors
    */
   withErrors(val) {
     if (!val) return this;
@@ -110,16 +113,11 @@ class Redirect extends Response {
     return this;
   }
 
-  send(request) {
+  async send(request) {
     if (this.forceBack) {
       const url = request.session().get(symbols.SESSION.PREVIOUS) || request.getHeader('Referrer') || this.alt || '/';
       this.setUrl(url);
     }
-
-    // if (this.needWithInput) {
-    //   const old = request.param();
-    //   request.session().flash(symbols.SESSION.OLD_INPUT, old);
-    // }
 
     if (this.flashSessions) {
       const flashKeys = Object.keys(this.flashSessions);

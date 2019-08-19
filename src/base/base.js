@@ -8,7 +8,6 @@ const Container = require('../container');
 const Response = require('../response');
 const RedirectResponse = require('../response/redirect');
 
-
 class Base {
   /**
    * Application instance getter
@@ -32,7 +31,7 @@ class Base {
   }
 
   /**
-   * create response instancw
+   * create response instance
    * @param  {...any} params response constructor params
    */
   response(...params) {
@@ -40,7 +39,7 @@ class Base {
   }
 
   /**
-   *  create redirect instancw
+   * create redirect instance
    * @param  {...any} params redirect constructor params
    */
   redirect(...params) {

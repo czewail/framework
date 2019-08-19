@@ -15,7 +15,7 @@ declare module "@dazejs/framework" {
      * Bind a singleton to the container
      *
      * @param {string} abstract Object identifier
-     * @param {mixed} concrete The object instance
+     * @param {*} concrete The object instance
      * @returns {void}
      * @public
      */
@@ -24,7 +24,7 @@ declare module "@dazejs/framework" {
      * Bind a multiton to the container
      *
      * @param {string} abstract Object identifier
-     * @param {mixed} concrete The object instance
+     * @param {*} concrete The object instance
      * @returns {void}
      * @public
      */
@@ -40,7 +40,7 @@ declare module "@dazejs/framework" {
     /**
      * Identifies whether the container has been bound
      *
-     * @param {mixed} abstract Object identifier
+     * @param {*} abstract Object identifier
      * @returns {boolean}
      * @public
      */
@@ -48,7 +48,7 @@ declare module "@dazejs/framework" {
     /**
      * Identifies whether the container has been instance
      *
-     * @param {mixed} abstract Object identifier
+     * @param {*} abstract Object identifier
      * @public
      */
     exists(abstract: any): boolean
@@ -75,7 +75,7 @@ declare module "@dazejs/framework" {
      *
      * @param {string} abstract class name or identif∂ier
      * @param {array} args params
-     * @returns {mixed} instance
+     * @returns {*} instance
      * @public
      * @static
      */
@@ -87,7 +87,7 @@ declare module "@dazejs/framework" {
      * @param {string} abstract Object identifier
      * @param {array} args params
      * @param {boolean} shared forced instantiation
-     * @returns {mixed} instance
+     * @returns {*} instance
      * @public
      * @static
      */
@@ -95,7 +95,7 @@ declare module "@dazejs/framework" {
     /**
      * Determines whether there is a corresponding binding within the container instance
      *
-     * @param {mixed} abstract Object identifier
+     * @param {*} abstract Object identifier
      * @returns {boolean} has abstract
      * @public
      * @static
@@ -119,8 +119,8 @@ declare module "@dazejs/framework" {
      */
     static setInstance(instance: object): void
   }
-  
-  
+
+
 
   class Application extends Container {
   }
@@ -132,7 +132,7 @@ declare module "@dazejs/framework" {
   const Decorators: Decorators
 
   class Controller {
-    
+
   }
 
 }

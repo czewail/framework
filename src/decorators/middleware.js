@@ -1,5 +1,3 @@
-
-
 /**
  * Copyright (c) 2018 Chan Zewail
  *
@@ -7,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 const proxy = require('../base/proxy');
-const Basemiddleware = require('../base//middleware');
+const BaseMiddleware = require('../base/middleware');
 
 function decoratorClass(elementDescriptor, name) {
   return {
@@ -15,7 +13,7 @@ function decoratorClass(elementDescriptor, name) {
     finisher(target) {
       Reflect.setMetadata('type', 'middleware', target.prototype);
       Reflect.setMetadata('middlewareName', name, target.prototype);
-      return proxy(target, Basemiddleware);
+      return proxy(target, BaseMiddleware);
     },
   };
 }

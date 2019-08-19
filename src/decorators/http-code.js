@@ -7,7 +7,7 @@
 
 const { HTTP_CODE } = require('../symbol');
 
-function injectdMethod(elementDescriptor, code) {
+function injectedMethod(elementDescriptor, code) {
   return {
     ...elementDescriptor,
     finisher(target) {
@@ -19,7 +19,7 @@ function injectdMethod(elementDescriptor, code) {
 function handle(elementDescriptor, code) {
   const { kind } = elementDescriptor;
   if (kind === 'method') {
-    return injectdMethod(elementDescriptor, code);
+    return injectedMethod(elementDescriptor, code);
   }
   return elementDescriptor;
 }

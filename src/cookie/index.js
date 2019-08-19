@@ -12,7 +12,7 @@ class Cookie {
   /**
    * Create Cookie instance
    * @param {String} name cookie name
-   * @param {Mixed} value cookie value
+   * @param {*} value cookie value
    * @param {Object} options cookie options
    */
   constructor(name, value, options = {}) {
@@ -56,19 +56,6 @@ class Cookie {
   }
 
   /**
-   * set cookie value
-   * @public
-   * @param {string} val cookie value
-   * @returns {object} this
-   */
-  setValue(val) {
-    if (val) {
-      this.value = val;
-    }
-    return this;
-  }
-
-  /**
    * get cookie value
    * @public
    * @returns {string} cookie value
@@ -78,10 +65,23 @@ class Cookie {
   }
 
   /**
+   * set cookie value
+   * @public
+   * @param {string} val cookie value
+   * @returns {this}
+   */
+  setValue(val) {
+    if (val) {
+      this.value = val;
+    }
+    return this;
+  }
+
+  /**
    * set cookie options - httpOnly
    * @public
    * @param {boolean} flag is http only?
-   * @returns {object} this
+   * @returns {this}
    */
   setHttpOnly(flag = true) {
     this.options.httpOnly = flag;
@@ -92,7 +92,7 @@ class Cookie {
    * set cookie options - signed
    * @public
    * @param {boolean} flag should signed?
-   * @returns {object} this
+   * @returns {this}
    */
   setSigned(flag = true) {
     this.options.signed = flag;
@@ -102,7 +102,7 @@ class Cookie {
   /**
    * set cookie should signed
    * @public
-   * @returns {object} this
+   * @returns {this}
    */
   shouldSigned() {
     this.setSigned(true);
@@ -112,7 +112,7 @@ class Cookie {
   /**
    * set cookie dont't signed
    * @public
-   * @returns {object} this
+   * @returns {this}
    */
   doNotSigned() {
     this.setSigned(false);
@@ -122,8 +122,8 @@ class Cookie {
   /**
    * set cookie options - maxAge
    * @public
-   * @param {number} expiry cookie expir(mm)
-   * @returns {object} this
+   * @param {number} expiry cookie expire(mm)
+   * @returns {this}
    */
   setMaxAge(expiry = 0) {
     this.options.maxAge = expiry;
@@ -134,7 +134,7 @@ class Cookie {
    * set cookie options - domain
    * @public
    * @param {string} pattern cookie domain
-   * @returns {object} this
+   * @returns {this}
    */
   setDomain(pattern = '') {
     this.options.domain = pattern;
@@ -145,7 +145,7 @@ class Cookie {
    * set cookie options - path
    * @public
    * @param {string} uri cookie uri
-   * @returns {object} this
+   * @returns {this}
    */
   setPath(uri = '/') {
     this.options.path = uri;
@@ -156,7 +156,7 @@ class Cookie {
    * set cookie options - secure
    * @public
    * @param {boolean} flag cookie secure
-   * @returns {object} this
+   * @returns {this}
    */
   setSecure(flag = false) {
     this.options.secure = flag;
@@ -167,7 +167,7 @@ class Cookie {
    * set cookie options - expires
    * @public
    * @param {Date} expires cookie expires
-   * @returns {object} this
+   * @returns {this}
    */
   setExpires(expires) {
     this.options.expires = expires;

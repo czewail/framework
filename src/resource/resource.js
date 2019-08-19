@@ -23,7 +23,7 @@ class Resource {
   key = DEFAULT_KEY;
 
   /**
-   * @var {mixed} data resource data
+   * @var {*} data resource data
    */
   data = null;
 
@@ -38,7 +38,7 @@ class Resource {
   metaFormatter = null;
 
   /**
-   * @var {mixed} meta resource meta data
+   * @var {*} meta resource meta data
    */
   meta = null;
 
@@ -49,8 +49,8 @@ class Resource {
 
   /**
    * Create Resource
-   * @param {mixed} data resource data
-   * @param {?function} formatter resource data formatter
+   * @param {*} data resource data
+   * @param {?Function} formatter resource data formatter
    * @param {?string} key resource data key
    */
   constructor(data, formatter = null, key = null) {
@@ -146,7 +146,7 @@ class Resource {
   /**
    * add meta object
    * @param {string|object} name meta object key name
-   * @param {mixed} value meta value for name key
+   * @param {*} value meta value for name key
    * @param {function|string} formatter meta formatter
    */
   addMeta(name, value, formatter = null) {

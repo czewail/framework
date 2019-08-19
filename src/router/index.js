@@ -1,11 +1,15 @@
-// const http = require('http');
+/**
+ * Copyright (c) 2019 zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const Route = require('./route');
 const Collection = require('./collection');
 const Container = require('../container');
 const Dispatcher = require('./dispatcher');
 const corsMiddleware = require('../foundation/middlewares/cors');
-// const ResponseFactory = require('../response/manager');
-
 
 class Router {
   /**
@@ -13,21 +17,14 @@ class Router {
    */
   constructor() {
     /**
-     * @var {Application} app Application instance
+     * @type {Application} app Application instance
      */
     this.app = Container.get('app');
 
     /**
-     * @var {Collection} collection Router Collection instance
+     * @type {RouteCollection} collection Router Collection instance
      */
     this.collection = new Collection();
-
-    /**
-     * @var {Controller[]} controllers controllers in container
-     */
-    // this.controllers = this.getControllers();
-
-    // this.registerRoutes();
   }
 
   resolve() {

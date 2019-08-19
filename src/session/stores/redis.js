@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const { promisify } = require('util');
 const redis = require('redis');
 
@@ -8,12 +15,12 @@ class RedisSessionStore {
    */
   constructor(app) {
     /**
-     * @var {Application} app Application instance
+     * @type {Application} app Application instance
      */
     this.app = app;
 
     /**
-     * @var {Object} redisConfig redis connect options
+     * @type {Object} redisConfig redis connect options
      */
     this.redisConfig = this.getRedisConfigure();
   }

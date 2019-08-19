@@ -61,7 +61,9 @@ class Controller {
    * register controller routes
    * @param {Class} controller controller class
    * @param {Array} routes routes desc array
-   * @param {String} prefix routes prifix
+   * @param {String} prefix routes prefix
+   * @param {Middleware} controllerMiddlewares controller middlewares
+   * @param {Middleware} routeMiddlewares route middlewares
    * @private
    */
   registerRoutes(controller, routes, prefix, controllerMiddlewares, routeMiddlewares) {
