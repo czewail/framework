@@ -12,6 +12,7 @@ const Multiton = require('./multiton');
 const Resource = require('./resource');
 const Component = require('./component');
 const Validator = require('./validator');
+const Provider = require('./provider');
 const Ignore = require('./ignore');
 const useMiddleware = require('./use-middleware');
 const Verbs = require('./verb');
@@ -34,6 +35,7 @@ module.exports = {
   Resource,
   Component,
   Validator,
+  Provider,
   Middleware,
   Multiton,
   useMiddleware,

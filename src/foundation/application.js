@@ -149,9 +149,6 @@ class Application extends Container {
     // register router provider
     await this.register(new providers.Router(this));
 
-    // register request provider
-    // await this.register(new providers.Request(this));
-
     // register response provider
     await this.register(new providers.Response(this));
 
@@ -179,24 +176,12 @@ class Application extends Container {
     if (Reflect.has(Provider, 'launch') && typeof Provider.launch === 'function') {
       this.launchCalls.push((...args) => Provider.launch(...args));
     }
-
-    if (Reflect.has(Provider, 'runtime') && typeof Provider.runtime === 'function') {
-      this.runtimeCalls.push((...args) => Provider.runtime(...args));
-    }
   }
 
   async fireLaunchCalls(...args) {
     const results = [];
     for (const launch of this.launchCalls) {
       results.push(launch(...args, this));
-    }
-    await Promise.all(results);
-  }
-
-  async fireRuntimeCalls(ctx) {
-    const results = [];
-    for (const runtime of this.runtimeCalls) {
-      results.push(runtime(ctx));
     }
     await Promise.all(results);
   }

@@ -8,14 +8,14 @@
 // const { Item, Collection } = require('../resource');
 // const ResourceFactory = require('../resource/DEPRECATED_factory');
 const proxy = require('../base/proxy');
-const BaseResource = require('../base/resource');
+const BaseProvider = require('../base/provider');
 
 function decoratorClass(elementDescriptor) {
   return {
     ...elementDescriptor,
     finisher(target) {
       Reflect.setMetadata('type', 'provider', target.prototype);
-      return proxy(target, BaseResource);
+      return proxy(target, BaseProvider);
     },
   };
 }
