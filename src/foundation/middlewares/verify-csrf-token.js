@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const minimatch = require('minimatch');
 const Middleware = require('../../base/middleware');
 const Message = require('../support/message');
@@ -8,6 +15,7 @@ const defaultInvalidTokenMessage = 'Invalid CSRF token';
 
 class VerifyCsrfToken extends Middleware {
   constructor(context) {
+    // FIXME 父类是没有入参的
     super(context);
     this.message = new Message();
   }
@@ -37,9 +45,7 @@ class VerifyCsrfToken extends Middleware {
       return ctx;
     }
     this.message.add('token', this.invalidTokenMessage);
-    // console.log(this.message.toJSON())
     throw new HttpError(403, this.invalidTokenMessage);
-    // ctx.throw(403, this.invalidTokenMessage)
   }
 
   /**

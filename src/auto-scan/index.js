@@ -69,7 +69,7 @@ class AutoScan {
 
   /**
    * parse file module
-   * @param {mixed} target
+   * @param {*} target
    * @param {string} type controller | middleware | service | resource | validator | component
    */
   parseModule(target, type) {

@@ -73,7 +73,7 @@ class Config {
   /**
    * Sets the property value recursively based on the property name
    * @param {array} names name array
-   * @param {mixed} value set value
+   * @param {*} value set value
    * @param {number} index name in names index
    * @returns {object} name:value object
    */
@@ -94,7 +94,7 @@ class Config {
   /**
    * Set the property value according to the property name
    * @param {array|string} name name,  array or string
-   * @param {mixed} value set value
+   * @param {*} value set value
    * @returns {object} this._items
    */
   set(name, value = null) {
@@ -108,8 +108,8 @@ class Config {
 
   /**
    * The name of the configuration
-   * @param {string} name The name of the configuration
-   * @param {mixed} def The default configuration
+   * @param {?string} name The name of the configuration
+   * @param {*} def The default configuration
    */
   get(name = null, def = null) {
     let value = this._items;

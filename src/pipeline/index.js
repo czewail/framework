@@ -15,7 +15,7 @@ class Pipeline {
    */
   constructor(...stages) {
     /**
-     * @var {Array} stages pipe stages
+     * @type {Array} stages pipe stages
      */
     this.stages = stages;
   }
@@ -35,7 +35,7 @@ class Pipeline {
 
   /**
    * send payloads
-   * @param  {...Mixed} payload
+   * @param  {...*} payload
    * @returns {Pipeline} this
    */
   send(...payload) {
@@ -45,8 +45,8 @@ class Pipeline {
 
   /**
    * run pipeline
-   * @param {mixed} payload pipe data payload
-   * @returns {mixed} result
+   * @param {*} processor pipe data payload
+   * @returns {*} result
    */
   async process(processor) {
     if (this.stages.length > 0) {

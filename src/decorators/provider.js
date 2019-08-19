@@ -5,8 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 
-// const { Item, Collection } = require('../resource');
-// const ResourceFactory = require('../resource/DEPRECATED_factory');
 const proxy = require('../base/proxy');
 const BaseResource = require('../base/resource');
 

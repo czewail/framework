@@ -19,32 +19,32 @@ const parseBody = require('./utils/parse-body');
 class Request {
   constructor(req, res) {
     /**
-     * @var {object} app Application
+     * @type {object} app Application
      */
     this.app = Container.get('app');
 
     /**
-     * @var {http.IncomingMessage} req http.IncomingMessage
+     * @type {http.IncomingMessage} req http.IncomingMessage
      */
     this.req = req;
 
     /**
-     * @var {http.ServerResponse} res http.ServerResponse
+     * @type {http.ServerResponse} res http.ServerResponse
      */
     this.res = res;
 
     /**
-     * @var {Object} _cookies Cookies instance
+     * @type {Object} _cookies Cookies instance
      */
     this._cookies = null;
 
     /**
-     * @var {Session} _session Session instance
+     * @type {Session} _session Session instance
      */
     this._session = null;
 
     /**
-     * @var {Object} _accept accepts
+     * @type {Object} _accept accepts
      */
     this._accepts = null;
   }
@@ -205,7 +205,7 @@ class Request {
 
   /**
    * Get request protocol
-   * @returns {String: 'http' | 'https'}
+   * @returns {String} 'http' | 'https'
    */
   get protocol() {
     if (this.socket.encrypted) return 'https';
@@ -217,7 +217,7 @@ class Request {
 
   /**
    * Get request protocol
-   * @returns {String: 'http' | 'https'}
+   * @returns {String} 'http' | 'https'
    */
   getProtocol() {
     return this.protocol;
@@ -281,7 +281,7 @@ class Request {
   }
 
   /**
-   * 根据 ? 获取原始查询字符串（不包含 ？）
+   * 根据 ? 获取原始查询字符串（不包含 ?）
    */
   get querystring() {
     return parse(this.req).query || '';
@@ -296,7 +296,7 @@ class Request {
 
 
   /**
-   * 根据 ? 获取原始查询字符串（包含 ？）
+   * 根据 ? 获取原始查询字符串（包含 ?）
    */
   get search() {
     if (!this.querystring) return '';
@@ -304,7 +304,7 @@ class Request {
   }
 
   /**
-   * 根据 ? 获取原始查询字符串（包含 ？）
+   * 根据 ? 获取原始查询字符串（包含 ?）
    */
   getSearch() {
     return this.search;
@@ -409,9 +409,11 @@ class Request {
   }
 
   /**
+   * FIXME cookie方法入参是字符串，但是解构结果是数组
+   *
    * alias this.cookie
-   * @param  {...any} params this.cookie params
-  //  */
+   * @param  {...*} params this.cookie params
+   */
   cookieValue(...params) {
     return this.cookie(...params);
   }
@@ -419,7 +421,7 @@ class Request {
   /**
    * session simple
    * @param {String} key session key
-   * @param {Mixed} value session value
+   * @param {*} value session value
    */
   session(key, value) {
     if (!this._session) {
@@ -431,21 +433,14 @@ class Request {
   }
 
   /**
+   * FIXME 这个方法入参是错误的，session入参是两个值，但是这个只有一个。这个方法无地方使用，可以删除这个方法
+   *
    * get Session value
    * @param {String} key
    */
   sessionValue(key) {
     return this.session(key);
   }
-
-  // get port() {
-  //   return this.socket.remotePort;
-  // }
-
-  // get ip() {
-  //   return this.socket.remoteAddress;
-  // }
-
 
   get secure() {
     return this.protocol === 'https';
@@ -472,10 +467,6 @@ class Request {
     }
     return false;
   }
-
-  // get expectsJson() {
-  //   return this.isAjax || !!this.ctx.accepts('json');
-  // }
 
   get mergedParams() {
     if (!this._params) {
@@ -519,7 +510,7 @@ class Request {
    * Gets the parameter value based on the parameter name
    * Returns the default value when the parameter does not exist
    * @param {string} name Parameter name
-   * @param {mixed} defaultValue default parameter value
+   * @param {*} defaultValue default parameter value
    */
   param(name, defaultValue = null) {
     if (name) {
@@ -530,7 +521,7 @@ class Request {
 
   /**
    * Filter parameters
-   * @param {string} names An array of parameter names
+   * @param {...*} args An array of parameter names
    */
   only(...args) {
     const res = {};
@@ -553,7 +544,7 @@ class Request {
 
   /**
    * Filter parameters
-   * @param {string} names An array of parameter names
+   * @param {...*} args An array of parameter names
    */
   except(...args) {
     let exceptKeys = [];

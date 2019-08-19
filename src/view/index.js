@@ -30,7 +30,7 @@ class View {
   /**
    * Pass the variable to the template
    * @param {string|object} name variable object or variable name
-   * @param {mixed} value variable value
+   * @param {*} value variable value
    */
   assign(name, value) {
     if (is.isObject(name)) {

@@ -35,8 +35,9 @@ class Container extends EventEmitter {
    * Bind a singleton to the container
    *
    * @param {string} abstract Object identifier
-   * @param {mixed} concrete The object instance
-   * @returns {void}
+   * @param {*} concrete The object instance
+   * @param {Boolean} [callable=false] Generic Functions
+   * @returns {this}
    * @public
    */
   singleton(abstract, concrete = null, callable = false) {
@@ -48,7 +49,8 @@ class Container extends EventEmitter {
    * Bind a multiton to the container
    *
    * @param {string} abstract Object identifier
-   * @param {mixed} concrete The object instance
+   * @param {*} concrete The object instance
+   * @param {Boolean} [callable=false] Generic Functions
    * @returns {void}
    * @public
    */
@@ -74,7 +76,7 @@ class Container extends EventEmitter {
   /**
    * Identifies whether the container has been bound
    *
-   * @param {mixed} abstract Object identifier
+   * @param {*} abstract Object identifier
    * @returns {boolean}
    * @public
    */
@@ -85,7 +87,7 @@ class Container extends EventEmitter {
   /**
    * Identifies whether the container has been instance
    *
-   * @param {mixed} abstract Object identifier
+   * @param {*} abstract Object identifier
    * @public
    */
   exists(abstract) {
@@ -96,7 +98,9 @@ class Container extends EventEmitter {
    * Bind an object to the container
    *
    * @param {string} abstract Object identifier
-   * @param {mixed} concrete The object instance to bind to
+   * @param {*} concrete The object instance to bind to
+   * @param {Boolean} [shared=false] forced instantiation
+   * @param {Boolean} [callable=false] Generic Functions
    * @returns {Container} this
    * @private
    */
@@ -123,7 +127,7 @@ class Container extends EventEmitter {
   /**
    * Bind multiple dependencies to the container
    *
-   * @param {MapArray} mapArray multiple dependencies array
+   * @param {Array} mapArray multiple dependencies array
    * @returns {void}
    * @public
    */
@@ -252,7 +256,7 @@ class Container extends EventEmitter {
   /**
    * set abstract in groups
    * @param {string} abstract Object identifier
-   * @param {string} group group name
+   * @param {string} tag group name
    */
   static tag(abstract, tag) {
     if (!abstract || !tag) return;
@@ -265,7 +269,7 @@ class Container extends EventEmitter {
    *
    * @param {string} abstract class name or identif∂ier
    * @param {array} args params
-   * @returns {mixed} instance
+   * @returns {*} instance
    * @public
    * @static
    */
@@ -277,9 +281,10 @@ class Container extends EventEmitter {
    * bind an abstract in container
    *
    * @param {string} abstract Object identifier
-   * @param {array} args params
+   * @param {array} concrete
    * @param {boolean} shared forced instantiation
-   * @returns {mixed} instance
+   * @param {boolean} [callable=false] Generic Functions
+   * @returns {*} instance
    * @public
    * @static
    */
@@ -290,7 +295,7 @@ class Container extends EventEmitter {
   /**
    * Determines whether there is a corresponding binding within the container instance
    *
-   * @param {mixed} abstract Object identifier
+   * @param {*} abstract Object identifier
    * @returns {boolean} has abstract
    * @public
    * @static

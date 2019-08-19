@@ -1,4 +1,9 @@
-
+/**
+ * Copyright (c) 2019 zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 module.exports = (current, Base) => new Proxy(current, {
   construct(target, argArray, newTarget) {
     const instance = Reflect.construct(target, argArray, newTarget);

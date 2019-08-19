@@ -17,22 +17,22 @@ class Validate {
    */
   constructor(data, rules) {
     /**
-     * @var {Application} app Application instance
+     * @type {Application} app Application instance
      */
     this.app = Container.get('app');
 
     /**
-     * @var {Object} data validate data
+     * @type {Object} data validate data
      */
     this.data = this.parseData(data);
 
     /**
-     * @var {Array} rules validator rules
+     * @type {Array} rules validator rules
      */
     this.rules = this.parseRules(rules);
 
     /**
-     * @var {Message} message message instance
+     * @type {Message} message message instance
      */
     this.message = new Message();
   }

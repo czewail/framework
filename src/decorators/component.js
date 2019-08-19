@@ -5,7 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 
-
 function injectClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,

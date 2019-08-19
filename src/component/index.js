@@ -43,7 +43,7 @@ class Component {
   }
 
   /**
-   * resolve a cpmponent
+   * resolve a component
    * @param {Class} component
    * @param {String} type service | resource | component
    * @private

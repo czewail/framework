@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2019 Chan Zewail <chanzewail@gmail.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const is = require('core-util-is');
 const Container = require('../container');
 const Pipeline = require('../pipeline');
@@ -7,7 +14,7 @@ class Middleware {
     this.app = Container.get('app');
 
     /**
-     * @var {Array} middlewares middlewares stack
+     * @type {Array} middlewares middlewares stack
      */
     this.middlewares = [];
   }
@@ -15,6 +22,7 @@ class Middleware {
   /**
    * register a middleware
    * @param {String | Function | Class} middleware
+   * @param {Array} args
    */
   register(middleware, args) {
     if (is.isString(middleware)) {
@@ -48,6 +56,7 @@ class Middleware {
   /**
    * parse middle if middleware type is string type
    * @param {String} middleware
+   * @param {Array} args
    */
   parseStringMiddleware(middleware, args = []) {
     const _middleware = this.app.get(`middleware.${middleware}`, args);
@@ -59,6 +68,7 @@ class Middleware {
   /**
    * parse middle if middleware type is function type
    * @param {Function} middleware
+   * @param {Array} args
    */
   parseFunctionMiddleware(middleware, args = []) {
     // 使用了 @Middleware 装饰器

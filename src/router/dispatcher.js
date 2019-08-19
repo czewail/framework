@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2019 zewail
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
@@ -33,7 +40,6 @@ class Dispatcher {
 
   /**
    * resolve dispatcher
-   * @param {Request} request
    */
   async resolve() {
     if (this.route) {
@@ -58,7 +64,7 @@ class Dispatcher {
         response.setHeader('Content-Encoding', 'br');
         this.request.res.removeHeader('Content-Length');
         encodingExt = '.br';
-      } else if (this.isEncodingGZ()) {
+      } else if (this.isEncodingGZ()) { // FIXME isEncodingGZ 入参缺失
         filePath += '.gz';
         response.setHeader('Content-Encoding', 'gzip');
         this.request.res.removeHeader('Content-Length');
