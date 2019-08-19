@@ -7,7 +7,7 @@
 
 const cpus = require('os').cpus().length;
 const cluster = require('cluster');
-const { WORKER_RELOAD } = require('./const');
+const { WORKER_DYING } = require('./const');
 
 /**
  * Analyze the parameters of Cluster module
@@ -47,7 +47,6 @@ exports.getAlivedWorkers = function getAlivedWorkers() {
  */
 exports.isAliveWorker = function isAliveWorker(worker) {
   if (worker.state === 'disconnected' || worker.state === 'dead') return false;
-  // FIXME WORKER_RELOAD是个对象，所以这里永远都是true
-  if (worker[WORKER_RELOAD]) return false;
+  if (worker[WORKER_DYING]) return false;
   return true;
 };
