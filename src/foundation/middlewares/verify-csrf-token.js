@@ -4,96 +4,78 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+const minimatch = require('minimatch');
+const { Middleware } = require('../../decorators');
+const Container = require('../../container');
+const Response = require('../../response');
 
-// TODO
+const defaultExcludedMethods = ['HEAD', 'GET', 'OPTIONS'];
+const defaultInvalidTokenMessage = 'Invalid CSRF token';
 
-// const minimatch = require('minimatch');
-// const Middleware = require('../../base/middleware');
-// const Message = require('../support/message');
-// const HttpError = require('../../errors/http-error');
+@Middleware('verify-csrf-token')
+class VerifyCsrfToken {
+  constructor() {
+    this.app = Container.get('app');
+  }
 
-// const defaultExcludedMethods = ['HEAD', 'GET', 'OPTIONS'];
-// const defaultInvalidTokenMessage = 'Invalid CSRF token';
+  get except() {
+    return [];
+  }
 
-// class VerifyCsrfToken extends Middleware {
-//   constructor(context) {
-//     super(context);
-//     this.message = new Message();
-//   }
+  get excludedMethods() {
+    return defaultExcludedMethods;
+  }
 
-//   /**
-//    * The URIs that should be excluded from CSRF verification.
-//    * @type {array}
-//    */
-//   get except() {
-//     return [];
-//   }
+  get invalidTokenMessage() {
+    return defaultInvalidTokenMessage;
+  }
 
-//   get excludedMethods() {
-//     return defaultExcludedMethods;
-//   }
+  isReadVerb(method) {
+    const excludedMethods = Array.isArray(this.excludedMethods)
+      ? this.excludedMethods
+      : defaultExcludedMethods;
+    return !!~excludedMethods.indexOf(method.toUpperCase());
+  }
 
-//   get invalidTokenMessage() {
-//     return defaultInvalidTokenMessage;
-//   }
+  inExcept(requestPath) {
+    for (const except of this.except) {
+      if (minimatch(requestPath, except)) return true;
+    }
+    return false;
+  }
 
-//   handle(ctx) {
-//     if (
-//       this.isReadVerb(ctx)
-//       || this.inExcept(ctx)
-//       || this.tokenValidity(ctx)
-//     ) {
-//       return ctx;
-//     }
-//     this.message.add('token', this.invalidTokenMessage);
-//     throw new HttpError(403, this.invalidTokenMessage);
-//   }
+  tokenValidity(request) {
+    const bodyToken = (request.body && typeof request.body._token === 'string')
+      ? request.body._token : false;
+    const token = bodyToken
+      || request.getHeader('csrf-token')
+      || request.getHeader('xsrf-token')
+      || request.getHeader('x-csrf-token')
+      || request.getHeader('x-xsrf-token');
 
-//   /**
-//    * Verify the token validity
-//    * @refer https://github.com/koajs/csrf/blob/master/src/index.js
-//    * @param {object} ctx
-//    * @returns {boolean}
-//    */
-//   tokenValidity(ctx) {
-//     const bodyToken = (ctx.request.body && typeof ctx.request.body._token === 'string')
-//       ? ctx.request.body._token : false;
-//     const token = bodyToken
-//       || ctx.get('csrf-token')
-//       || ctx.get('xsrf-token')
-//       || ctx.get('x-csrf-token')
-//       || ctx.get('x-xsrf-token');
+    if (!token) {
+      return false;
+    }
+    if (!this.app.get('csrf').verify(request.session().get('secret'), token)) {
+      return false;
+    }
+    return true;
+  }
 
-//     if (!token) {
-//       return false;
-//     }
-//     if (!this.app.get('csrf').verify(ctx.session.secret, token)) {
-//       return false;
-//     }
-//     return true;
-//   }
+  resolve(request, next) {
+    const session = request.session();
+    if (!session.get('secret')) {
+      session.set('secret', this.app.get('csrf').secretSync());
+    }
+    if (
+      this.isReadVerb(request.getMethod())
+      || this.inExcept(request.getPath())
+      || this.tokenValidity(request)
+    ) {
+      return next();
+    }
+    return new Response(this.invalidTokenMessage, 403);
+  }
+}
 
-//   /**
-//    * Check if the current request path requires validation
-//    * @param {object} ctx
-//    * @returns {boolean}
-//    */
-//   inExcept(ctx) {
-//     for (const except of this.except) {
-//       if (minimatch(ctx.path, except)) return true;
-//     }
-//     return false;
-//   }
-
-//   /**
-//    * Check if the current request type requires validation
-//    * @param {object} ctx
-//    * @returns {boolean}
-//    */
-//   isReadVerb(ctx) {
-//     const excludedMethods = Array.isArray(this.excludedMethods) ? this.excludedMethods : defaultExcludedMethods;
-//     return !!~excludedMethods.indexOf(ctx.method.toUpperCase());
-//   }
-// }
-
-// module.exports = VerifyCsrfToken;
+module.exports = VerifyCsrfToken;

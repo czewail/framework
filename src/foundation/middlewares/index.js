@@ -6,3 +6,4 @@
  */
 
 exports.Cors = require('./cors');
+exports.VerifyCsrfToken = require('./verify-csrf-token');

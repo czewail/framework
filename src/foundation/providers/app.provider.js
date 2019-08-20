@@ -4,7 +4,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-
+const Tokens = require('csrf');
 const AutoScan = require('../../auto-scan');
 const symbols = require('../../symbol');
 
@@ -19,11 +19,16 @@ class AppProvider {
     this.app.bind('auto-scan', AutoScan);
 
     this.registerInjectors();
+
+    this.app.bind('csrf', Tokens);
   }
 
   launch() {
     const scan = this.app.get('auto-scan');
     scan.resolve();
+
+
+    this.app.make('csrf');
   }
 
   registerInjectors() {
