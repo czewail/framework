@@ -143,7 +143,6 @@ class Session {
   }
 
   /**
-   * FIXME defaultVal 应该做成选填参数
    * get session value
    * @param {String} key session key
    */

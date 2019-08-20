@@ -74,7 +74,6 @@ class Route {
    * register default route middlewares
    */
   registerDefaultMiddlewares() {
-    // FIXME 入参不符
     this.middleware.register(LoadSessionMiddleware);
   }
 
@@ -125,7 +124,6 @@ class Route {
   registerControllerMiddlewares(middlewares) {
     if (!Array.isArray(middlewares)) return this;
     for (const middleware of middlewares) {
-      // FIXME 入参不符
       this.middleware.register(middleware);
     }
     return this;

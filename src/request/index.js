@@ -409,8 +409,6 @@ class Request {
   }
 
   /**
-   * FIXME cookie方法入参是字符串，但是解构结果是数组
-   *
    * alias this.cookie
    * @param  {...*} params this.cookie params
    */
@@ -433,8 +431,6 @@ class Request {
   }
 
   /**
-   * FIXME 这个方法入参是错误的，session入参是两个值，但是这个只有一个。这个方法无地方使用，可以删除这个方法
-   *
    * get Session value
    * @param {String} key
    */

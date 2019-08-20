@@ -59,12 +59,12 @@ class Dispatcher {
       let filePath = this.getStaticFilePath();
 
       let encodingExt = '';
-      if (this.isEncodingBR()) {
+      if (this.isEncodingBR(filePath)) {
         filePath += '.br';
         response.setHeader('Content-Encoding', 'br');
         this.request.res.removeHeader('Content-Length');
         encodingExt = '.br';
-      } else if (this.isEncodingGZ()) { // FIXME isEncodingGZ 入参缺失
+      } else if (this.isEncodingGZ(filePath)) {
         filePath += '.gz';
         response.setHeader('Content-Encoding', 'gzip');
         this.request.res.removeHeader('Content-Length');

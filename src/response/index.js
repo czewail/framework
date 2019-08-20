@@ -53,9 +53,6 @@ class Response {
      */
     this._charset = 'utf-8';
 
-    // FIXME unused vars
-    this._isStaticServer = false;
-
     /**
      * FIXME unused vars
      *
@@ -389,8 +386,6 @@ class Response {
   }
 
   /**
-   * FIXME 选填参数应跟在必填后边
-   *
    * Contents-dispositions are set as "attachments" to indicate that the client prompts to download.
    * Optionally, specify the filename to be downloaded.
    * @public
@@ -404,8 +399,6 @@ class Response {
   }
 
   /**
-   * FIXME 选填参数应跟在必填后边
-   *
    * attachment alias
    * @public
    * @param {string} filename
