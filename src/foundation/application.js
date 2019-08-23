@@ -9,6 +9,7 @@ const path = require('path');
 const cluster = require('cluster');
 const util = require('util');
 const Keygrip = require('keygrip');
+const is = require('core-util-is');
 const Container = require('../container');
 const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
@@ -121,6 +122,7 @@ class Application extends Container {
    */
   async registerBaseProviders() {
     await this.register(new providers.Config(this));
+    await this.register(new providers.Loader(this));
     await this.register(new providers.Messenger(this));
   }
 
@@ -135,6 +137,42 @@ class Application extends Container {
     await this.register(new providers.Middleware(this));
     await this.register(new providers.Router(this));
     await this.register(new providers.Template(this));
+  }
+
+  async registerVendorProviders() {
+    const _providers = this.config.get('app.providers', []);
+
+    for (const key of _providers) {
+      await this.load(key);
+    }
+  }
+
+
+  /**
+   * load a registed provider with key or provider function
+   * @param {String | Class} Provider
+   */
+  async load(Provider) {
+    // if (is.isString(Provider)) {
+    //   if (this.has(Provider)) {
+    //     // await this.register(this.get(Provider));
+    //     return this;
+    //   }
+    //   try {
+    //     const modulePath = require.resolve(Provider);
+    //     // eslint-disable-next-line
+    //     const Target = require(modulePath);
+    //     await this.register(new Target(this));
+    //   } catch (err) {
+    //     throw new Error(`Can not find provider [${Provider}]!`);
+    //   }
+    //   return this;
+    // }
+    if (is.isFunction(Provider)) {
+      const type = Reflect.getMetadata('type', Provider.prototype);
+      if (type !== 'provider') throw new Error(`${Provider.name || 'Unknow'} is not a provider!`);
+    }
+    throw new Error(`Does not supported ${typeof Provider} Provider!`);
   }
 
   /**
@@ -263,7 +301,7 @@ class Application extends Container {
     if (!clusterConfig.enable || !cluster.isMaster) {
       await this.registerDefaultProviders();
       await this.registerHttpServerProvider();
-
+      await this.registerVendorProviders();
       await this.fireLaunchCalls();
     }
   }

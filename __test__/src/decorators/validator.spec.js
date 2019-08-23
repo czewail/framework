@@ -8,6 +8,6 @@ describe('Validator Decorator', () => {
       elements: [],
     }).finisher(class Example { });
     expect(Reflect.getMetadata('type', res.prototype)).toBe('validator');
-    expect(Reflect.getMetadata('validator', res.prototype)).toBe('example');
+    expect(Reflect.getMetadata('name', res.prototype)).toBe('example');
   });
 });

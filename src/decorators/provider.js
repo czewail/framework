@@ -8,23 +8,24 @@
 const proxy = require('../base/proxy');
 const BaseProvider = require('../base/provider');
 
-function decoratorClass(elementDescriptor) {
+function decoratorClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,
     finisher(target) {
       Reflect.setMetadata('type', 'provider', target.prototype);
+      Reflect.setMetadata('type', name, target.prototype);
       return proxy(target, BaseProvider);
     },
   };
 }
 
-function handle(elementDescriptor) {
+function handle(elementDescriptor, name) {
   if (elementDescriptor.kind === 'class') {
-    return decoratorClass(elementDescriptor);
+    return decoratorClass(elementDescriptor, name);
   }
   return elementDescriptor;
 }
 
-module.exports = function Provider() {
-  return elementDescriptor => handle(elementDescriptor);
+module.exports = function Provider(name) {
+  return elementDescriptor => handle(elementDescriptor, name);
 };

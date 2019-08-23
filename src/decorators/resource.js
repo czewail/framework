@@ -13,7 +13,7 @@ function decoratorClass(elementDescriptor, name) {
     ...elementDescriptor,
     finisher(target) {
       Reflect.setMetadata('type', 'resource', target.prototype);
-      Reflect.setMetadata('resource', name, target.prototype);
+      Reflect.setMetadata('name', name, target.prototype);
       return proxy(target, BaseResource);
     },
   };

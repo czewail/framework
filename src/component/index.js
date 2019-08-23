@@ -49,7 +49,7 @@ class Component {
    * @private
    */
   resolve(component, type) {
-    const componentName = Reflect.getMetadata(type, component.prototype) || component.name;
+    const componentName = Reflect.getMetadata('name', component.prototype);
     if (!componentName) throw new IllegalArgumentError(`${type} must have a name!`);
     const key = `${type}.${componentName}`;
     if (!this.app.has(key)) {

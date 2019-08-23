@@ -5,7 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 const Tokens = require('csrf');
-const Loader = require('../../loader');
 const symbols = require('../../symbol');
 
 // FIXME 不单单是这个文件，而是所有provider。建议加一个Provider基类作为类型，不然很多涉及到provider基类的地方无法做类型标记(譬如Application)
@@ -16,14 +15,9 @@ class AppProvider {
   }
 
   register() {
-    this.app.singleton('loader', Loader);
     this.app.singleton('csrf', Tokens);
 
     this.registerInjectors();
-  }
-
-  launch() {
-    this.app.get('loader').resolve();
   }
 
   registerInjectors() {

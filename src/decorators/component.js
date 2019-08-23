@@ -10,7 +10,7 @@ function injectClass(elementDescriptor, name) {
     ...elementDescriptor,
     finisher(target) {
       Reflect.setMetadata('type', 'component', target.prototype);
-      Reflect.setMetadata('component', name, target.prototype);
+      Reflect.setMetadata('name', name, target.prototype);
       return target;
     },
   };

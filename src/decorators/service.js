@@ -8,14 +8,12 @@
 const proxy = require('../base/proxy');
 const BaseService = require('../base/service');
 
-const TYPE = 'service';
-
 function injectClass(elementDescriptor, name) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      Reflect.setMetadata('type', TYPE, target.prototype);
-      Reflect.setMetadata(TYPE, name, target.prototype);
+      Reflect.setMetadata('type', 'service', target.prototype);
+      Reflect.setMetadata(name, name, target.prototype);
       return proxy(target, BaseService);
     },
   };
