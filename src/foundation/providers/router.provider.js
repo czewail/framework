@@ -6,7 +6,6 @@
  */
 
 const Router = require('../../router');
-const Middleware = require('../../middleware');
 
 class RouterProvider {
   /**
@@ -26,11 +25,6 @@ class RouterProvider {
   register() {
     // bind config in container
     this.app.singleton('router', Router);
-    this.app.singleton('routerMiddleware', Middleware);
-  }
-
-  launch() {
-    this.app.make('router');
   }
 }
 

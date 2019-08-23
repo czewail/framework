@@ -7,7 +7,7 @@
 const path = require('path');
 const glob = require('glob');
 
-class AutoScan {
+class Loader {
   /**
    * Create AutoScan Instance
    */
@@ -159,4 +159,4 @@ class AutoScan {
   }
 }
 
-module.exports = AutoScan;
+module.exports = Loader;
