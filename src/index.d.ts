@@ -125,14 +125,33 @@ declare module "@dazejs/framework" {
   class Application extends Container {
   }
 
-  interface Decorators {
-    Controller: Function
+  // Decorators
+  interface Http {
+    Code(code: number): any,
+    Get(path: string): any,
+    Post(path: string): any,
+    Put(path: string): any,
+    Patch(path: string): any,
+    Delete(path: string): any,
+    Head(path: string): any,
+    Options(path: string): any,
+    All(path: string): any,
   }
-
-  const Decorators: Decorators
-
-  class Controller {
-
-  }
-
+  const Http: Http
+  /**
+   * 将一个类标记为控制器
+   * @param prefix 控制器路由前缀
+   */
+  function Controller(prefix: string): any
+  function RestController(prefix: string): any
+  function Service(name: string): any
+  function Resource(name: string): any
+  function Component(name: string): any
+  function Validator(name: string): any
+  function Provider(name: string): any
+  function Middleware(name: string): any
+  function Multiton(): any
+  function useMiddleware(name: string): any
+  function CrossOrigin(options: object): any
+  function Ignore(): any
 }
