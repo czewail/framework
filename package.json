@@ -1,12 +1,12 @@
 {
   "name": "@dazejs/framework",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "description": "Daze.js - A powerful web framework for Node.js",
   "main": "dist/index.js",
   "scripts": {
     "dev": "babel src --out-dir dist --copy-files --watch --source-maps",
     "clean": "rimraf dist/*",
-    "build": "npm run clean && babel src --out-dir dist --copy-files --source-maps",
+    "build": "npm run clean && babel src --out-dir dist --copy-files",
     "test": "jest",
     "test:coverage": "jest --detectOpenHandles --runInBand --forceExit --coverage",
     "debugger": "node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --no-watchman --detectOpenHandles",

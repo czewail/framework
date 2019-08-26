@@ -139,12 +139,17 @@ class Application extends Container {
     await this.register(new providers.Template(this));
   }
 
+  /**
+   * register vendor providers
+   * @private
+   */
   async registerVendorProviders() {
     const _providers = this.config.get('app.providers', []);
-
+    const providerPromises = [];
     for (const key of _providers) {
-      await this.load(key);
+      providerPromises.push(this.load(key));
     }
+    await Promise.all(providerPromises);
   }
 
 
@@ -153,24 +158,26 @@ class Application extends Container {
    * @param {String | Class} Provider
    */
   async load(Provider) {
-    // if (is.isString(Provider)) {
-    //   if (this.has(Provider)) {
-    //     // await this.register(this.get(Provider));
-    //     return this;
-    //   }
-    //   try {
-    //     const modulePath = require.resolve(Provider);
-    //     // eslint-disable-next-line
-    //     const Target = require(modulePath);
-    //     await this.register(new Target(this));
-    //   } catch (err) {
-    //     throw new Error(`Can not find provider [${Provider}]!`);
-    //   }
-    //   return this;
-    // }
+    if (is.isString(Provider)) {
+      if (this.has(Provider)) {
+        await this.register(this.get(Provider));
+        return this;
+      }
+      try {
+        const modulePath = require.resolve(Provider);
+        // eslint-disable-next-line
+        const Target = require(modulePath);
+        await this.register(new Target(this));
+      } catch (err) {
+        throw new Error(`Can not find provider [${Provider}]!`);
+      }
+      return this;
+    }
     if (is.isFunction(Provider)) {
       const type = Reflect.getMetadata('type', Provider.prototype);
       if (type !== 'provider') throw new Error(`${Provider.name || 'Unknow'} is not a provider!`);
+      await this.register(new Provider(this));
+      return this;
     }
     throw new Error(`Does not supported ${typeof Provider} Provider!`);
   }
@@ -300,8 +307,8 @@ class Application extends Container {
     // 在集群模式下，主进程不运行业务代码
     if (!clusterConfig.enable || !cluster.isMaster) {
       await this.registerDefaultProviders();
-      await this.registerHttpServerProvider();
       await this.registerVendorProviders();
+      await this.registerHttpServerProvider();
       await this.fireLaunchCalls();
     }
   }

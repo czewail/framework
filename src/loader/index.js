@@ -6,7 +6,7 @@
  */
 const path = require('path');
 const glob = require('glob');
-const is = require('core-util-is');
+// const is = require('core-util-is');
 
 class Loader {
   /**
@@ -33,10 +33,10 @@ class Loader {
      */
     this.components = [];
 
-    /**
-     * @var {array} providers providers
-     */
-    this.providers = [];
+    // /**
+    //  * @var {array} providers providers
+    //  */
+    // this.providers = [];
   }
 
   autoLoadApp() {
@@ -49,24 +49,24 @@ class Loader {
     }
   }
 
-  autoLoadProvider() {
-    const providerFiles = glob.sync(path.resolve(this.app.rootPath, 'provider', '**'), {
-      nodir: true,
-    });
+  // autoLoadProvider() {
+  //   const providerFiles = glob.sync(path.resolve(this.app.rootPath, 'provider', '**'), {
+  //     nodir: true,
+  //   });
 
-    for (const file of providerFiles) {
-      this.loadFile(file);
-    }
-  }
+  //   for (const file of providerFiles) {
+  //     this.loadFile(file);
+  //   }
+  // }
 
   /**
    * resolve auto scan
    */
   async resolve() {
     this.autoLoadApp();
-    this.autoLoadProvider();
+    // this.autoLoadProvider();
 
-    await this.registerProviders();
+    // await this.registerProviders();
     // register middlewares
     // middlewares must be registed before controller
     this.registerMiddlewares();
@@ -110,9 +110,9 @@ class Loader {
       case 'component':
         this.components.push(target);
         break;
-      case 'provider':
-        this.providers.push(target);
-        break;
+      // case 'provider':
+      //   this.providers.push(target);
+      //   break;
       default:
         break;
     }
@@ -146,17 +146,17 @@ class Loader {
     }
   }
 
-  /**
-   * register provider
-   * @param {class} Provider provider
-   */
-  async registerProviders() {
-    const promises = [];
-    for (const Provider of this.providers) {
-      this.promises.push(this.app.register(new Provider(this.app)));
-    }
-    await Promise.all(promises);
-  }
+  // /**
+  //  * register provider
+  //  * @param {class} Provider provider
+  //  */
+  // async registerProviders() {
+  //   const promises = [];
+  //   for (const Provider of this.providers) {
+  //     this.promises.push(this.app.register(new Provider(this.app)));
+  //   }
+  //   await Promise.all(promises);
+  // }
 }
 
 module.exports = Loader;
