@@ -9,13 +9,13 @@ const proxy = require('../base/proxy');
 const BaseController = require('../base/controller');
 
 const rest = {
-  index: { uri: '/', method: 'get' },
-  create: { uri: '/create', method: 'get' },
-  show: { uri: '/:id', method: 'get' },
-  store: { uri: '/', method: 'post' },
-  edit: { uri: '/:id/edit', method: 'get' },
-  update: { uri: '/:id', method: 'put' },
-  destroy: { uri: '/:id', method: 'del' },
+  index: [{ uri: '/', method: 'get' }],
+  create: [{ uri: '/create', method: 'get' }],
+  show: [{ uri: '/:id', method: 'get' }],
+  store: [{ uri: '/', method: 'post' }],
+  edit: [{ uri: '/:id/edit', method: 'get' }],
+  update: [{ uri: '/:id', method: 'put' }],
+  destroy: [{ uri: '/:id', method: 'del' }],
 };
 
 function injectClass(elementDescriptor, prefix) {
@@ -26,8 +26,8 @@ function injectClass(elementDescriptor, prefix) {
       Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
       const routes = Reflect.getMetadata('routes', target.prototype);
       Reflect.setMetadata('routes', {
-        ...routes,
         ...rest,
+        ...routes,
       }, target.prototype);
       return proxy(target, BaseController);
     },

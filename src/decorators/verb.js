@@ -11,14 +11,16 @@ function decorateMethod(elementDescriptor, verb, uri) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const routes = Reflect.getMetadata('routes', target.prototype);
+      const routes = Reflect.getMetadata('routes', target.prototype) || {};
       Reflect.setMetadata('routes', {
         ...routes,
-        [`${elementDescriptor.key}`]: {
-          uri: formatPrefix(uri),
-          method: verb,
-          action: elementDescriptor.key,
-        },
+        [`${elementDescriptor.key}`]: [
+          ...routes[`${elementDescriptor.key}`] || [],
+          {
+            uri: formatPrefix(uri),
+            method: verb,
+          },
+        ],
       }, target.prototype);
       return target;
     },

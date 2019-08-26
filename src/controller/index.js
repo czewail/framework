@@ -69,9 +69,11 @@ class Controller {
   registerRoutes(controller, routes, prefix, controllerMiddlewares, routeMiddlewares) {
     const Router = this.app.get('router');
     for (const key of Object.keys(routes)) {
-      const { uri, method } = routes[key];
-      const actionMiddlewares = routeMiddlewares[key] || [];
-      Router.register(`${prefix}${uri}`, [method], controller, key, [...controllerMiddlewares, ...actionMiddlewares]);
+      for (const route of routes[key]) {
+        const { uri, method } = route;
+        const actionMiddlewares = routeMiddlewares[key] || [];
+        Router.register(`${prefix}${uri}`, [method], controller, key, [...controllerMiddlewares, ...actionMiddlewares]);
+      }
     }
   }
 }
