@@ -228,7 +228,7 @@ class Container extends EventEmitter {
         instance.__context__ = args;
         return new Proxy(instance, {
           get(__target, __name, __receiver) {
-            if (__name === 'name' && __name === 'constructor' && typeof __name === 'symbol') return Reflect.get(__target, __name, __receiver);
+            if (__name === 'name' || __name === 'constructor' || typeof __name === 'symbol') return Reflect.get(__target, __name, __receiver);
             if (typeof __target[__name] === 'function') {
               return new Proxy(__target[__name], {
                 apply(target, thisBinding, methodArgs) {
