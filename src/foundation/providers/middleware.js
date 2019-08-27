@@ -23,10 +23,6 @@ class MiddlewareProvider {
   register() {
     this.app.singleton('middleware', Middleware);
   }
-
-  launch() {
-    this.app.get('loader').loadMiddleware(VerifyCsrfToken);
-  }
 }
 
 module.exports = MiddlewareProvider;

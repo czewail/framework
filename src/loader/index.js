@@ -6,6 +6,7 @@
  */
 const path = require('path');
 const glob = require('glob');
+const verifyCsrfToken = require('../foundation/middlewares/verify-csrf-token');
 // const is = require('core-util-is');
 
 class Loader {
@@ -24,9 +25,12 @@ class Loader {
     this.controllers = [];
 
     /**
+     * 默认加载的中间件
      * @var {array} middlewares middlewares
      */
-    this.middlewares = [];
+    this.middlewares = [
+      verifyCsrfToken,
+    ];
 
     /**
      * @var {array} components components

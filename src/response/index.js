@@ -516,7 +516,7 @@ class Response {
    * @public
    */
   async send(request) {
-    const data = this.handleData();
+    const data = this.handleData(request);
 
     const shouldSetType = !this.getHeader('content-type');
 

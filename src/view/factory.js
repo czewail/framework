@@ -16,8 +16,11 @@ class Factory {
 
   combineVars(request) {
     const defaultVars = {
-      session(key) {
+      session_value(key) {
         return request.session().get(key);
+      },
+      get __token__() {
+        return request._csrf;
       },
     };
     return Object.assign({}, defaultVars, this.view.getVars());

@@ -66,6 +66,7 @@ class VerifyCsrfToken {
     if (!session.get('secret')) {
       session.set('secret', this.app.get('csrf').secretSync());
     }
+    request._csrf = this.app.get('csrf').create(session.get('secret'));
     if (
       this.isReadVerb(request.getMethod())
       || this.inExcept(request.getPath())
