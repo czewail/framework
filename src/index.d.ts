@@ -19,7 +19,7 @@ declare module "@dazejs/framework" {
      * @returns {void}
      * @public
      */
-    singleton(abstract: any, concrete: any): void
+    singleton(abstract: string, concrete: any): this
     /**
      * Bind a multiton to the container
      *
@@ -28,7 +28,7 @@ declare module "@dazejs/framework" {
      * @returns {void}
      * @public
      */
-    multiton(abstract: any, concrete: any): void
+    multiton(abstract: string, concrete: any): this
     /**
      * Determines if the instance is Shared
      *
@@ -36,7 +36,7 @@ declare module "@dazejs/framework" {
      * @returns {boolean}
      * @public
      */
-    isShared(abstract: any): boolean
+    isShared(abstract: string): boolean
     /**
      * Identifies whether the container has been bound
      *
@@ -44,14 +44,14 @@ declare module "@dazejs/framework" {
      * @returns {boolean}
      * @public
      */
-    bound(abstract: any): boolean
+    bound(abstract: string): boolean
     /**
      * Identifies whether the container has been instance
      *
      * @param {*} abstract Object identifier
      * @public
      */
-    exists(abstract: any): boolean
+    exists(abstract: string): boolean
     /**
      * Bind multiple dependencies to the container
      *
@@ -68,7 +68,7 @@ declare module "@dazejs/framework" {
      * @returns {Container} this
      * @public
      */
-    make(abstract: any, args: any[], newInstance: boolean): object
+    make(abstract: string, args: any[], newInstance: boolean): object
 
     /**
      * gets the object instance in the container
@@ -79,7 +79,7 @@ declare module "@dazejs/framework" {
      * @public
      * @static
      */
-    static get(abstract: any, args: any[]): object
+    static get(abstract: string, args: any[]): object
     static get(abstract: 'config', args: any[]): Config
     /**
      * bind an abstract in container
@@ -91,7 +91,7 @@ declare module "@dazejs/framework" {
      * @public
      * @static
      */
-    static bind(abstract: any, concrete: any, shared: boolean): object
+    static bind(abstract: string, concrete: any, shared: boolean): object
     /**
      * Determines whether there is a corresponding binding within the container instance
      *
@@ -100,7 +100,7 @@ declare module "@dazejs/framework" {
      * @public
      * @static
      */
-    static has(abstract: any): boolean
+    static has(abstract: string): boolean
     /**
      * Get the container instance
      *
@@ -126,7 +126,7 @@ declare module "@dazejs/framework" {
   }
 
   // Decorators
-  interface Http {
+  interface IHttp {
     Code(code: number): any,
     Get(path: string): any,
     Post(path: string): any,
@@ -137,12 +137,17 @@ declare module "@dazejs/framework" {
     Options(path: string): any,
     All(path: string): any,
   }
-  const Http: Http
+  const Http: IHttp
+
+  interface IController {
+    app: Application,
+    container: Container,
+  }
   /**
    * 将一个类标记为控制器
    * @param prefix 控制器路由前缀
    */
-  function Controller(prefix: string): any
+  function Controller(prefix: string): <T extends IController>(target: T) => any
   function RestController(prefix: string): any
   function Service(name: string): any
   function Resource(name: string): any
@@ -154,4 +159,5 @@ declare module "@dazejs/framework" {
   function useMiddleware(name: string): any
   function CrossOrigin(options: object): any
   function Ignore(): any
+  function Csrf(): any
 }
