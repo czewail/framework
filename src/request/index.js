@@ -53,7 +53,10 @@ class Request {
    * initialize request
    */
   async initialize() {
+    // init body
     this._body = await parseBody(this);
+    // init session
+    await this.session().loadSession();
   }
 
   /**

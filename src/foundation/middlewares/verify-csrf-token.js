@@ -6,7 +6,6 @@
  */
 const minimatch = require('minimatch');
 const { Middleware } = require('../../decorators');
-const Container = require('../../container');
 const Response = require('../../response');
 
 const defaultExcludedMethods = ['HEAD', 'GET', 'OPTIONS'];
@@ -14,8 +13,8 @@ const defaultInvalidTokenMessage = 'Invalid CSRF token';
 
 @Middleware('verify-csrf-token')
 class VerifyCsrfToken {
-  constructor() {
-    this.app = Container.get('app');
+  constructor(app) {
+    this.app = app;
   }
 
   get except() {

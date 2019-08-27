@@ -22,6 +22,7 @@ const Middleware = require('./middleware');
 const CrossOrigin = require('./cross-origin');
 const ValidateDecorators = require('../validate/decorators');
 const InjectAble = require('./injectable');
+const Csrf = require('./csrf');
 
 const Http = {
   Code: HttpCode,
@@ -41,6 +42,7 @@ module.exports = {
   useMiddleware,
   Http,
   CrossOrigin,
+  Csrf,
   Ignore,
   InjectAble,
   ...Contexts,

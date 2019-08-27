@@ -6,6 +6,7 @@
  */
 
 const Middleware = require('../../middleware');
+const VerifyCsrfToken = require('../middlewares/verify-csrf-token');
 
 class MiddlewareProvider {
   /**
@@ -21,6 +22,10 @@ class MiddlewareProvider {
 
   register() {
     this.app.singleton('middleware', Middleware);
+  }
+
+  launch() {
+    this.app.get('loader').loadMiddleware(VerifyCsrfToken);
   }
 }
 

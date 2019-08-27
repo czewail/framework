@@ -32,11 +32,6 @@ class Loader {
      * @var {array} components components
      */
     this.components = [];
-
-    // /**
-    //  * @var {array} providers providers
-    //  */
-    // this.providers = [];
   }
 
   autoLoadApp() {
@@ -49,24 +44,11 @@ class Loader {
     }
   }
 
-  // autoLoadProvider() {
-  //   const providerFiles = glob.sync(path.resolve(this.app.rootPath, 'provider', '**'), {
-  //     nodir: true,
-  //   });
-
-  //   for (const file of providerFiles) {
-  //     this.loadFile(file);
-  //   }
-  // }
-
   /**
    * resolve auto scan
    */
-  async resolve() {
+  resolve() {
     this.autoLoadApp();
-    // this.autoLoadProvider();
-
-    // await this.registerProviders();
     // register middlewares
     // middlewares must be registed before controller
     this.registerMiddlewares();
@@ -119,12 +101,20 @@ class Loader {
   }
 
   /**
+   * load Middleware
+   * @param {class} target
+   */
+  loadMiddleware(target) {
+    const name = Reflect.getMetadata('name', target.prototype);
+    this.app.bind(`middleware.${name}`, target);
+  }
+
+  /**
    * register middlewares
    */
   registerMiddlewares() {
     for (const middleware of this.middlewares) {
-      const type = Reflect.getMetadata('name', middleware.prototype);
-      this.app.bind(`middleware.${type}`, middleware);
+      this.loadMiddleware(middleware);
     }
   }
 
@@ -145,18 +135,6 @@ class Loader {
       this.app.get('component').register(component);
     }
   }
-
-  // /**
-  //  * register provider
-  //  * @param {class} Provider provider
-  //  */
-  // async registerProviders() {
-  //   const promises = [];
-  //   for (const Provider of this.providers) {
-  //     this.promises.push(this.app.register(new Provider(this.app)));
-  //   }
-  //   await Promise.all(promises);
-  // }
 }
 
 module.exports = Loader;

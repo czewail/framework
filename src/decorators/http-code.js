@@ -12,6 +12,7 @@ function injectedMethod(elementDescriptor, code) {
     ...elementDescriptor,
     finisher(target) {
       target.prototype[elementDescriptor.key][HTTP_CODE] = code;
+      return target;
     },
   };
 }

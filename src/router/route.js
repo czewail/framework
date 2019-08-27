@@ -10,7 +10,7 @@ const is = require('core-util-is');
 const Container = require('../container');
 const Middleware = require('../middleware');
 const Response = require('../response');
-const LoadSessionMiddleware = require('../session/middleware/load-session');
+// const LoadSessionMiddleware = require('../session/DEPRECATED_middleware/load-session');
 // const VerifyCsrfTokenMiddleware = require('../foundation/middlewares/verify-csrf-token');
 
 class Route {
@@ -66,18 +66,18 @@ class Route {
       this.methods.push('HEAD');
     }
 
-    this.registerDefaultMiddlewares();
+    // this.registerDefaultMiddlewares();
 
     this.registerControllerMiddlewares(middlewares);
   }
 
-  /**
-   * register default route middlewares
-   */
-  registerDefaultMiddlewares() {
-    this.middleware.register(LoadSessionMiddleware);
-    // this.middleware.register(VerifyCsrfTokenMiddleware);
-  }
+  // /**
+  //  * register default route middlewares
+  //  */
+  // registerDefaultMiddlewares() {
+  //   // this.middleware.register(LoadSessionMiddleware);
+  //   // this.middleware.register(VerifyCsrfTokenMiddleware);
+  // }
 
   /**
    * register route middleware
