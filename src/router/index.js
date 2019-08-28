@@ -39,9 +39,13 @@ class Router {
   register(uri, methods, controller, action, middlewares) {
     if (Reflect.getMetadata('type', controller.prototype) !== 'controller') throw new Error('route must be register an controller!');
     const route = new Route(uri, methods, controller, action, middlewares);
-    const corses = Reflect.getMetadata('crossOrigin', controller.prototype) || {};
-    if (corses[action]) {
-      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware, [corses[action]]);
+    const controllerCrossOrigin = Reflect.getMetadata('controllerCrossOrigin', controller.prototype);
+    const routeCrossOrigin = Reflect.getMetadata('routeCrossOrigin', controller.prototype) || {};
+
+    if (controllerCrossOrigin) {
+      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware, [controllerCrossOrigin]);
+    } else if (routeCrossOrigin[action]) {
+      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware, [routeCrossOrigin[action]]);
     }
     this.collection.add(route);
     return route;

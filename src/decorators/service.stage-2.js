@@ -6,21 +6,21 @@
  */
 
 const proxy = require('../base/proxy');
-const BaseProvider = require('../base/provider');
+const BaseService = require('../base/service');
 
-function decoratorClass(target, name) {
-  Reflect.setMetadata('type', 'provider', target.prototype);
+function injectClass(target, name) {
+  Reflect.setMetadata('type', 'service', target.prototype);
   Reflect.setMetadata(name, name, target.prototype);
-  return proxy(target, BaseProvider);
+  return proxy(target, BaseService);
 }
 
 function handle(args, name) {
   if (args.length === 1) {
-    return decoratorClass(...args, name);
+    return injectClass(...args, name);
   }
-  throw new Error('@Provider must be decorate on Class');
+  throw new Error('@Controller must be decorate on Class');
 }
 
-module.exports = function Provider(name) {
+module.exports = function Controller(name = '') {
   return (...args) => handle(args, name);
 };

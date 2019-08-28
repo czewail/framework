@@ -5,25 +5,21 @@
  * https://opensource.org/licenses/MIT
  */
 
-function injectClass(elementDescriptor, name) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      Reflect.setMetadata('type', 'component', target.prototype);
-      Reflect.setMetadata('name', name, target.prototype);
-      return target;
-    },
-  };
+function decoratorClass(target, name) {
+  Reflect.setMetadata('type', 'component', target.prototype);
+  Reflect.setMetadata('name', name, target.prototype);
+  return target;
 }
 
-function handle(elementDescriptor, name) {
-  const { kind } = elementDescriptor;
-  if (kind === 'class') {
-    return injectClass(elementDescriptor, name);
+function handle(args, name) {
+  if (args.length === 1) {
+    return decoratorClass(...args, name);
   }
-  return elementDescriptor;
+  throw new Error('@Component must be decorate on Class');
 }
 
 module.exports = function Component(name = '') {
-  return elementDescriptor => handle(elementDescriptor, name);
+  return function (...args) {
+    return handle(args, name);
+  };
 };

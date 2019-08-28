@@ -7,24 +7,18 @@
 
 const { HTTP_CODE } = require('../symbol');
 
-function injectedMethod(elementDescriptor, code) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      target.prototype[elementDescriptor.key][HTTP_CODE] = code;
-      return target;
-    },
-  };
+function injectedMethod(target, name, descriptor, code) {
+  target.prototype[name][HTTP_CODE] = code;
+  return target;
 }
 
-function handle(elementDescriptor, code) {
-  const { kind } = elementDescriptor;
-  if (kind === 'method') {
-    return injectedMethod(elementDescriptor, code);
+function handle(args, code) {
+  if (args.length > 1) {
+    return injectedMethod(...args, code);
   }
-  return elementDescriptor;
+  throw new Error('@HttpCode must be decorate on method');
 }
 
 module.exports = function HttpCode(code = 200) {
-  return elementDescriptor => handle(elementDescriptor, code);
+  return (...args) => handle(args, code);
 };

@@ -5,44 +5,30 @@
  * https://opensource.org/licenses/MIT
  */
 
-function decoratorClass(elementDescriptor, middleware) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      const middlewares = Reflect.getMetadata('controllerMiddlewares', target.prototype) || [];
-      middlewares.push(middleware);
-      Reflect.setMetadata('controllerMiddlewares', middlewares, target.prototype);
-      return target;
-    },
-  };
+function decoratorClass(target, middleware) {
+  const middlewares = Reflect.getMetadata('controllerMiddlewares', target.prototype) || [];
+  middlewares.push(middleware);
+  Reflect.setMetadata('controllerMiddlewares', middlewares, target.prototype);
+  return target;
 }
 
-function decoratorMethod(elementDescriptor, middleware) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      const middlewares = Reflect.getMetadata('routeMiddlewares', target.prototype) || {};
-      if (!middlewares[elementDescriptor.key]) {
-        middlewares[elementDescriptor.key] = [];
-      }
-      middlewares[elementDescriptor.key].push(middleware);
-      Reflect.setMetadata('routeMiddlewares', middlewares, target.prototype);
-      return target;
-    },
-  };
+function decoratorMethod(target, name, descriptor, middleware) {
+  const middlewares = Reflect.getMetadata('routeMiddlewares', target.prototype) || {};
+  if (!middlewares[name]) {
+    middlewares[name] = [];
+  }
+  middlewares[name].push(middleware);
+  Reflect.setMetadata('routeMiddlewares', middlewares, target.prototype);
+  return target;
 }
 
-function handle(elementDescriptor, middleware) {
-  const { kind } = elementDescriptor;
-  if (kind === 'class') {
-    return decoratorClass(elementDescriptor, middleware);
+function handle(args, middleware) {
+  if (args.length === 1) {
+    return decoratorClass(...args, middleware);
   }
-  if (kind === 'method') {
-    return decoratorMethod(elementDescriptor, middleware);
-  }
-  throw new TypeError('@useMiddleware must use on class or method!');
+  return decoratorMethod(...args, middleware);
 }
 
 module.exports = function useMiddleware(middleware) {
-  return elementDescriptor => handle(elementDescriptor, middleware);
+  return (...args) => handle(args, middleware);
 };

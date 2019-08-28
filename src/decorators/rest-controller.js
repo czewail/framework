@@ -18,30 +18,24 @@ const rest = {
   destroy: [{ uri: '/:id', method: 'del' }],
 };
 
-function injectClass(elementDescriptor, prefix) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      Reflect.setMetadata('type', 'controller', target.prototype);
-      Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
-      const routes = Reflect.getMetadata('routes', target.prototype);
-      Reflect.setMetadata('routes', {
-        ...rest,
-        ...routes,
-      }, target.prototype);
-      return proxy(target, BaseController);
-    },
-  };
+function injectClass(target, prefix) {
+  Reflect.setMetadata('type', 'controller', target.prototype);
+  Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
+  const routes = Reflect.getMetadata('routes', target.prototype);
+  Reflect.setMetadata('routes', {
+    ...rest,
+    ...routes,
+  }, target.prototype);
+  return proxy(target, BaseController);
 }
 
-function handle(elementDescriptor, prefix) {
-  const { kind } = elementDescriptor;
-  if (kind === 'class') {
-    return injectClass(elementDescriptor, prefix);
+function handle(args, prefix) {
+  if (args.length === 1) {
+    return injectClass(...args, prefix);
   }
-  return elementDescriptor;
+  throw new Error('@RestController must be decorate on Class');
 }
 
 module.exports = function RestController(prefix = '') {
-  return elementDescriptor => handle(elementDescriptor, prefix);
+  return (...args) => handle(args, prefix);
 };

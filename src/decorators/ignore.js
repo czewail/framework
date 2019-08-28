@@ -5,24 +5,18 @@
  * https://opensource.org/licenses/MIT
  */
 
-function decorateClass(elementDescriptor) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      Reflect.setMetadata('ignore', true, target.prototype);
-      return target;
-    },
-  };
+function decorateClass(target) {
+  Reflect.setMetadata('ignore', true, target.prototype);
+  return target;
 }
 
-function handle(elementDescriptor) {
-  const { kind } = elementDescriptor;
-  if (kind === 'class') {
-    return decorateClass(elementDescriptor);
+function handle(args) {
+  if (args.length === 1) {
+    return decorateClass(...args);
   }
-  return elementDescriptor;
+  throw new Error('@Ignore must be decorate on Class');
 }
 
-module.exports = function Injectable() {
-  return elementDescriptor => handle(elementDescriptor);
+module.exports = function Ignore() {
+  return (...args) => handle(args);
 };

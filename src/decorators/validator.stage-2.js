@@ -5,21 +5,21 @@
  * https://opensource.org/licenses/MIT
  */
 const proxy = require('../base/proxy');
-const BaseMiddleware = require('../base/middleware');
+const BaseValidator = require('../base/validator');
 
 function decoratorClass(target, name) {
-  Reflect.setMetadata('type', 'middleware', target.prototype);
+  Reflect.setMetadata('type', 'validator', target.prototype);
   Reflect.setMetadata('name', name, target.prototype);
-  return proxy(target, BaseMiddleware);
+  return proxy(target, BaseValidator);
 }
 
 function handle(args, name) {
   if (args.length === 1) {
     return decoratorClass(...args, name);
   }
-  throw new TypeError('@Middleware must be decorate on Class');
+  throw new Error('@Validator must be decorate on Class');
 }
 
-module.exports = function Middleware(name) {
+module.exports = function Validator(name = '') {
   return (...args) => handle(args, name);
 };
