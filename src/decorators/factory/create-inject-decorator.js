@@ -30,7 +30,5 @@ function handle(args, params, type) {
 }
 
 module.exports = function create(type) {
-  return function (...args) {
-    return handle(args, type);
-  };
+  return (...args) => (...argsClass) => handle(argsClass, args, type);
 };

@@ -18,6 +18,7 @@ module.exports = {
   // files for which coverage information should be collected
   collectCoverageFrom: [
     'src/**/*.js',
+    'src/**/*.stage-2.js',
     '!src/**/DEPRECATED_*.js',
     '!src/**/*.bak.js',
     '!src/DEPRECATED_*/*.js',
@@ -160,9 +161,9 @@ module.exports = {
   // timers: 'fake',
   // A map from regular expressions to paths to transformers
   // transform: null,
-  // transform: {
-  //   '^.+\\.js$': 'babel-jest',
-  // },
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
   // An array of regexp pattern strings that
   // are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [

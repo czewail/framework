@@ -7,25 +7,19 @@
 const proxy = require('../base/proxy');
 const BaseValidator = require('../base/validator');
 
-function decoratorClass(elementDescriptor, name) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      Reflect.setMetadata('type', 'validator', target.prototype);
-      Reflect.setMetadata('name', name, target.prototype);
-      return proxy(target, BaseValidator);
-    },
-  };
+function decoratorClass(target, name) {
+  Reflect.setMetadata('type', 'validator', target.prototype);
+  Reflect.setMetadata('name', name, target.prototype);
+  return proxy(target, BaseValidator);
 }
 
-function handle(elementDescriptor, name) {
-  const { kind } = elementDescriptor;
-  if (kind === 'class') {
-    return decoratorClass(elementDescriptor, name);
+function handle(args, name) {
+  if (args.length === 1) {
+    return decoratorClass(...args, name);
   }
-  return elementDescriptor;
+  throw new Error('@Validator must be decorate on Class');
 }
 
-module.exports = function Validate(name = '') {
-  return elementDescriptor => handle(elementDescriptor, name);
+module.exports = function Validator(name = '') {
+  return (...args) => handle(args, name);
 };
