@@ -8,7 +8,7 @@
 const { HTTP_CODE } = require('../symbol');
 
 function injectedMethod(target, name, descriptor, code) {
-  target.prototype[name][HTTP_CODE] = code;
+  target[name][HTTP_CODE] = code;
   return target;
 }
 

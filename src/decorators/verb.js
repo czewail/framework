@@ -7,38 +7,30 @@
 
 const { formatPrefix } = require('./helpers');
 
-function decorateMethod(elementDescriptor, verb, uri) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      const routes = Reflect.getMetadata('routes', target.prototype) || {};
-      Reflect.setMetadata('routes', {
-        ...routes,
-        [`${elementDescriptor.key}`]: [
-          ...routes[`${elementDescriptor.key}`] || [],
-          {
-            uri: formatPrefix(uri),
-            method: verb,
-          },
-        ],
-      }, target.prototype);
-      return target;
-    },
-  };
+function decorateMethod(target, name, descriptor, verb, uri) {
+  const routes = Reflect.getMetadata('routes', target) || {};
+  Reflect.setMetadata('routes', {
+    ...routes,
+    [`${name}`]: [
+      ...routes[`${name}`] || [],
+      {
+        uri: formatPrefix(uri),
+        method: verb,
+      },
+    ],
+  }, target);
+  return target;
 }
 
-function handle(elementDescriptor, verb, uri) {
-  const { kind } = elementDescriptor;
-  if (kind === 'method') {
-    return decorateMethod(elementDescriptor, verb, uri);
+function handle(args, verb, uri) {
+  if (args.length > 1) {
+    return decorateMethod(...args, verb, uri);
   }
-  return elementDescriptor;
+  throw new Error('@Http[method] must be decorate on method');
 }
 
 function Verb(verb, uri = '/') {
-  return function resolve(elementDescriptor) {
-    return handle(elementDescriptor, verb, uri);
-  };
+  return (...args) => handle(args, verb, uri);
 }
 
 exports.Get = function Get(uri) {

@@ -13,12 +13,12 @@ function decoratorClass(target, middleware) {
 }
 
 function decoratorMethod(target, name, descriptor, middleware) {
-  const middlewares = Reflect.getMetadata('routeMiddlewares', target.prototype) || {};
+  const middlewares = Reflect.getMetadata('routeMiddlewares', target) || {};
   if (!middlewares[name]) {
     middlewares[name] = [];
   }
   middlewares[name].push(middleware);
-  Reflect.setMetadata('routeMiddlewares', middlewares, target.prototype);
+  Reflect.setMetadata('routeMiddlewares', middlewares, target);
   return target;
 }
 

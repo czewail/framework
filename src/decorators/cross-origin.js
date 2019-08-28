@@ -15,11 +15,11 @@ function decoratorMethod(elementDescriptor, options) {
   return {
     ...elementDescriptor,
     finisher(target) {
-      const corses = Reflect.getMetadata('routeCrossOrigin', target.prototype) ?? {};
+      const corses = Reflect.getMetadata('routeCrossOrigin', target) ?? {};
       corses[elementDescriptor.key] = {
         ...options,
       };
-      Reflect.setMetadata('routeCrossOrigin', corses, target.prototype);
+      Reflect.setMetadata('routeCrossOrigin', corses, target);
       return target;
     },
   };
