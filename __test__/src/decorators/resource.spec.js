@@ -7,4 +7,11 @@ describe('Resource Decorator', () => {
     expect(Reflect.getMetadata('type', Klass.prototype)).toBe('resource');
     expect(Reflect.getMetadata('name', Klass.prototype)).toBe('example');
   });
+
+  it('should throws error when decorate on method', () => {
+    expect(() => class {
+      @Resource('example')
+      foo() { }
+    }).toThrow();
+  });
 });

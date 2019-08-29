@@ -7,4 +7,11 @@ describe('Validator Decorator', () => {
     expect(Reflect.getMetadata('type', Klass.prototype)).toBe('validator');
     expect(Reflect.getMetadata('name', Klass.prototype)).toBe('example');
   });
+
+  it('should throws error when decorate on method', () => {
+    expect(() => class {
+      @Validator('example')
+      foo() {}
+    }).toThrow();
+  });
 });

@@ -7,4 +7,11 @@ describe('Controller Decorator', () => {
     expect(Reflect.getMetadata('type', res.prototype)).toBe('controller');
     expect(Reflect.getMetadata('prefix', res.prototype)).toBe('/example');
   });
+
+  it('should throws error when decorate on method', () => {
+    expect(() => class {
+      @Controller('example')
+      foo() { }
+    }).toThrow();
+  });
 });

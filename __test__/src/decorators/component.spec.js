@@ -7,4 +7,11 @@ describe('Component Decorator', () => {
     expect(Reflect.getMetadata('type', res.prototype)).toBe('component');
     expect(Reflect.getMetadata('name', res.prototype)).toBe('example');
   });
+
+  it('should throws error when decorate on method', () => {
+    expect(() => class {
+      @Component('example')
+      foo() { }
+    }).toThrow();
+  });
 });
