@@ -7,7 +7,8 @@
 
 const is = require('core-util-is');
 const Response = require('../../response');
-const { Middleware } = require('../../decorators');
+const { Component } = require('../../decorators');
+const Middleware = require('../../base/middleware');
 
 const defaultOptions = {
   origin: '*',
@@ -17,9 +18,10 @@ const defaultOptions = {
   allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
 };
 
-@Middleware('cors')
-class CORSMiddleware {
+@Component('cors')
+class CORSMiddleware extends Middleware {
   constructor(options) {
+    super();
     this.options = this.parseOptions(options);
   }
 

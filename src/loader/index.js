@@ -7,7 +7,6 @@
 const path = require('path');
 const glob = require('glob');
 const verifyCsrfToken = require('../foundation/middlewares/verify-csrf-token');
-// const is = require('core-util-is');
 
 class Loader {
   /**
@@ -96,9 +95,6 @@ class Loader {
       case 'component':
         this.components.push(target);
         break;
-      // case 'provider':
-      //   this.providers.push(target);
-      //   break;
       default:
         break;
     }
@@ -110,6 +106,7 @@ class Loader {
    */
   loadMiddleware(target) {
     const name = Reflect.getMetadata('name', target.prototype);
+    if (!name) return;
     this.app.bind(`middleware.${name}`, target);
   }
 

@@ -54,4 +54,6 @@ class Resource extends Base {
   }
 }
 
+Reflect.setMetadata('type', 'resource', Resource.prototype);
+
 module.exports = Resource;

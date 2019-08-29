@@ -5,8 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
+const { INJECT_ABLE } = require('../symbol');
+
 function decoratorClass(target, name) {
-  Reflect.setMetadata('type', 'component', target.prototype);
+  Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
   Reflect.setMetadata('name', name, target.prototype);
   return target;
 }

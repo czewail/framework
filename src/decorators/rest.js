@@ -5,8 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 const { formatPrefix } = require('./helpers');
-const proxy = require('../base/proxy');
-const BaseController = require('../base/controller');
 
 const rest = {
   index: [{ uri: '/', method: 'get' }],
@@ -19,23 +17,22 @@ const rest = {
 };
 
 function injectClass(target, prefix) {
-  Reflect.setMetadata('type', 'controller', target.prototype);
   Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
   const routes = Reflect.getMetadata('routes', target.prototype);
   Reflect.setMetadata('routes', {
     ...rest,
     ...routes,
   }, target.prototype);
-  return proxy(target, BaseController);
+  return target;
 }
 
 function handle(args, prefix) {
   if (args.length === 1) {
     return injectClass(...args, prefix);
   }
-  throw new Error('@RestController must be decorate on Class');
+  throw new Error('@Rest must be decorate on Class');
 }
 
-module.exports = function RestController(prefix = '') {
+module.exports = function Rest(prefix = '') {
   return (...args) => handle(args, prefix);
 };

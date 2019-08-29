@@ -2,7 +2,6 @@ declare module "@dazejs/framework" {
 
 
   class Config {
-    constructor(configPath: string)
     set(name: string | object, value: any): object
     get(name: string, def: any): any
     has(name: string): boolean
@@ -80,7 +79,7 @@ declare module "@dazejs/framework" {
      * @static
      */
     static get(abstract: string, args: any[]): object
-    static get(abstract: 'config', args: any[]): Config
+    // static get(abstract: 'config', args: any[]): Config
     /**
      * bind an abstract in container
      *
@@ -125,6 +124,11 @@ declare module "@dazejs/framework" {
   class Application extends Container {
   }
 
+  class Controller {
+    app: Application;
+    config: Config;
+  }
+
   // Decorators
   interface IHttp {
     Code(code: number): any,
@@ -137,27 +141,6 @@ declare module "@dazejs/framework" {
     Options(path: string): any,
     All(path: string): any,
   }
-  const Http: IHttp
 
-  interface IController {
-    app: Application,
-    container: Container,
-  }
-  /**
-   * 将一个类标记为控制器
-   * @param prefix 控制器路由前缀
-   */
-  function Controller(prefix: string): <T extends IController>(target: T) => any
-  function RestController(prefix: string): any
-  function Service(name: string): any
-  function Resource(name: string): any
-  function Component(name: string): any
-  function Validator(name: string): any
-  function Provider(name: string): any
-  function Middleware(name: string): any
-  function Multiton(): any
-  function useMiddleware(name: string): any
-  function CrossOrigin(options: object): any
-  function Ignore(): any
-  function Csrf(): any
+  const Http: IHttp;
 }

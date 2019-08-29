@@ -11,23 +11,10 @@ const Validate = require('../validate');
 
 class Controller extends Base {
   /**
-   * Create Controller base context
-   * @param {Object} request
-   */
-  constructor(request) {
-    super();
-
-    /**
-     * @var {Request} _request Request instance
-     */
-    this._request = request;
-  }
-
-  /**
    * @var {Object} request request instance
    */
   get request() {
-    return this._request;
+    return this.__context__[0];
   }
 
   /**
@@ -123,5 +110,7 @@ class Controller extends Base {
     return new Resource.Collection(data, resourceName);
   }
 }
+
+Reflect.setMetadata('type', 'controller', Controller.prototype);
 
 module.exports = Controller;

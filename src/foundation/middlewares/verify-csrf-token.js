@@ -5,15 +5,17 @@
  * https://opensource.org/licenses/MIT
  */
 const minimatch = require('minimatch');
-const { Middleware } = require('../../decorators');
 const Response = require('../../response');
+const { Component } = require('../../decorators');
+const Middleware = require('../../base/middleware');
 
 const defaultExcludedMethods = ['HEAD', 'GET', 'OPTIONS'];
 const defaultInvalidTokenMessage = 'Invalid CSRF token';
 
-@Middleware('verify-csrf-token')
-class VerifyCsrfToken {
+@Component('verify-csrf-token')
+class VerifyCsrfToken extends Middleware {
   constructor(app) {
+    super();
     this.app = app;
   }
 

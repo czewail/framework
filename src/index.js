@@ -14,6 +14,12 @@ const Redirect = require('./response/redirect');
 const View = require('./view');
 const Cookie = require('./cookie');
 const Decorators = require('./decorators');
+const Controller = require('./base/controller');
+const Service = require('./base/service');
+const Validator = require('./base/validator');
+const Resource = require('./base/resource');
+const Provider = require('./base/provider');
+const Middleware = require('./base/middleware');
 
 module.exports = {
   Application,
@@ -22,5 +28,11 @@ module.exports = {
   Redirect,
   View,
   Cookie,
+  Controller,
+  Service,
+  Validator,
+  Resource,
+  Provider,
+  Middleware,
   ...Decorators,
 };
