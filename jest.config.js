@@ -18,7 +18,7 @@ module.exports = {
   // files for which coverage information should be collected
   collectCoverageFrom: [
     'src/**/*.js',
-    'src/**/*.stage-2.js',
+    '!src/**/*.stage-2.js',
     '!src/**/DEPRECATED_*.js',
     '!src/**/*.bak.js',
     '!src/DEPRECATED_*/*.js',
