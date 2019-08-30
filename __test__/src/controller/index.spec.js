@@ -8,10 +8,10 @@ const Application = require('../../../src/foundation/application');
 
 const app = new Application(path.resolve(__dirname, '../../daze/src'));
 
+beforeAll(() => app.initialize());
 
 describe('Controller', () => {
   it('Controller#register', async () => {
-    await app.initialize();
     const _Controller = createController();
     const instance = new Controller();
     instance.register(_Controller);
