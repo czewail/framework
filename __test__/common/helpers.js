@@ -1,8 +1,9 @@
 
 require('../../src/helpers');
+const Controller = require('../../src/base/controller');
 
 exports.createController = function () {
-  const newController = class Controller {
+  class _Controller extends Controller {
     get hello() {
       return 'hello';
     }
@@ -20,11 +21,11 @@ exports.createController = function () {
     update() { }
 
     destory() { }
-  };
+  }
 
-  Reflect.setMetadata('type', 'controller', newController.prototype);
+  Reflect.setMetadata('type', 'controller', _Controller.prototype);
 
-  return newController;
+  return _Controller;
 };
 
 exports.createService = function () {

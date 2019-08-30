@@ -1,8 +1,8 @@
-const { Controller, Http } = require('../../../../../src');
+const { Controller, Route, Http } = require('../../../../../src');
 
 
-@Controller('/example')
-class Example {
+@Route('/example')
+class Example extends Controller {
   @Http.Get()
   index() {
     return '';

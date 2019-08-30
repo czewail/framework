@@ -1,16 +1,15 @@
 require('../../../src/helpers');
-const Controller = require('../../../src/decorators/controller');
+const Route = require('../../../src/decorators/route');
 
 describe('Controller Decorator', () => {
   it('should patch type and prefix in Controller', () => {
-    const res = Controller('example')(class Example { });
-    expect(Reflect.getMetadata('type', res.prototype)).toBe('controller');
+    const res = @Route('example') class Example { };
     expect(Reflect.getMetadata('prefix', res.prototype)).toBe('/example');
   });
 
   it('should throws error when decorate on method', () => {
     expect(() => class {
-      @Controller('example')
+      @Route('example')
       foo() { }
     }).toThrow();
   });

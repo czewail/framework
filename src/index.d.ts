@@ -1,11 +1,12 @@
+
+
+
+
 declare module "@dazejs/framework" {
-
-
   class Config {
     set(name: string | object, value: any): object
     get(name: string, def: any): any
     has(name: string): boolean
-    env: string
   }
 
   class Container {
@@ -79,15 +80,12 @@ declare module "@dazejs/framework" {
      * @static
      */
     static get(abstract: string, args: any[]): object
-    // static get(abstract: 'config', args: any[]): Config
     /**
      * bind an abstract in container
      *
      * @param {string} abstract Object identifier
      * @param {array} args params
      * @param {boolean} shared forced instantiation
-     * @returns {*} instance
-     * @public
      * @static
      */
     static bind(abstract: string, concrete: any, shared: boolean): object
@@ -120,13 +118,80 @@ declare module "@dazejs/framework" {
   }
 
 
-
   class Application extends Container {
+    get(abstract: string, args: any[]): object
   }
 
-  class Controller {
-    app: Application;
-    config: Config;
+  class Base {
+    app: Application
+    config: Config
+    messenger: Messenger
+    /**
+     * Create Response instance - 生成响应实例
+     * @param data Response Data - 响应数据
+     * @param code Response statusCode - 响应状态码
+     * @param header Response Headers - 额外响应头
+     */
+    response: (data: any, code: number, header: H) => Response
+    /**
+     * Create Redirect response instance - 生成重定向响应实例
+     * @param  url redirect url - 重定向地址
+     * @param code Response statusCode - 响应状态码
+     * @param header Response Headers - 额外响应头
+     */
+    redirect: (url: string, code: number, header: H) => Redirect
+  }
+
+  class Messenger {
+
+  }
+
+  class Response {
+
+  }
+
+  class Redirect extends Response {
+
+  }
+
+  class Request {
+
+  }
+
+  class View {
+
+  }
+
+  class Resource {
+
+  }
+
+  class Service {
+
+  }
+
+  class Validate {
+
+  }
+
+  interface IResourceHelper {
+    item: () => Resource,
+    collection: () => Resource,
+  }
+
+  class Controller extends Base {
+    request: Request;
+    render: () => View;
+    assign: () => View;
+    view: () => View;
+    resource: () => IResourceHelper;
+    service: () => Service;
+    validate: () => Validate;
+    item: () => Resource;
+    collection: () => Resource;
+  }
+
+  class Middleware extends Base {
   }
 
   // Decorators

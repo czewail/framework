@@ -133,7 +133,7 @@ class Application extends Container {
   async registerDefaultProviders() {
     await this.register(new providers.App(this));
     await this.register(new providers.Controller(this));
-    await this.register(new providers.Component(this));
+    // await this.register(new providers.Component(this));
     await this.register(new providers.Middleware(this));
     await this.register(new providers.Router(this));
     await this.register(new providers.Template(this));

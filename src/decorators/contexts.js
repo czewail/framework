@@ -13,6 +13,7 @@ exports.HttpBody = createInjectDecorator(symbols.INJECTORS.BODY);
 exports.CookieValue = createInjectDecorator(symbols.INJECTORS.COOKIE);
 exports.SessionValue = createInjectDecorator(symbols.INJECTORS.SESSION);
 exports.useService = createInjectDecorator(symbols.INJECTORS.SERVICE);
+exports.useValidator = createInjectDecorator(symbols.INJECTORS.VALIDATOR);
 exports.useResource = createInjectDecorator(symbols.INJECTORS.RESOURCE);
 exports.useComponent = createInjectDecorator(symbols.INJECTORS.COMPONENT);
 exports.Config = createInjectDecorator('config');

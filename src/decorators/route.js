@@ -9,6 +9,7 @@ const { INJECT_ABLE } = require('../symbol');
 
 function decoratorClass(target, prefix) {
   Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
+  Reflect.setMetadata('isRoute', true, target.prototype);
   Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
   return target;
 }

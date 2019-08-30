@@ -1,8 +1,9 @@
 {
   "name": "@dazejs/framework",
-  "version": "1.0.0-beta.9",
+  "version": "1.0.1-beta.1",
   "description": "Daze.js - A powerful web framework for Node.js",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "babel src --out-dir dist --copy-files --watch --source-maps",
     "clean": "rimraf dist/*",

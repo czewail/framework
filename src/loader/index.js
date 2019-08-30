@@ -133,7 +133,11 @@ class Loader {
    */
   registerComponents() {
     for (const component of this.components) {
-      this.app.get('component').register(component);
+      const name = Reflect.getMetadata('name', component.prototype);
+      const type = Reflect.getMetadata('type', component.prototype);
+      if (name && type) {
+        this.app.bind(`${type}.${name}`, component);
+      }
     }
   }
 }

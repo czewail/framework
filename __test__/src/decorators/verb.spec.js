@@ -1,12 +1,12 @@
 require('../../../src/helpers');
 const {
-  Controller, Http,
+  Route, Http,
 } = require('../../../src/decorators');
 
 
 describe('verb Decorator', () => {
   it('should patch get route', () => {
-    @Controller('users')
+    @Route('users')
     class Example {
       @Http.Get()
       index() {}
@@ -21,7 +21,7 @@ describe('verb Decorator', () => {
   });
 
   it('should patch post route', () => {
-    @Controller('users')
+    @Route('users')
     class Example {
       @Http.Post(':id')
       store() { }
@@ -36,7 +36,7 @@ describe('verb Decorator', () => {
   });
 
   it('should patch put route', () => {
-    @Controller('users')
+    @Route('users')
     class Example {
       @Http.Put(':id')
       put() { }
@@ -51,7 +51,7 @@ describe('verb Decorator', () => {
   });
 
   it('should patch options route', () => {
-    @Controller('users')
+    @Route('users')
     class Example {
       @Http.Options(':id')
       options() { }
@@ -66,7 +66,7 @@ describe('verb Decorator', () => {
   });
 
   it('should patch head route', () => {
-    @Controller('users')
+    @Route('users')
     class Example {
       @Http.Head(':id')
       head() { }
@@ -81,7 +81,7 @@ describe('verb Decorator', () => {
   });
 
   it('should patch delete route', () => {
-    @Controller('users')
+    @Route('users')
     class Example {
       @Http.Delete(':id')
       del() { }

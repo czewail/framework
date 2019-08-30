@@ -5,6 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 const { formatPrefix } = require('./helpers');
+const { INJECT_ABLE } = require('../symbol');
 
 const rest = {
   index: [{ uri: '/', method: 'get' }],
@@ -17,6 +18,7 @@ const rest = {
 };
 
 function injectClass(target, prefix) {
+  Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
   Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
   const routes = Reflect.getMetadata('routes', target.prototype);
   Reflect.setMetadata('routes', {

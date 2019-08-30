@@ -91,6 +91,8 @@ class AppProvider {
       (key, request) => (key ? request.session(key) : request.session()),
       true,
     );
+
+    this.app.multiton(symbols.INJECTORS.SERVICE, key => this.app.get(`service.${key}`), true);
   }
 }
 

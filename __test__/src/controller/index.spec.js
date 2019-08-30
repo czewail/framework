@@ -7,14 +7,15 @@ const Controller = require('../../../src/controller');
 const Application = require('../../../src/foundation/application');
 
 const app = new Application(path.resolve(__dirname, '../../daze/src'));
-app.initialize();
+
 
 describe('Controller', () => {
-  it('Controller#register', () => {
-    const controller = createController();
+  it('Controller#register', async () => {
+    await app.initialize();
+    const _Controller = createController();
     const instance = new Controller();
-    instance.register(controller);
-    expect(app.get(controller)).toBeInstanceOf(controller);
+    instance.register(_Controller);
+    expect(app.get(_Controller)).toBeInstanceOf(_Controller);
     expect(() => {
       instance.register('string');
     }).toThrow();

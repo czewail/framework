@@ -7,7 +7,7 @@
 
 // const Controller = require('./controller');
 const Route = require('./route');
-const RestController = require('./rest-controller');
+const Rest = require('./rest');
 // const Service = require('./service');
 const Multiton = require('./multiton');
 // const Resource = require('./resource');
@@ -32,7 +32,7 @@ const Http = {
 
 module.exports = {
   Route,
-  RestController,
+  Rest,
   Component,
   Multiton,
   useMiddleware,
