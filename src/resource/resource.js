@@ -7,7 +7,6 @@
 
 const is = require('core-util-is');
 const Container = require('../container');
-// const ResourceFactory = require('./factory');
 
 const DEFAULT_KEY = 'data';
 
