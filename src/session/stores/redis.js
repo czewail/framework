@@ -66,7 +66,8 @@ class RedisSessionStore {
     const max = typeof maxAge === 'number' ? maxAge : 1000 * 60 * 60 * 24;
     const val = JSON.stringify(sess);
     const setAsync = promisify(this.client.set).bind(this.client);
-    await setAsync(id, val, 'PX', max);
+    const res = await setAsync(id, val, 'PX', max);
+    return res;
   }
 
   /**
@@ -75,7 +76,8 @@ class RedisSessionStore {
    */
   async destroy(id) {
     const delAsync = promisify(this.client.del).bind(this.client);
-    await delAsync(id);
+    const res = await delAsync(id);
+    return res;
   }
 }
 
