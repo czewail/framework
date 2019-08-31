@@ -43,7 +43,7 @@ class Response {
      * http headers
      * @type {object}
      */
-    this._header = header;
+    this._header = this.parseHeaders(header);
 
     /**
      * FIXME unused vars
@@ -80,6 +80,20 @@ class Response {
 
   get data() {
     return this._data;
+  }
+
+  /**
+   * parse init headers
+   * @param {object} headers
+   */
+  parseHeaders(headers) {
+    assert(is.isObject(headers), new IllegalArgumentError('header name must be object'));
+    const keys = Object.keys(headers);
+    const _headers = {};
+    for (const key of keys) {
+      _headers[key.toLocaleLowerCase()] = headers[key];
+    }
+    return _headers;
   }
 
   /**
