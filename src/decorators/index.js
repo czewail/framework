@@ -21,7 +21,7 @@ const Contexts = require('./contexts');
 const HttpCode = require('./http-code');
 // const Middleware = require('./middleware');
 const CrossOrigin = require('./cross-origin');
-const ValidateDecorators = require('../validate/decorators');
+const ValidateDecorators = require('./validates');
 const InjectAble = require('./injectable');
 const Csrf = require('./csrf');
 

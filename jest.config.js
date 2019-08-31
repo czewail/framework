@@ -21,7 +21,7 @@ module.exports = {
     '!src/**/*.stage-2.js',
     '!src/**/DEPRECATED_*.js',
     '!src/**/*.bak.js',
-    '!src/DEPRECATED_*/*.js',
+    '!src/**/DEPRECATED_*/*.js',
   ],
 
   // The directory where Jest should output its coverage files

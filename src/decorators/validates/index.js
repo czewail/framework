@@ -6,7 +6,7 @@
  */
 const is = require('core-util-is');
 const validatorFactory = require('./factory');
-const validators = require('../validators');
+const validators = require('../../validate/validators');
 
 // MARK: Custom
 

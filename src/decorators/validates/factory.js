@@ -7,14 +7,14 @@
 
 module.exports = function (validatorMethod, args = [], options = {}) {
   return function (target, name, descriptor) {
-    const rules = Reflect.getMetadata('rules', target.prototype) || [];
+    const rules = Reflect.getMetadata('rules', target) || [];
     rules.push({
       field: name,
       handler: validatorMethod,
       args,
       options,
     });
-    Reflect.setMetadata('rules', rules, target.prototype);
+    Reflect.setMetadata('rules', rules, target);
     return descriptor;
   };
 };
