@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 require('../../daze/src/app/controller/example');
 require('../../daze/src/provider/app');
 const path = require('path');

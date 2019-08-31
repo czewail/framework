@@ -1,4 +1,4 @@
-require('../../../../src/helpers');
+require('reflect-metadata');
 const Descrators = require('../../../../src/decorators/validates');
 const Validators = require('../../../../src/validate/validators');
 

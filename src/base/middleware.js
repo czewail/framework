@@ -10,6 +10,6 @@ class Middleware extends Base {
 
 }
 
-Reflect.setMetadata('type', 'middleware', Middleware.prototype);
+Reflect.defineMetadata('type', 'middleware', Middleware.prototype);
 
 module.exports = Middleware;

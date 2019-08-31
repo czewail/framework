@@ -9,7 +9,7 @@ const { formatPrefix } = require('./helpers');
 
 function decorateMethod(target, name, descriptor, verb, uri) {
   const routes = Reflect.getMetadata('routes', target) || {};
-  Reflect.setMetadata('routes', {
+  Reflect.defineMetadata('routes', {
     ...routes,
     [`${name}`]: [
       ...routes[`${name}`] || [],

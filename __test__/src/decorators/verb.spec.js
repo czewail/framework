@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const {
   Route, Http,
 } = require('../../../src/decorators');

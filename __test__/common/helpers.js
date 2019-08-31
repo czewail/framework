@@ -1,5 +1,5 @@
 
-require('../../src/helpers');
+require('reflect-metadata');
 const Controller = require('../../src/base/controller');
 
 exports.createController = function () {
@@ -23,28 +23,28 @@ exports.createController = function () {
     destory() { }
   }
 
-  Reflect.setMetadata('type', 'controller', _Controller.prototype);
+  Reflect.defineMetadata('type', 'controller', _Controller.prototype);
 
   return _Controller;
 };
 
 exports.createService = function () {
   const target = class {};
-  Reflect.setMetadata('type', 'service', target.prototype);
-  Reflect.setMetadata('name', 'user', target.prototype);
+  Reflect.defineMetadata('type', 'service', target.prototype);
+  Reflect.defineMetadata('name', 'user', target.prototype);
   return target;
 };
 
 exports.createResource = function () {
   const target = class { };
-  Reflect.setMetadata('type', 'resource', target.prototype);
-  Reflect.setMetadata('name', 'user', target.prototype);
+  Reflect.defineMetadata('type', 'resource', target.prototype);
+  Reflect.defineMetadata('name', 'user', target.prototype);
   return target;
 };
 
 exports.createComponent = function () {
   const target = class { };
-  Reflect.setMetadata('type', 'component', target.prototype);
-  Reflect.setMetadata('name', 'user', target.prototype);
+  Reflect.defineMetadata('type', 'component', target.prototype);
+  Reflect.defineMetadata('name', 'user', target.prototype);
   return target;
 };

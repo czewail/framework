@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const path = require('path');
 const Validate = require('../../../src/validate');
 const validators = require('../../../src/validate/validators');
@@ -36,8 +36,8 @@ describe('Validate', () => {
 
     it('should return structuring object array when rules is Validator instance', () => {
       const Validator = class {};
-      Reflect.setMetadata('type', 'validator', Validator.prototype);
-      Reflect.setMetadata('validator', [
+      Reflect.defineMetadata('type', 'validator', Validator.prototype);
+      Reflect.defineMetadata('validator', [
         {
           field: 'field',
           handler: validators.isEmail,
@@ -62,8 +62,8 @@ describe('Validate', () => {
 
     it('should return structuring object array when rules is string', () => {
       const Validator = class {};
-      Reflect.setMetadata('type', 'validator', Validator.prototype);
-      Reflect.setMetadata('validator', [{
+      Reflect.defineMetadata('type', 'validator', Validator.prototype);
+      Reflect.defineMetadata('validator', [{
         field: 'field',
         handler: validators.isEmail,
         args: [],
@@ -96,7 +96,7 @@ describe('Validate', () => {
 
     it('should return empty array when rules is Validator instance without rules', () => {
       const Validator = class {};
-      Reflect.setMetadata('type', 'validator', Validator.prototype);
+      Reflect.defineMetadata('type', 'validator', Validator.prototype);
       const instance = new Validate({
         field: 'xxx@xxx.com',
       }, new Validator());
@@ -105,7 +105,7 @@ describe('Validate', () => {
 
     it('should return empty array when rules is conatiner instance without rules', () => {
       const Validator = class {};
-      Reflect.setMetadata('type', 'validator', Validator.prototype);
+      Reflect.defineMetadata('type', 'validator', Validator.prototype);
       app.bind('validator.example2', Validator);
       const instance = new Validate({
         field: 'xxx@xxx.com',

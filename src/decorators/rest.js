@@ -18,10 +18,10 @@ const rest = {
 };
 
 function injectClass(target, prefix) {
-  Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
-  Reflect.setMetadata('prefix', formatPrefix(prefix), target.prototype);
+  Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
+  Reflect.defineMetadata('prefix', formatPrefix(prefix), target.prototype);
   const routes = Reflect.getMetadata('routes', target.prototype);
-  Reflect.setMetadata('routes', {
+  Reflect.defineMetadata('routes', {
     ...rest,
     ...routes,
   }, target.prototype);

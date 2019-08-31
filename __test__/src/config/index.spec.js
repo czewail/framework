@@ -1,5 +1,5 @@
 const path = require('path');
-require('../../../src/helpers');
+require('reflect-metadata');
 const Config = require('../../../src/config');
 const appConfig = require('../../daze/src/config/app');
 const appConfig2 = require('../../daze/src/config/app.test');

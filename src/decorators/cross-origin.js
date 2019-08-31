@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 function decoratorClass(target, options) {
-  Reflect.setMetadata('controllerCrossOrigin', {
+  Reflect.defineMetadata('controllerCrossOrigin', {
     ...options,
   }, target.prototype);
   return target;
@@ -19,7 +19,7 @@ function decoratorMethod(elementDescriptor, options) {
       corses[elementDescriptor.key] = {
         ...options,
       };
-      Reflect.setMetadata('routeCrossOrigin', corses, target);
+      Reflect.defineMetadata('routeCrossOrigin', corses, target);
       return target;
     },
   };

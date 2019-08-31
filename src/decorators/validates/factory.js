@@ -14,7 +14,7 @@ module.exports = function (validatorMethod, args = [], options = {}) {
       args,
       options,
     });
-    Reflect.setMetadata('rules', rules, target);
+    Reflect.defineMetadata('rules', rules, target);
     return descriptor;
   };
 };

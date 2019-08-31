@@ -1,4 +1,4 @@
-require('../../../../src/helpers');
+require('reflect-metadata');
 const create = require('../../../../src/decorators/factory/create-inject-decorator');
 const symbols = require('../../../../src/symbol');
 

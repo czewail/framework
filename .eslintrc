@@ -26,6 +26,7 @@
     "no-bitwise": [0],
     "func-names": [0],
     "no-param-reassign": [0],
-    "node/no-unpublished-require": [0]
+    "node/no-unpublished-require": [0],
+    "node/no-extraneous-require": [0]
   }
 }

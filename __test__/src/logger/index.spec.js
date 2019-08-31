@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const path = require('path');
 const Logger = require('../../../src/logger');
 const Application = require('../../../src/foundation/application');

@@ -117,7 +117,6 @@ declare module "@dazejs/framework" {
     static setInstance(instance: object): void
   }
 
-
   class Application extends Container {
     get(abstract: string, args: any[]): object
   }

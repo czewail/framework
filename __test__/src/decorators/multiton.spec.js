@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const Multiton = require('../../../src/decorators/multiton');
 const { MULTITON } = require('../../../src/symbol');
 

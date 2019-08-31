@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const Route = require('../../../src/decorators/route');
 
 describe('Controller Decorator', () => {

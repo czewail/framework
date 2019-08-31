@@ -8,6 +8,7 @@ const Base = require('./base');
 const View = require('../view');
 const Resource = require('../resource');
 const Validate = require('../validate');
+const { INJECT_ABLE } = require('../symbol');
 
 class Controller extends Base {
   /**
@@ -111,6 +112,7 @@ class Controller extends Base {
   }
 }
 
-Reflect.setMetadata('type', 'controller', Controller.prototype);
+Reflect.defineMetadata('type', 'controller', Controller.prototype);
+Reflect.defineMetadata(INJECT_ABLE, true, Controller.prototype);
 
 module.exports = Controller;

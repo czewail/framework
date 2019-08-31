@@ -10,6 +10,6 @@ class Validator extends Base {
 
 }
 
-Reflect.setMetadata('type', 'validator', Validator.prototype);
+Reflect.defineMetadata('type', 'validator', Validator.prototype);
 
 module.exports = Validator;

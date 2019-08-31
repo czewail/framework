@@ -10,6 +10,6 @@ class Service extends Base {
 
 }
 
-Reflect.setMetadata('type', 'service', Service.prototype);
+Reflect.defineMetadata('type', 'service', Service.prototype);
 
 module.exports = Service;

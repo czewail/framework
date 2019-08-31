@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const Component = require('../../../src/decorators/component');
 const symbols = require('../../../src/symbol');
 

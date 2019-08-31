@@ -8,7 +8,7 @@
 function decoratorClass(target, middleware) {
   const middlewares = Reflect.getMetadata('controllerMiddlewares', target.prototype) || [];
   middlewares.push(middleware);
-  Reflect.setMetadata('controllerMiddlewares', middlewares, target.prototype);
+  Reflect.defineMetadata('controllerMiddlewares', middlewares, target.prototype);
   return target;
 }
 
@@ -18,7 +18,7 @@ function decoratorMethod(target, name, descriptor, middleware) {
     middlewares[name] = [];
   }
   middlewares[name].push(middleware);
-  Reflect.setMetadata('routeMiddlewares', middlewares, target);
+  Reflect.defineMetadata('routeMiddlewares', middlewares, target);
   return target;
 }
 

@@ -5,7 +5,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-require('./helpers');
+require('reflect-metadata');
 
 const Application = require('./foundation/application');
 const Container = require('./container');

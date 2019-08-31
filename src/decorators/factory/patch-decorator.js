@@ -4,7 +4,6 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const Metadata = require('../../foundation/support/metadata');
 const { INJECTABLE_KINDS, INJECT_ABLE } = require('../../symbol');
 
 /**
@@ -12,9 +11,9 @@ const { INJECTABLE_KINDS, INJECT_ABLE } = require('../../symbol');
  * [ [ type, params ] ]
  */
 exports.patchClass = function patchClass(type, params, target) {
-  Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
-  const injectors = Metadata.get(INJECTABLE_KINDS.CONSTRUCTOR, target.prototype) || [];
-  Metadata.set(INJECTABLE_KINDS.CONSTRUCTOR, [
+  Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
+  const injectors = Reflect.getMetadata(INJECTABLE_KINDS.CONSTRUCTOR, target.prototype) || [];
+  Reflect.defineMetadata(INJECTABLE_KINDS.CONSTRUCTOR, [
     ...injectors,
     [type, params],
   ], target.prototype);
@@ -26,10 +25,10 @@ exports.patchClass = function patchClass(type, params, target) {
  * { [name]: [ type,  params ] }
  */
 exports.patchProperty = function patchProperty(type, params, target, name) {
-  Reflect.setMetadata(INJECT_ABLE, true, target);
-  const injectors = Metadata.get(INJECTABLE_KINDS.PROPERTY, target) || {};
+  Reflect.defineMetadata(INJECT_ABLE, true, target);
+  const injectors = Reflect.getMetadata(INJECTABLE_KINDS.PROPERTY, target) || {};
   injectors[name] = [type, params];
-  Metadata.set(INJECTABLE_KINDS.PROPERTY, injectors, target);
+  Reflect.defineMetadata(INJECTABLE_KINDS.PROPERTY, injectors, target);
   return target;
 };
 
@@ -40,11 +39,11 @@ exports.patchProperty = function patchProperty(type, params, target, name) {
  * ] }
  */
 exports.patchMethod = function patchMethod(type, params, target, name) {
-  Reflect.setMetadata(INJECT_ABLE, true, target);
-  const injectors = Metadata.get(INJECTABLE_KINDS.METHOD, target) || {};
+  Reflect.defineMetadata(INJECT_ABLE, true, target);
+  const injectors = Reflect.getMetadata(INJECTABLE_KINDS.METHOD, target) || {};
   const items = injectors[name] || [];
   items.push([type, params]);
   injectors[name] = items;
-  Metadata.set(INJECTABLE_KINDS.METHOD, injectors, target);
+  Reflect.defineMetadata(INJECTABLE_KINDS.METHOD, injectors, target);
   return target;
 };

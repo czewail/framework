@@ -1,7 +1,7 @@
 jest.mock('redis');
 
 const path = require('path');
-require('../../../../src/helpers');
+require('reflect-metadata');
 require('../../../daze/src/app/controller/example');
 require('../../../daze/src/provider/app');
 const Application = require('../../../../src/foundation/application');

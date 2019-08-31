@@ -1,4 +1,4 @@
-require('../../../src/helpers');
+require('reflect-metadata');
 const path = require('path');
 const Accepts = require('accepts');
 const Cookies = require('cookies');

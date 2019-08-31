@@ -1,5 +1,5 @@
 const path = require('path');
-require('../../../src/helpers');
+require('reflect-metadata');
 const Cookie = require('../../../src/cookie');
 const Application = require('../../../src/foundation/application');
 

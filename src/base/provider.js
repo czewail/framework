@@ -5,6 +5,6 @@ class Provider extends Base {
 
 }
 
-Reflect.setMetadata('type', 'provider', Provider.prototype);
+Reflect.defineMetadata('type', 'provider', Provider.prototype);
 
 module.exports = Provider;

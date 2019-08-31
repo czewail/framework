@@ -8,7 +8,7 @@
 const { INJECT_ABLE } = require('../symbol');
 
 function decorateClass(target) {
-  Reflect.setMetadata(INJECT_ABLE, true, target.prototype);
+  Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
   return target;
 }
 
