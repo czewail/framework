@@ -1,13 +1,11 @@
 jest.mock('redis');
 
-
 const path = require('path');
 require('../../../../src/helpers');
 require('../../../daze/src/app/controller/example');
 require('../../../daze/src/provider/app');
 const Application = require('../../../../src/foundation/application');
 const RedisSessionStore = require('../../../../src/session/stores/redis');
-
 
 const app = new Application(path.resolve(__dirname, '../../../daze/src'));
 

@@ -146,15 +146,12 @@ class Resource {
    * add meta object
    * @param {string|object} name meta object key name
    * @param {*} value meta value for name key
-   * @param {function|string} formatter meta formatter
    */
-  addMeta(name, value, formatter = null) {
+  addMeta(name, value) {
     if (!this.meta) this.meta = {};
     if (is.isObject(name)) {
-      if (value) this.metaFormatter = value;
       this.meta = Object.assign({}, this.meta, name);
     } else if (is.isString(name)) {
-      this.metaFormatter = formatter;
       this.meta[name] = value;
     }
     return this;

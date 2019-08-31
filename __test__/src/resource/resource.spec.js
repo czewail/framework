@@ -43,4 +43,36 @@ describe('Resource', () => {
     resource.setMeta(data);
     expect(resource.getMeta()).toBe(data);
   });
+
+  describe('Resource#addMeta', () => {
+    it('should add meta with string params', () => {
+      const resource = new Resource();
+      resource.addMeta('key', 'value');
+      expect(resource.getMeta()).toEqual({
+        key: 'value',
+      });
+    });
+
+    it('should add meta with object params', () => {
+      const resource = new Resource();
+      resource.addMeta({
+        aaa: 'bbb',
+      });
+      expect(resource.getMeta()).toEqual({
+        aaa: 'bbb',
+      });
+    });
+
+    it('should do nothing with unsupported params type', () => {
+      const resource = new Resource();
+      resource.addMeta(() => {});
+      expect(resource.getMeta()).toEqual({});
+    });
+  });
+
+  it('should set null with withoutKey method', () => {
+    const resource = new Resource();
+    resource.withoutKey();
+    expect(resource.getKey()).toBeNull();
+  });
 });
