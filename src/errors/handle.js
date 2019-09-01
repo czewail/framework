@@ -125,8 +125,8 @@ class Handler {
     const httpErrorTemplate = config.get('app.errors_page', {});
     const temps = Object.assign({}, httpErrorTemplate, defaultHttpErrorTemplate);
     // check user config s status page
-    if (temps[this.error.status]) {
-      const view = (new View()).render(temps[this.error.status] || 'errors/error.njk', {
+    if (temps[this.error.code]) {
+      const view = (new View()).render(temps[this.error.code] || 'errors/error.njk', {
         err: this.error,
       });
       return new Response(view, this.code, this.error.headers).setType('html');

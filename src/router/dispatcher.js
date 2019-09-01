@@ -93,8 +93,8 @@ class Dispatcher {
         return new ResponseFactory(response).output(this.request);
       }
     }
-    const error = this.createNotFountError();
-    return this.errorCatch(error);
+    throw this.createNotFountError();
+    // return this.errorCatch(error);
   }
 
   /**
@@ -129,11 +129,11 @@ class Dispatcher {
     return this.request.isHead() || this.request.isGet();
   }
 
-  errorCatch(error) {
-    this.app.emit('error', error);
-    const err = new ErrorHandler(this.request, error);
-    return this.output(this.request, err.render());
-  }
+  // errorCatch(error) {
+  //   this.app.emit('error', error);
+  //   const err = new ErrorHandler(this.request, error);
+  //   return this.output(this.request, err.render());
+  // }
 
   /**
    * dispatch request to controller
@@ -145,10 +145,10 @@ class Dispatcher {
       .then(async (response) => {
         await response.commitCookies(this.request);
         return this.output(this.request, response);
-      })
-      .catch((error) => {
-        this.errorCatch(error);
       });
+      // .catch((error) => {
+      //   this.errorCatch(error);
+      // });
   }
 
   responseFilter() {
