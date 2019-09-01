@@ -45,22 +45,6 @@ class Response {
      */
     this._header = this.parseHeaders(header);
 
-    /**
-     * FIXME unused vars
-     *
-     * 默认字符集
-     * @type {string}
-     */
-    this._charset = 'utf-8';
-
-    /**
-     * FIXME unused vars
-     *
-     * 默认 contentType
-     * @type {string}
-     */
-    this._contentType = 'text/html';
-
     this.cookies = [];
 
     this.patchCodeMethods();
@@ -340,7 +324,14 @@ class Response {
    * @returns this
    */
   lastModified(time) {
-    this.setHeader('Last-Modified', time);
+    if (time instanceof Date) {
+      this.setHeader('Last-Modified', time.toUTCString());
+      return this;
+    }
+    if (typeof time === 'string' || typeof time === 'number') {
+      this.setHeader('Last-Modified', (new Date(time)).toUTCString());
+      return this;
+    }
     return this;
   }
 
@@ -362,6 +353,10 @@ class Response {
    * @returns this
    */
   eTag(eTag) {
+    if (!/^(W\/)?"/.test(eTag)) {
+      this.setHeader('ETag', `"${eTag}"`);
+      return this;
+    }
     this.setHeader('ETag', eTag);
     return this;
   }
