@@ -3,13 +3,32 @@
 const Response = require('../../../src/response');
 
 describe('Response', () => {
-  it('should code setter and code getter accordance', () => {
-    const response = new Response();
-    response.code = 404;
-    expect(response.code).toBe(404);
-    expect(response.getCode()).toBe(404);
-    expect(response.getStatus()).toBe(404);
+  describe('Response#code', () => {
+    it('should code setter and code getter accordance', () => {
+      const response = new Response();
+      response.code = 404;
+      expect(response.code).toBe(404);
+    });
+
+    it('should return code by getCode', () => {
+      const response = new Response();
+      response.code = 404;
+      expect(response.getCode()).toBe(404);
+    });
+
+    it('should return code by getStatus', () => {
+      const response = new Response();
+      response.code = 404;
+      expect(response.getStatus()).toBe(404);
+    });
+
+    it('should set code by setCode', () => {
+      const response = new Response();
+      response.setCode(404);
+      expect(response.getStatus()).toBe(404);
+    });
   });
+
 
   it('should data setter and data getter accordance', () => {
     const response = new Response();
@@ -91,6 +110,84 @@ describe('Response', () => {
         'content-type': 'application/json',
         accepts: 'application/json',
       });
+    });
+  });
+
+  describe('Response#type', () => {
+    it('should set type by setType', () => {
+      const response = new Response();
+      response.setType('json');
+      expect(response.getHeader('content-type')).toBe('application/json; charset=utf-8');
+    });
+  });
+
+  describe('Response#length', () => {
+    it('should set length by setLength', () => {
+      const response = new Response();
+      response.setLength(200);
+      expect(response.getHeader('Content-Length')).toBe(200);
+    });
+  });
+
+
+  describe('Response#vary', () => {
+    it('should set vary by setVary', () => {
+      const response = new Response();
+      response.setVary('Origin');
+      expect(response.getHeader('Vary')).toBe('Origin');
+    });
+
+    it('should set varys by setVary repeatedly', () => {
+      const response = new Response();
+      response.setVary('Origin');
+      response.setVary('User-Agent');
+      expect(response.getHeader('Vary')).toBe('Origin,User-Agent');
+    });
+  });
+
+  describe('Response#lastModified', () => {
+    it('should set last-modified with number', () => {
+      const response = new Response();
+      response.lastModified(1567344402522);
+      expect(response.getHeader('Last-Modified')).toBe('Sun, 01 Sep 2019 13:26:42 GMT');
+    });
+
+    it('should set last-modified with string', () => {
+      const response = new Response();
+      response.lastModified('2019/1/1');
+      expect(response.getHeader('Last-Modified')).toBe('Mon, 31 Dec 2018 16:00:00 GMT');
+    });
+
+    it('should set last-modified with Date', () => {
+      const response = new Response();
+      response.lastModified(new Date('2019/1/1'));
+      expect(response.getHeader('Last-Modified')).toBe('Mon, 31 Dec 2018 16:00:00 GMT');
+    });
+
+    it('should do nothing with invail params', () => {
+      const response = new Response();
+      response.lastModified({});
+      expect(response.getHeader('Last-Modified')).toBeUndefined();
+    });
+  });
+
+  describe('Response#etag', () => {
+    it('should not modify an etag with quotes', () => {
+      const response = new Response();
+      response.eTag('"test"');
+      expect(response.getHeader('ETag')).toBe('"test"');
+    });
+
+    it('should not modify a weak etag', () => {
+      const response = new Response();
+      response.eTag('W/"test"');
+      expect(response.getHeader('ETag')).toBe('W/"test"');
+    });
+
+    it('should add quotes around an etag if necessary', () => {
+      const response = new Response();
+      response.eTag('test');
+      expect(response.getHeader('ETag')).toBe('"test"');
     });
   });
 });
