@@ -1,8 +1,9 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/dazejs/daze.svg)](https://github.com/dazejs/daze/issues)
 [![npm](https://img.shields.io/npm/v/@dazejs/framework.svg)](https://www.npmjs.com/package/@dazejs/framework)
+[![npm](https://img.shields.io/npm/v/@dazejs/framework/next.svg)](https://www.npmjs.com/package/@dazejs/framework)
 [![npm](https://img.shields.io/npm/dm/@dazejs/framework.svg)](https://www.npmjs.com/package/@dazejs/framework)
-[![npm](https://travis-ci.com/dazejs/framework.svg?branch=master)](https://travis-ci.org/dazejs/framework)
+[![npm](https://travis-ci.com/dazejs/framework.svg?branch=master)](https://www.npmjs.com/package/dazejs)
 [![codecov](https://codecov.io/gh/dazejs/framework/branch/master/graph/badge.svg)](https://codecov.io/gh/dazejs/framework)
 [![GitHub license](https://img.shields.io/github/license/dazejs/daze.svg)](https://github.com/dazejs/daze/blob/master/LICENSE)
 
@@ -11,37 +12,43 @@
     <img width="200" heigth="200" src="https://github.com/dazejs/daze/blob/master/logo.png">
   </a>  
   <h1>Daze.js</h1>
-  <h4>Web Framework for Nodejs </h4>
+  <h4>Web framwork for Node.js</h4>
 </div>
 
 
-> ## 🛠 Status: In Development
-> Dazejs is currently in development. It's on the fast track to a 1.0 release, so we encourage you to use it and give us your feedback, but there are things that haven't been finalized yet and you can expect some changes.
+## Introduction
+
+`Daze.js` is an efficient, highly extensible and powerful `Node.js` server-side Web development framework.
+
+> Note: This repository contains the core code of the Daze.js framework. If you want to build an application using Daze.js, visit the main [Daze.js repository](https://github.com/dazejs/daze).
 
 
 ## Installation
 
-**使用 `@next` 安装, 尝鲜 `Beta` 版本！**
+**`Beta` version is now available!**
+
+> Beta version is still being tested, welcome developers to download the test, we will collect your comments, and actively upgrade maintenance
 
 ```bash
 $ npm install -g @dazejs/cli@next
 ```
 
+
 ## Getting Started
 
 ```bash
-$ daze create example
+$ daze create example --next
 $ cd example
 $ npm start
 ```
+
+visit `http://localhost:8005` to preview
 
 ## Docs & Community
 
 - [Documentations](https://dazejs.org/)
 
-
 ## License
 
-[MIT](https://github.com/dazejs/daze/blob/master/LICENSE)
+Daze.js is [MIT licensed](https://github.com/dazejs/daze/blob/master/LICENSE)
 
-Copyright (c) 2018-present, Zewail Chan
