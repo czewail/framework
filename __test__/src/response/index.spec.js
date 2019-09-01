@@ -149,19 +149,19 @@ describe('Response', () => {
     it('should set last-modified with number', () => {
       const response = new Response();
       response.lastModified(1567344402522);
-      expect(response.getHeader('Last-Modified')).toBe('Sun, 01 Sep 2019 13:26:42 GMT');
+      expect(response.getHeader('Last-Modified')).toBe(new Date(1567344402522).toUTCString());
     });
 
     it('should set last-modified with string', () => {
       const response = new Response();
       response.lastModified('2019/1/1');
-      expect(response.getHeader('Last-Modified')).toBe('Mon, 31 Dec 2018 16:00:00 GMT');
+      expect(response.getHeader('Last-Modified')).toBe(new Date('2019/1/1').toUTCString());
     });
 
     it('should set last-modified with Date', () => {
       const response = new Response();
       response.lastModified(new Date('2019/1/1'));
-      expect(response.getHeader('Last-Modified')).toBe('Mon, 31 Dec 2018 16:00:00 GMT');
+      expect(response.getHeader('Last-Modified')).toBe(new Date('2019/1/1').toUTCString());
     });
 
     it('should do nothing with invail params', () => {
