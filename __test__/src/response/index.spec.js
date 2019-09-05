@@ -119,6 +119,24 @@ describe('Response', () => {
       response.setType('json');
       expect(response.getHeader('content-type')).toBe('application/json; charset=utf-8');
     });
+
+    it('should set json type by json', () => {
+      const response = new Response();
+      response.json();
+      expect(response.getHeader('content-type')).toBe('application/json; charset=utf-8');
+    });
+
+    it('should set html type by html', () => {
+      const response = new Response();
+      response.html();
+      expect(response.getHeader('content-type')).toBe('text/html; charset=utf-8');
+    });
+
+    it('should set text type by text', () => {
+      const response = new Response();
+      response.text();
+      expect(response.getHeader('content-type')).toBe('text/plain; charset=utf-8');
+    });
   });
 
   describe('Response#length', () => {

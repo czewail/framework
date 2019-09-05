@@ -46,7 +46,7 @@ exports.getAlivedWorkers = function getAlivedWorkers() {
  * @param {object} worker worker process
  */
 exports.isAliveWorker = function isAliveWorker(worker) {
-  if (worker.state === 'disconnected' || worker.state === 'dead') return false;
+  if (worker.state === 'disconnected' || worker.state === 'dead' || worker.isDead()) return false;
   if (worker[WORKER_DYING]) return false;
   return true;
 };

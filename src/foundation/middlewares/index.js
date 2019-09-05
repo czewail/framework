@@ -5,5 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
-exports.Cors = require('./cors');
-exports.VerifyCsrfToken = require('./verify-csrf-token');
+const Cors = require('./cors');
+const VerifyCsrfToken = require('./verify-csrf-token');
+
+module.exports = {
+  Cors,
+  VerifyCsrfToken,
+};

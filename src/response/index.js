@@ -34,16 +34,16 @@ class Response {
     this._code = code;
 
     /**
-     * original data
-     * @type {*}
-     */
-    this._data = data;
-
-    /**
      * http headers
      * @type {object}
      */
     this._header = this.parseHeaders(header);
+
+    /**
+     * original data
+     * @type {*}
+     */
+    this._data = data;
 
     this.cookies = [];
 
@@ -65,6 +65,22 @@ class Response {
   get data() {
     return this._data;
   }
+
+  // parseData(data) {
+  //   const shouldSetType = !this.getHeader('content-type');
+  //   if (Buffer.isBuffer(data)) {
+  //     if (shouldSetType) this.setType('bin');
+  //     this.setLength(data.length);
+  //   } else if (typeof data === 'string') {
+  //     if (shouldSetType) this.setType(/^\s*</.test(data) ? 'html' : 'text');
+  //     this.setLength(Buffer.byteLength(data));
+  //   } else if (data instanceof Stream) {
+  //     if (shouldSetType) this.setType('bin');
+  //   } else {
+  //     this.setType('json');
+  //   }
+  //   return data;
+  // }
 
   /**
    * parse init headers
@@ -427,7 +443,7 @@ class Response {
     if (data instanceof View) {
       return (new ViewFactory(data)).output(request);
     }
-    return data;
+    return this.prepareData(data);
   }
 
   /**
@@ -483,7 +499,30 @@ class Response {
     await request.session().autoCommit();
   }
 
-  async end(request, data) {
+  prepareData(data) {
+    const shouldSetType = !this.getHeader('content-type');
+    if (Buffer.isBuffer(data)) {
+      if (shouldSetType) this.setType('bin');
+      this.setLength(data.length);
+    } else if (typeof data === 'string') {
+      if (shouldSetType) this.setType(/^\s*</.test(data) ? 'html' : 'text');
+      this.setLength(Buffer.byteLength(data));
+    } else if (data instanceof Stream) {
+      if (shouldSetType) this.setType('bin');
+    } else {
+      this.setType('json');
+    }
+    return data;
+  }
+
+  /**
+   * send data
+   * @param {*} request
+   * @public
+   */
+  async send(request) {
+    const data = this.handleData(request);
+
     const { req, res } = request;
 
     // headers
@@ -517,31 +556,6 @@ class Response {
 
     res.end(jsonData);
     return undefined;
-  }
-
-  /**
-   * send data
-   * @param {*} request
-   * @public
-   */
-  async send(request) {
-    const data = this.handleData(request);
-
-    const shouldSetType = !this.getHeader('content-type');
-
-    if (Buffer.isBuffer(data)) {
-      if (shouldSetType) this.setType('bin');
-      this.setLength(data.length);
-    } else if (typeof data === 'string') {
-      if (shouldSetType) this.setType(/^\s*</.test(data) ? 'html' : 'text');
-      this.setLength(Buffer.byteLength(data));
-    } else if (data instanceof Stream) {
-      if (shouldSetType) this.setType('bin');
-    } else {
-      this.setType('json');
-    }
-
-    return this.end(request, data);
   }
 }
 

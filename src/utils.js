@@ -17,27 +17,3 @@ exports.defer = function () {
   });
   return result;
 };
-
-/**
- * Determine whether the target can be traversed
- */
-exports.iterable = function (target) {
-  return !!target[Symbol.iterator];
-};
-
-/**
- * proxy `__get__` method
- */
-exports.getMethodProxy = function (klass) {
-  return new Proxy(klass, {
-    construct(target, argArray, newTarget) {
-      const instance = Reflect.construct(target, argArray, newTarget);
-      return new Proxy(instance, {
-        get(t, p, r) {
-          if (Reflect.has(t, p)) return Reflect.get(t, p, r);
-          return Reflect.apply(t.__get__, t, [p]);
-        },
-      });
-    },
-  });
-};
