@@ -1,6 +1,7 @@
 
+const { Provider } = require('../../../../src');
 
-class AppProvider {
+class AppProvider extends Provider {
 
 }
 
