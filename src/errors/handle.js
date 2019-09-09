@@ -56,7 +56,7 @@ class Handler {
    * @public
    */
   render() {
-    const type = typeis(this.error.headers['content-type'], ['html', 'text', 'json']) || this.request.acceptsTypes('html', 'text', 'json') || 'text';
+    const type = typeis(this.error.headers && this.error.headers['content-type'], ['html', 'text', 'json']) || this.request.acceptsTypes('html', 'text', 'json') || 'text';
     return this[type]();
   }
 
