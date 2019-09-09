@@ -327,15 +327,24 @@ class Application extends Container {
     if (this.config.get('app.cluster.enable')) {
       // 以集群工作方式运行应用
       if (cluster.isMaster) {
-        this.clusterMaterInstance.run();
+        this._server = this.clusterMaterInstance.run();
       } else {
-        this.clusterWorkerInstance.run();
+        this._server = this.clusterWorkerInstance.run();
       }
     } else {
       // 以单线程工作方式运行应用
-      this.startServer(this.port);
+      this._server = this.startServer(this.port);
     }
-    return this;
+    return this._server;
+  }
+
+  close() {
+    return new Promise((resolve, reject) => {
+      this._server.close((error) => {
+        if (error) return reject(error);
+        return resolve();
+      });
+    });
   }
 
   /**

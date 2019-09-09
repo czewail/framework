@@ -5,7 +5,7 @@ const { Controller, Route, Http } = require('../../../../../src');
 class Example extends Controller {
   @Http.Get()
   index() {
-    return '';
+    return 'hello dazejs';
   }
 }
 
