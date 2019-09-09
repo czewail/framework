@@ -1,6 +1,6 @@
 const os = require('os');
 const cluster = require('cluster');
-const { parseOpts, isAliveWorker } = require('../../../src/cluster/helpers');
+const { parseOpts, isAliveWorker, getAlivedWorkers } = require('../../../src/cluster/helpers');
 const { WORKER_DYING } = require('../../../src/cluster/const');
 
 describe('Cluster#helpers', () => {
@@ -58,6 +58,29 @@ describe('Cluster#helpers', () => {
       worker[WORKER_DYING] = true;
       expect(isAliveWorker(worker)).toBeFalsy();
       worker.process.kill();
+    });
+  });
+
+  describe('getAlivedWorkers', () => {
+    it('should return alived works', () => {
+      if (cluster.isMaster) {
+        const worker1 = cluster.fork();
+        const worker2 = cluster.fork();
+        const worker3 = cluster.fork();
+        const worker4 = cluster.fork();
+
+        const workers = getAlivedWorkers();
+
+        expect(workers.includes(worker1)).toBeTruthy();
+        expect(workers.includes(worker2)).toBeTruthy();
+        expect(workers.includes(worker3)).toBeTruthy();
+        expect(workers.includes(worker4)).toBeTruthy();
+
+        worker1.process.kill();
+        worker2.process.kill();
+        worker3.process.kill();
+        worker4.process.kill();
+      }
     });
   });
 });
