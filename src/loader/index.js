@@ -37,6 +37,9 @@ class Loader {
     this.components = [];
   }
 
+  /**
+   * auto scan app dir
+   */
   autoLoadApp() {
     const appFiles = glob.sync(path.resolve(this.app.appPath, '**'), {
       nodir: true,
