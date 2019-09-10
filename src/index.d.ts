@@ -195,7 +195,6 @@ declare module "@dazejs/framework" {
 
   // Decorators
   interface IHttp {
-    Code(code: number): any,
     Get(path: string): any,
     Post(path: string): any,
     Put(path: string): any,
@@ -204,7 +203,38 @@ declare module "@dazejs/framework" {
     Head(path: string): any,
     Options(path: string): any,
     All(path: string): any,
+    OriginalReq(): any,
+    Req(): any,
+    OriginalRes(): any,
+    Res(): any,
+    Request(): any,
+    Response(): any,
+    Query(): any,
+    Params(): any,
+    Header(): any,
+    Headers(): any,
+    Body(): any,
+    CookieValue(): any,
+    SessionValue(): any,
+    Code(): any,
   }
 
   const Http: IHttp;
+
+  function useMiddleware(): any
+  function Component(): any
+  function CrossOrigin(): any
+  function Csrf(): any
+  function Ignore(): any
+  function Injectable(): any
+  function Multiton(): any
+  function Rest(): any
+  function Route(): any
+  function useService(): any
+  function useValidator(): any
+  function useResource(): any
+  function useComponent(): any
+  function Config(): any
+  function App(): any
+  function Messenger(): any
 }

@@ -18,6 +18,7 @@ const Ignore = require('./ignore');
 const useMiddleware = require('./use-middleware');
 const Verbs = require('./verb');
 const Contexts = require('./contexts');
+const HttpContexts = require('./contexts-http');
 const HttpCode = require('./http-code');
 // const Middleware = require('./middleware');
 const CrossOrigin = require('./cross-origin');
@@ -28,6 +29,7 @@ const Csrf = require('./csrf');
 const Http = {
   Code: HttpCode,
   ...Verbs,
+  ...HttpContexts,
 };
 
 module.exports = {
