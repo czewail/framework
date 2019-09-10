@@ -8,5 +8,5 @@
 const useMiddleware = require('./use-middleware');
 
 module.exports = function Csrf() {
-  return elementDescriptor => useMiddleware('verify-csrf-token')(elementDescriptor);
+  return (...args) => useMiddleware('verify-csrf-token')(...args);
 };

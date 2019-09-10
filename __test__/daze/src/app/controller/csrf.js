@@ -1,15 +1,15 @@
 const {
-  Controller, Route, Http, useMiddleware,
+  Controller, Route, Http, Csrf,
 } = require('../../../../../src');
 
 
 @Route('/csrf')
-class Csrf extends Controller {
+class CsrfController extends Controller {
   @Http.Post()
-  @useMiddleware('verify-csrf-token')
+  @Csrf()
   store() {
     return 'hello';
   }
 }
 
-module.exports = Csrf;
+module.exports = CsrfController;
