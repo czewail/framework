@@ -10,6 +10,12 @@ class CsrfController extends Controller {
   store() {
     return 'hello';
   }
+
+  @Http.Get('/get')
+  @Csrf()
+  show() {
+    return 'hello';
+  }
 }
 
 module.exports = CsrfController;
