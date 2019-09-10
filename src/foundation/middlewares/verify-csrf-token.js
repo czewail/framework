@@ -14,11 +14,6 @@ const defaultInvalidTokenMessage = 'Invalid CSRF token';
 
 @Component('verify-csrf-token')
 class VerifyCsrfToken extends Middleware {
-  constructor(app) {
-    super();
-    this.app = app;
-  }
-
   get except() {
     return [];
   }
