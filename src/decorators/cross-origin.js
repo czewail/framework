@@ -11,18 +11,13 @@ function decoratorClass(target, options) {
   return target;
 }
 
-function decoratorMethod(elementDescriptor, options) {
-  return {
-    ...elementDescriptor,
-    finisher(target) {
-      const corses = Reflect.getMetadata('routeCrossOrigin', target) ?? {};
-      corses[elementDescriptor.key] = {
-        ...options,
-      };
-      Reflect.defineMetadata('routeCrossOrigin', corses, target);
-      return target;
-    },
+function decoratorMethod(target, name, descriptor, options) {
+  const corses = Reflect.getMetadata('routeCrossOrigin', target) ?? {};
+  corses[name] = {
+    ...options,
   };
+  Reflect.defineMetadata('routeCrossOrigin', corses, target);
+  return target;
 }
 
 function handle(args, options) {
