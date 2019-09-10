@@ -5,9 +5,8 @@ const { Application } = require('../../../../src');
 const app = new Application(path.resolve(__dirname, '../../../daze/src'));
 
 
-beforeAll(async () => {
-  await app.run();
-});
+beforeAll(() => app.run());
+afterAll(() => app.close());
 
 describe('Request#utils#parse-body', () => {
   it('should parse body when type is json', async () => {
@@ -67,8 +66,4 @@ describe('Request#utils#parse-body', () => {
     expect(example.name).toBe('example.txt');
     expect(name).toEqual(['dazejs', 'dazejs2', 'dazejs3']);
   });
-});
-
-afterAll(async () => {
-  await app.close();
 });

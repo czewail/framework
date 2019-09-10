@@ -340,7 +340,8 @@ class Application extends Container {
 
   close() {
     return new Promise((resolve, reject) => {
-      this._server.close((error) => {
+      if (!this._server) return reject(new Error('app does not running!'));
+      return this._server.close((error) => {
         if (error) return reject(error);
         return resolve();
       });
