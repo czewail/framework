@@ -10,8 +10,6 @@ const is = require('core-util-is');
 const Container = require('../container');
 const Middleware = require('../middleware');
 const Response = require('../response');
-// const LoadSessionMiddleware = require('../session/DEPRECATED_middleware/load-session');
-// const VerifyCsrfTokenMiddleware = require('../foundation/middlewares/verify-csrf-token');
 
 class Route {
   /**

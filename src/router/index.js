@@ -9,7 +9,7 @@ const Route = require('./route');
 const Collection = require('./collection');
 const Container = require('../container');
 const Dispatcher = require('./dispatcher');
-const corsMiddleware = require('../foundation/middlewares/cors');
+const { Cors } = require('../foundation/middlewares');
 
 class Router {
   /**
@@ -43,9 +43,9 @@ class Router {
     const routeCrossOrigin = Reflect.getMetadata('routeCrossOrigin', controller.prototype) || {};
 
     if (controllerCrossOrigin) {
-      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware, [controllerCrossOrigin]);
+      route.addMethod('OPTIONS').registerMiddleware(Cors, [controllerCrossOrigin]);
     } else if (routeCrossOrigin[action]) {
-      route.addMethod('OPTIONS').registerMiddleware(corsMiddleware, [routeCrossOrigin[action]]);
+      route.addMethod('OPTIONS').registerMiddleware(Cors, [routeCrossOrigin[action]]);
     }
     this.collection.add(route);
     return route;

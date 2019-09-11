@@ -6,7 +6,7 @@
  */
 const path = require('path');
 const glob = require('glob');
-const verifyCsrfToken = require('../foundation/middlewares/verify-csrf-token');
+const { VerifyCsrfToken } = require('../foundation/middlewares');
 
 class Loader {
   /**
@@ -28,7 +28,7 @@ class Loader {
      * @var {array} middlewares middlewares
      */
     this.middlewares = [
-      verifyCsrfToken,
+      VerifyCsrfToken,
     ];
 
     /**
