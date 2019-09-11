@@ -240,6 +240,14 @@ class Request {
     return host ? host.split(/\s*,\s*/, 1)[0] : '';
   }
 
+
+  /**
+   * get request host
+   */
+  getHost() {
+    return this.host;
+  }
+
   /**
    * Get request origin
    */
@@ -424,12 +432,12 @@ class Request {
    * @param {String} key session key
    * @param {*} value session value
    */
-  session(key, value) {
+  session() {
     if (!this._session) {
       this._session = new Session(this);
     }
-    if (key && !value) return this._session.get(key);
-    if (key && value) return this._session.set(key, value);
+    // if (key && !value) return this._session.get(key);
+    // if (key && value) return this._session.set(key, value);
     return this._session;
   }
 
@@ -438,7 +446,7 @@ class Request {
    * @param {String} key
    */
   sessionValue(key) {
-    return this.session(key);
+    return this.session().get(key);
   }
 
   get secure() {
@@ -511,10 +519,15 @@ class Request {
    * @param {string} name Parameter name
    * @param {*} defaultValue default parameter value
    */
-  param(name, defaultValue = null) {
-    if (name) {
-      return this.has(name) ? this.mergedParams[name] : defaultValue;
-    }
+  getParam(name, defaultValue) {
+    if (!name) return undefined;
+    return this.has(name) ? this.mergedParams[name] : defaultValue;
+  }
+
+  /**
+   * get all params
+   */
+  getParams() {
     return this.mergedParams;
   }
 
@@ -563,7 +576,7 @@ class Request {
    * Determine whether the parameter exists
    * @param {string} name Parameter name
    */
-  has(name) {
+  hasParam(name) {
     return Reflect.has(this.mergedParams, name);
   }
 

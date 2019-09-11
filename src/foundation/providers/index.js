@@ -8,7 +8,6 @@ exports.Loader = require('./loader');
 exports.App = require('./app');
 exports.Config = require('./config');
 exports.Controller = require('./controller');
-// exports.Component = require('./DEPRECATED_component');
 exports.Messenger = require('./messenger');
 exports.Logger = require('./logger');
 exports.Template = require('./template');
