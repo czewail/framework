@@ -6,7 +6,6 @@
  */
 
 const Middleware = require('../../middleware');
-const VerifyCsrfToken = require('../middlewares/verify-csrf-token');
 
 class MiddlewareProvider {
   /**
