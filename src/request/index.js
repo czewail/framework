@@ -521,7 +521,7 @@ class Request {
    */
   getParam(name, defaultValue) {
     if (!name) return undefined;
-    return this.has(name) ? this.mergedParams[name] : defaultValue;
+    return this.hasParam(name) ? this.mergedParams[name] : defaultValue;
   }
 
   /**
@@ -539,12 +539,12 @@ class Request {
     const res = {};
     for (const arg of args) {
       if (is.isString(arg)) {
-        if (this.has(arg)) {
+        if (this.hasParam(arg)) {
           res[arg] = this.getParam(arg);
         }
       } else if (is.isArray(arg)) {
         for (const name of arg) {
-          if (this.has(name)) {
+          if (this.hasParam(name)) {
             res[name] = this.getParam(name);
           }
         }
