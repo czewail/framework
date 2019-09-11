@@ -1,6 +1,8 @@
 
 
-
+interface IObj {
+  [key: string]: any
+}
 
 declare module "@dazejs/framework" {
   class Config {
@@ -121,6 +123,100 @@ declare module "@dazejs/framework" {
     get(abstract: string, args: any[]): object
   }
 
+
+  class Response {
+    json: () => this
+    text: () => this
+    html: () => this
+    cookie: <T extends IObj>(key: string, value: any, options: T) => this
+    withCookie: (cookie: any) => this
+    attachment: <T extends IObj>(filename?: sting, options: T) => this
+    getCode: () => number
+    getData: <T extends IObj>() => T
+    getStatus: () => number
+    setHeaders: <T extends IObj>(headers: T) => this
+    setCode: (code: number) => this
+    setType: (type: string) => this
+    setLength: (length: number) => this
+    setVary: (vary: string) => this
+    eTag: (etag: string) => this
+    lastModified: (time: string | number | Date) => this
+    setData: <T extends IObj>(data: T) => this
+    setStatus: (code: number) => this
+    setHeader: (name: string, value: any) => this
+    error: (message: string, code: number) => this
+    success: (message: string, code: number) => this
+    Continue: () => this
+    SwitchingProtocols: () => this
+    Processing: () => this
+    EarlyHints: () => this
+    OK: () => this
+    Created: () => this
+    Accepted: () => this
+    NonAuthoritativeInformation: () => this
+    NoContent: () => this
+    ResetContent: () => this
+    PartialContent: () => this
+    MultiStatus: () => this
+    AlreadyReported: () => this
+    IMUsed: () => this
+    MultipleChoices: () => this
+    MovedPermanently: () => this
+    Found: () => this
+    SeeOther: () => this
+    NotModified: () => this
+    UseProxy: () => this
+    Unused: () => this
+    TemporaryRedirect: () => this
+    PermanentRedirect: () => this
+    BadRequest: () => this
+    Unauthorized: () => this
+    PaymentRequired: () => this
+    Forbidden: () => this
+    NotFound: () => this
+    MethodNotAllowed: () => this
+    NotAcceptable: () => this
+    ProxyAuthenticationRequired: () => this
+    RequestTimeout: () => this
+    Conflict: () => this
+    Gone: () => this
+    LengthRequired: () => this
+    PreconditionFailed: () => this
+    PayloadTooLarge: () => this
+    URITooLong: () => this
+    UnsupportedMediaType: () => this
+    RangeNotSatisfiable: () => this
+    ExpectationFailed: () => this
+    ImATeapot: () => this
+    MisdirectedRequest: () => this
+    UnprocessableEntity: () => this
+    Locked: () => this
+    FailedDependency: () => this
+    UnorderedCollection: () => this
+    UpgradeRequired: () => this
+    PreconditionRequired: () => this
+    TooManyRequests: () => this
+    RequestHeaderFieldsTooLarge: () => this
+    UnavailableForLegalReasons: () => this
+    InternalServerError: () => this
+    NotImplemented: () => this
+    BadGateway: () => this
+    ServiceUnavailable: () => this
+    GatewayTimeout: () => this
+    HTTPVersionNotSupported: () => this
+    VariantAlsoNegotiates: () => this
+    InsufficientStorage: () => this
+    LoopDetected: () => this
+    BandwidthLimitExceeded: () => this
+    NotExtended: () => this
+    NetworkAuthenticationRequired: () => this
+  }
+  class Redirect extends Response {
+    go: (url: string) => this
+    back: () => this
+  }
+
+
   class Base {
     app: Application
     config: Config
@@ -145,16 +241,44 @@ declare module "@dazejs/framework" {
 
   }
 
-  class Response {
-
-  }
-
-  class Redirect extends Response {
-
-  }
-
   class Request {
-
+    getHeaders: <T extends IObj>() => T
+    getHeader: (name: string) => any
+    getMethod: () => string
+    isOptions: () => boolean
+    isHead: () => boolean
+    isGet: () => boolean
+    isPost: () => boolean
+    isPut: () => boolean
+    isPatch: () => boolean
+    isDelete: () => boolean
+    getLength: () => ?number
+    getUrl: () => string
+    getSocket: () => any
+    getProtocol: () => 'http' | 'https'
+    getHost: () => string
+    getOrigin: () => string
+    getHref: () => string
+    getPath: () => string
+    getQuerystring: () => string
+    getSearch: () => string
+    getQuery: <T extends IObj>() => T
+    getType: () => string
+    acceptsTypes: (...params: string[]) => string
+    acceptsEncodings: (...params: string[]) => string
+    acceptsCharsets: (...params: string[]) => string
+    acceptsLanguages: (...params: string[]) => string
+    cookieValue: (name: string) => any
+    session: () => any
+    sessionValue: (key: string) => any
+    getBody: <T extends IObj>() => T
+    getFiles: <T extends IObj>() => T
+    getParam: (name: string) => any
+    getParams: <T extends IObj>() => T
+    only: <T extends IObj>(...params: string[] | string[][]) => T 
+    except: <T extends IObj>(...params: string[] | string[][]) => T
+    hasParam: (name: string) => boolean
+    validate: (validator: any, message: string) => void
   }
 
   class View {
