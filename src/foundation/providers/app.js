@@ -55,7 +55,7 @@ class AppProvider {
     // for @HttpParams
     this.app.multiton(
       symbols.INJECTORS.PARAMS,
-      (name, request) => (name ? request.param(name) : request.param()),
+      (name, request) => (name ? request.getParam(name) : request.getParams()),
       true,
     );
 

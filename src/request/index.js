@@ -540,12 +540,12 @@ class Request {
     for (const arg of args) {
       if (is.isString(arg)) {
         if (this.has(arg)) {
-          res[arg] = this.param(arg);
+          res[arg] = this.getParam(arg);
         }
       } else if (is.isArray(arg)) {
         for (const name of arg) {
           if (this.has(name)) {
-            res[name] = this.param(name);
+            res[name] = this.getParam(name);
           }
         }
       }
@@ -605,7 +605,7 @@ const requestProxy = new Proxy(Request, {
         if (Reflect.has(t, prop) || typeof prop === 'symbol') {
           return Reflect.get(t, prop, receiver);
         }
-        return t.param(prop);
+        return t.getParam(prop);
       },
     });
   },

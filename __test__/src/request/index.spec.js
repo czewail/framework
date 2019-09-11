@@ -563,7 +563,7 @@ describe('Request', () => {
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
-      expect(instance.param('page')).toBe('10');
+      expect(instance.getParam('page')).toBe('10');
     });
 
     it('shoud return body value', () => {
@@ -577,7 +577,7 @@ describe('Request', () => {
           name: 'dazejs',
         },
       };
-      expect(instance.param('name')).toBe('dazejs');
+      expect(instance.getParam('name')).toBe('dazejs');
     });
 
     it('should return null when key does not exist', () => {
@@ -586,7 +586,7 @@ describe('Request', () => {
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
-      expect(instance.param('age')).toBeNull();
+      expect(instance.getParam('age')).toBeNull();
     });
 
     it('should return default value when key does not exist', () => {
@@ -595,7 +595,7 @@ describe('Request', () => {
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
-      expect(instance.param('age', '100')).toBe('100');
+      expect(instance.getParam('age', '100')).toBe('100');
     });
 
     it('should return all param object whitout name', () => {
@@ -609,7 +609,7 @@ describe('Request', () => {
           name: 'dazejs',
         },
       };
-      expect(instance.param()).toEqual({
+      expect(instance.getParam()).toEqual({
         page: '10',
         color: 'blue',
         name: 'dazejs',
