@@ -580,13 +580,13 @@ describe('Request', () => {
       expect(instance.getParam('name')).toBe('dazejs');
     });
 
-    it('should return null when key does not exist', () => {
+    it('should return undefined when key does not exist', () => {
       const request = {
         url: '/users?page=10&color=blue',
       };
       const { req, res } = context(request);
       const instance = new Request(req, res);
-      expect(instance.getParam('age')).toBeNull();
+      expect(instance.getParam('age')).toBeUndefined();
     });
 
     it('should return default value when key does not exist', () => {
@@ -609,7 +609,7 @@ describe('Request', () => {
           name: 'dazejs',
         },
       };
-      expect(instance.getParam()).toEqual({
+      expect(instance.getParams()).toEqual({
         page: '10',
         color: 'blue',
         name: 'dazejs',
