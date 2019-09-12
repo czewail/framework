@@ -24,10 +24,6 @@
 
 ## Installation
 
-**`Beta` version is now available!**
-
-> Beta version is still being tested, welcome developers to download the test, we will collect your comments, and actively upgrade maintenance
-
 ```bash
 $ npm install -g @dazejs/cli
 ```
