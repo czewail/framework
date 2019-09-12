@@ -41,7 +41,7 @@ $ cd example
 $ npm start
 ```
 
-visit `http://localhost:8005` to preview
+visit `http://localhost:8080` to preview
 
 ## Docs & Community
 

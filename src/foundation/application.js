@@ -15,7 +15,7 @@ const { Master, Worker } = require('../cluster');
 const providers = require('./providers');
 const HttpError = require('../errors/http-error');
 
-const DEFAULT_PORT = 8000;
+const DEFAULT_PORT = 8080;
 
 class Application extends Container {
   /**
