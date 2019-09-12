@@ -29,14 +29,14 @@
 > Beta version is still being tested, welcome developers to download the test, we will collect your comments, and actively upgrade maintenance
 
 ```bash
-$ npm install -g @dazejs/cli@next
+$ npm install -g @dazejs/cli
 ```
 
 
 ## Getting Started
 
 ```bash
-$ daze create example --next
+$ daze create example
 $ cd example
 $ npm start
 ```
