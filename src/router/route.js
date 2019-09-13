@@ -101,11 +101,7 @@ class Route {
     const _methods = [];
     for (const method of methods) {
       const _method = method.toUpperCase();
-      if (_method === 'ALL') {
-        _methods.push.push(...http.METHODS);
-      } else {
-        _methods.push(_method);
-      }
+      _methods.push(_method);
     }
     return [...new Set(_methods)];
   }

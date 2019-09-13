@@ -4,67 +4,65 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-
+const http = require('http');
 const { formatPrefix } = require('./helpers');
 
-function decorateMethod(target, name, descriptor, verb, uri) {
+function decorateMethod(target, name, descriptor, methods, uri) {
   const routes = Reflect.getMetadata('routes', target) || {};
-  Reflect.defineMetadata('routes', {
-    ...routes,
-    [`${name}`]: [
-      ...routes[`${name}`] || [],
-      {
-        uri: formatPrefix(uri),
-        method: verb,
-      },
-    ],
-  }, target);
+  if (!routes[name]) routes[name] = [];
+  for (const method of methods) {
+    routes[name].push({
+      uri: formatPrefix(uri),
+      method,
+    });
+  }
+  Reflect.defineMetadata('routes', routes, target);
   return target;
 }
 
-function handle(args, verb, uri) {
+function handle(args, methods, uri) {
   if (args.length > 1) {
-    return decorateMethod(...args, verb, uri);
+    return decorateMethod(...args, methods, uri);
   }
   throw new Error('@Http[method] must be decorate on method');
 }
 
-function Verb(verb, uri = '/') {
-  return (...args) => handle(args, verb, uri);
+function Verb(methods, uri = '/') {
+  return (...args) => handle(args, methods, uri);
 }
 
 exports.Get = function Get(uri) {
-  return Verb('get', uri);
+  return Verb(['GET'], uri);
 };
 
 exports.Post = function Post(uri) {
-  return Verb('post', uri);
+  return Verb(['POST'], uri);
 };
 
 exports.Put = function Put(uri) {
-  return Verb('put', uri);
+  return Verb(['PUT'], uri);
 };
 
 exports.Patch = function Patch(uri) {
-  return Verb('patch', uri);
+  return Verb(['PATCH'], uri);
 };
 
 exports.Options = function Options(uri) {
-  return Verb('options', uri);
+  return Verb(['OPTIONS'], uri);
 };
 
 exports.Head = function Head(uri) {
-  return Verb('head', uri);
+  return Verb(['HEAD'], uri);
 };
 
 exports.Delete = function Delete(uri) {
-  return Verb('delete', uri);
+  return Verb(['DELETE'], uri);
 };
 
 exports.Del = function Del(uri) {
-  return Verb('del', uri);
+  return Verb(['DEL'], uri);
 };
 
-exports.All = function All(uri) {
-  return Verb('all', uri);
+exports.All = function All(uri, methods = http.METHODS) {
+  return Verb(methods, uri);
 };
