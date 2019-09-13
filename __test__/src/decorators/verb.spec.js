@@ -14,7 +14,7 @@ describe('verb Decorator', () => {
     const routes = Reflect.getMetadata('routes', Example.prototype);
     expect(routes.index).toEqual([
       {
-        method: 'get',
+        method: 'GET',
         uri: '',
       },
     ]);
@@ -29,7 +29,7 @@ describe('verb Decorator', () => {
     const routes = Reflect.getMetadata('routes', Example.prototype);
     expect(routes.store).toEqual([
       {
-        method: 'post',
+        method: 'POST',
         uri: '/:id',
       },
     ]);
@@ -44,7 +44,7 @@ describe('verb Decorator', () => {
     const routes = Reflect.getMetadata('routes', Example.prototype);
     expect(routes.put).toEqual([
       {
-        method: 'put',
+        method: 'PUT',
         uri: '/:id',
       },
     ]);
@@ -59,7 +59,7 @@ describe('verb Decorator', () => {
     const routes = Reflect.getMetadata('routes', Example.prototype);
     expect(routes.options).toEqual([
       {
-        method: 'options',
+        method: 'OPTIONS',
         uri: '/:id',
       },
     ]);
@@ -74,7 +74,7 @@ describe('verb Decorator', () => {
     const routes = Reflect.getMetadata('routes', Example.prototype);
     expect(routes.head).toEqual([
       {
-        method: 'head',
+        method: 'HEAD',
         uri: '/:id',
       },
     ]);
@@ -89,7 +89,7 @@ describe('verb Decorator', () => {
     const routes = Reflect.getMetadata('routes', Example.prototype);
     expect(routes.del).toEqual([
       {
-        method: 'delete',
+        method: 'DELETE',
         uri: '/:id',
       },
     ]);
