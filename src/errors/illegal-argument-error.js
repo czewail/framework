@@ -6,7 +6,7 @@
  */
 
 class IllegalArgumentError extends Error {
-  constructor(message = 'illegal argument') {
+  constructor(message = 'Illegal Argument') {
     super(message);
     Error.captureStackTrace(this, this.constructor);
   }

@@ -1,5 +1,5 @@
 const HttpError = require('../../../src/errors/http-error');
-const ValidateError = require('../../../src/errors/validate-error');
+const ValidateError = require('../../../src/errors/validate-http-error');
 
 describe('src/errors/validate-error', () => {
   it('validate-error', () => {

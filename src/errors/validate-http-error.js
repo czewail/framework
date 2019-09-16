@@ -11,6 +11,7 @@ class ValidateError extends HttpError {
   constructor(message = 'Validation error', validate = null) {
     super(422, message, {}, validate && validate.errors);
     this.validate = validate;
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 

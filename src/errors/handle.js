@@ -12,7 +12,7 @@ const typeis = require('type-is').is;
 const tracePage = require('@dazejs/trace-page');
 const Container = require('../container');
 const HttpError = require('./http-error');
-const ValidateError = require('./validate-error');
+const ValidateHttpError = require('./validate-http-error');
 const Response = require('../response');
 const RedirectResponse = require('../response/redirect');
 const View = require('../view');
@@ -90,7 +90,7 @@ class Handler {
    * @private
    */
   html() {
-    if (this.error instanceof ValidateError) {
+    if (this.error instanceof ValidateHttpError) {
       // this.ctx.status = 302;
       // const url = this.ctx.session[SESSION_PREVIOUS_URL] || this.ctx.get('Referrer') || '/';
       // this.ctx.response.set('Location', url);

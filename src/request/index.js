@@ -12,7 +12,7 @@ const accepts = require('accepts');
 const is = require('core-util-is');
 const Container = require('../container');
 const Validate = require('../validate');
-const ValidateError = require('../errors/validate-error');
+const ValidateHttpError = require('../errors/validate-http-error');
 const Session = require('../session');
 const parseBody = require('./utils/parse-body');
 
@@ -588,7 +588,7 @@ class Request {
   validate(validator, message = 'Validation error') {
     const validate = new Validate(this.mergedParams, validator);
     if (validate.fails) {
-      throw new ValidateError(message, validate);
+      throw new ValidateHttpError(message, validate);
     }
   }
 }
