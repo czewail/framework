@@ -51,7 +51,7 @@
   },
   "readmeFilename": "README.md",
   "dependencies": {
-    "@dazejs/trace-page": "0.1.0",
+    "@dazejs/trace-page": "^0.2.0",
     "accepts": "^1.3.7",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
@@ -78,7 +78,6 @@
     "redis": "^2.8.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.9",
-    "stack-trace": "0.0.10",
     "statuses": "^1.5.0",
     "string-hash": "^1.1.3",
     "toidentifier": "^1.0.0",
@@ -109,7 +108,6 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "jest": "^24.8.0",
-    "regenerator-runtime": "^0.12.1",
     "rimraf": "^2.6.2",
     "supertest": "^3.4.2"
   }

@@ -109,9 +109,7 @@ class Handler {
    * @private
    */
   renderTracePage() {
-    const page = tracePage(this.error, this.request, {
-      logo: `${fs.readFileSync(path.resolve(__dirname, './views/assets/logo.svg'))}<span style="vertical-align: top;line-height: 50px;margin-left: 10px;">Daze.js</span>`,
-    });
+    const page = tracePage(this.error, this.request);
     return new Response(page, this.code, this.error.headers).setType('html');
   }
 
