@@ -13,7 +13,7 @@ const Container = require('../container');
 const Response = require('../response');
 const NotFoundHttpError = require('../errors/not-found-http-error');
 const HttpError = require('../errors/http-error');
-const ErrorHandler = require('../errors/handle');
+// const ErrorHandler = require('../errors/handle');
 const ResponseFactory = require('../response/manager');
 
 function type(file, ext) {
@@ -146,9 +146,9 @@ class Dispatcher {
         await response.commitCookies(this.request);
         return this.output(this.request, response);
       });
-      // .catch((error) => {
-      //   this.errorCatch(error);
-      // });
+    // .catch((error) => {
+    //   this.errorCatch(error);
+    // });
   }
 
   responseFilter() {
