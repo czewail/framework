@@ -14,7 +14,7 @@ export const Http = {
   ...Vberbs,
   ...HttpContext
 }
-export * from './controller';
+export * from './route';
 export * from './rest';
 export * from './multiton';
 export * from './component';
@@ -25,7 +25,3 @@ export * from './cross-origin';
 export * from './validates';
 export * from './injectable';
 export * from './csrf';
-export * from './service';
-export * from './validator';
-export * from './resource';
-export * from './middleware';

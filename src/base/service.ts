@@ -10,3 +10,5 @@ import { Base } from './base'
 export class Service extends Base {
 
 }
+
+Reflect.defineMetadata('type', 'service', Service.prototype);

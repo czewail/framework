@@ -112,3 +112,5 @@ export class Controller extends Base {
     return new Resource.Collection(data, resourceName);
   }
 }
+
+Reflect.defineMetadata('type', 'controller', Controller.prototype);

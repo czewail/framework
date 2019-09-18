@@ -1,3 +1,5 @@
+
+
 declare module 'Keygrip' {
   var x: any;
   export = x;
@@ -24,13 +26,13 @@ declare module '@dazejs/trace-page' {
 }
 
 
-
 declare module 'winston-mongodb' {
   const MongoDB: MongoDBTransportInstance;
 }
 
 // declare module 'winston-daily-rotate-file' {
-//   const DailyRotateFile: Dail;
+//   var x: any;
+//   export = x;
 // }
 
 // declare module 'winston' {

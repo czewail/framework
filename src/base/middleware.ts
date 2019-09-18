@@ -10,3 +10,6 @@ import { Base } from './base'
 export class Middleware extends Base {
 
 }
+
+Reflect.defineMetadata('type', 'middleware', Middleware.prototype);
+

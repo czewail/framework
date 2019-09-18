@@ -5,8 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 import { INJECT_ABLE } from '../symbol'
-import { proxy } from '../base/proxy'
-import { Base } from '../base/base'
 
 function decoratorClass(target: any, name: string) {
   Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
@@ -14,7 +12,7 @@ function decoratorClass(target: any, name: string) {
     Reflect.defineMetadata('type', 'component', target.prototype);
   }
   Reflect.defineMetadata('name', name, target.prototype);
-  return proxy(target, Base);
+  return target;
 }
 
 function handle(args: any[], name: string) {

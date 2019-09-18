@@ -8,7 +8,7 @@
 import path from 'path'
 import * as winston from 'winston';
 import { MongoDB } from 'winston-mongodb'
-import DailyRotateFile from 'winston-daily-rotate-file'
+// import DailyRotateFile from 'winston-daily-rotate-file';
 import { Container } from '../container'
 import { IllegalArgumentError } from '../errors/illegal-argument-error'
 
@@ -192,9 +192,10 @@ class LoggerBase {
   /**
    * dailyFile driver creator
    */
+  // @ts-ignore
   dailyFileDriverCreator(options: any) {
     const { driver, ...restOpts } = options;
-    return [new DailyRotateFile(restOpts)];
+    return [new (require('winston-daily-rotate-file'))(restOpts)];
   }
 
   /**

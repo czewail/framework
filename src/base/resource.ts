@@ -53,3 +53,5 @@ export class Resource extends Base {
     return data;
   }
 }
+
+Reflect.defineMetadata('type', 'resource', Resource.prototype);
