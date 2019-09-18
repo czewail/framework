@@ -99,9 +99,9 @@ class Handler {
       return (new RedirectResponse()).back();
     }
     if (!(this.error instanceof HttpError) && this.app.isDebug) {
-      return this.renderTracePage(this.code);
+      return this.renderTracePage();
     }
-    return this.renderHttpErrorPage(this.code);
+    return this.renderHttpErrorPage();
   }
 
   /**

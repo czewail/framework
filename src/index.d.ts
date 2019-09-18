@@ -205,7 +205,7 @@ declare module "@dazejs/framework" {
     isPut: () => boolean
     isPatch: () => boolean
     isDelete: () => boolean
-    getLength: () => ?number
+    getLength: () => number
     getUrl: () => string
     getSocket: () => any
     getProtocol: () => 'http' | 'https'

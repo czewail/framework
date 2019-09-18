@@ -106,7 +106,7 @@ class Master {
     const server = net.createServer({ pauseOnConnect: true }, (connection) => {
       const signature = `${connection.remoteAddress}:${connection.remotePort}`;
       this.connections[signature] = connection;
-      this.connection.on('close', () => {
+      this.connections.on('close', () => {
         delete this.connections[signature];
       });
       const index = hash(connection.remoteAddress || '') % this.options.works;
