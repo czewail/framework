@@ -29,6 +29,10 @@ declare module 'winston-mongodb' {
   const MongoDB: MongoDBTransportInstance;
 }
 
+// declare module 'winston-daily-rotate-file' {
+//   const DailyRotateFile: Dail;
+// }
+
 // declare module 'winston' {
 //   var x: any;
 //   export = x;

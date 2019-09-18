@@ -8,7 +8,14 @@ import { Container } from '../container'
 import { Response } from '../response'
 import { Redirect } from '../response/redirect'
 
-export class Base {
+export interface IBase {
+  [key: string]: any
+}
+export interface IBaseConstructor {
+  new(...args: any[]): IBase;
+}
+
+export class Base implements IBase {
   /**
    * Application instance getter
    */

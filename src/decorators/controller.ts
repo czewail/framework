@@ -8,8 +8,9 @@ import { formatPrefix } from './helpers'
 import { INJECT_ABLE } from '../symbol'
 import { proxy } from '../base/proxy'
 import { Controller as BaseController } from '../base/controller'
+import { IBaseConstructor } from '../base/base'
 
-function decoratorClass(target: any, prefix: string) {
+function decoratorClass(target: any, prefix: string): IBaseConstructor  {
   Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
   Reflect.defineMetadata('isRoute', true, target.prototype);
   Reflect.defineMetadata('type', 'controller', target.prototype);

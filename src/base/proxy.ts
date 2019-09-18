@@ -4,12 +4,14 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-export const proxy = (current: any, Base: any) => new Proxy(current, {
+import { IBaseConstructor, IBase } from './base'
+
+export const proxy = <B extends IBaseConstructor>(current: any, Base: B): B => new Proxy(current, {
   construct(target, argArray, newTarget) {
     const instance = Reflect.construct(target, argArray, newTarget);
-    const base = new Base(...argArray);
+    const base: IBase = new Base(...argArray);
     return new Proxy(instance, {
-      get(t, p, receiver) {
+      get(t, p: string, receiver) {
         if (Reflect.has(t, p)) {
           return Reflect.get(t, p, receiver);
         }
