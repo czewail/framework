@@ -48,16 +48,16 @@ export class ConfigBase {
     const files = fs.readdirSync(this._app.configPath);
 
     for (const file of files) {
-      if (!~path.basename(file, '.js').indexOf('.')) {
-        const currentConfig = await import(path.join(this._app.configPath, file));
-        const basename = path.basename(file, '.js');
+      if (!~path.basename(file, '.js').indexOf('.') || !~path.basename(file, '.ts').indexOf('.')) {
+        const currentConfig = (await import(path.join(this._app.configPath, file))).default;
+        const basename = path.basename(file, '.ts');
         if (!this.has(basename)) {
           this.set(basename, currentConfig);
         }
       }
 
-      if (~file.indexOf(`.${currentEnv}.js`)) {
-        const currentConfig = await import(path.join(this._app.configPath, file));
+      if (~file.indexOf(`.${currentEnv}.js`) || ~file.indexOf(`.${currentEnv}.ts`)) {
+        const currentConfig = (await import(path.join(this._app.configPath, file))).default;
         const basename: string = path.basename(file, `.${currentEnv}.js`);
         if (!this.has(basename)) {
           this.set(basename, currentConfig);

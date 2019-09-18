@@ -61,7 +61,8 @@
       // "declarationDir": "lib"                /* Output directory for generated declaration files. */
     },
     "include": [
-      "src/**/*"
+      "src/**/*",
+      "vendors.d.ts"
     ],
     "exclude": [
       "node_modules"

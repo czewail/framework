@@ -6,8 +6,9 @@
   "scripts": {
     "clean": "rimraf dist/*",
     "test": "jest --verbose --runInBand",
-    "build": "npm run clean && tsc",
-    "dev": "npm run clean && tsc -w",
+    "copy": "copyfiles -u 1 src/**/*.njk dist",
+    "build": "npm run clean && npm run copy && tsc",
+    "dev": "npm run clean && npm run copy &&  tsc -w",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "test:coverage": "jest --detectOpenHandles --runInBand --forceExit --coverage",
     "debugger": "node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --no-watchman --detectOpenHandles"
@@ -111,6 +112,7 @@
     "@typescript-eslint/eslint-plugin": "^2.3.0",
     "@typescript-eslint/parser": "^2.3.0",
     "commitizen": "^3.0.5",
+    "copyfiles": "^2.1.1",
     "eslint": "^5.15.3",
     "jest": "^24.8.0",
     "rimraf": "^2.6.2",
