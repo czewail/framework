@@ -17,7 +17,7 @@ export class LoaderProvider {
     this.app.singleton('loader', Loader);
   }
 
-  launch() {
-    this.app.get('loader').resolve();
+  async launch() {
+    await this.app.get('loader').resolve();
   }
 }

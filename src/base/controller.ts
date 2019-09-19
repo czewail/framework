@@ -9,7 +9,7 @@ import { View } from '../view'
 import * as Resource from '../resource'
 import { Validate } from '../validate'
 
-export class Controller extends Base {
+class Controller extends Base {
   __context__: any[];
   _view: any;
   /**
@@ -114,3 +114,7 @@ export class Controller extends Base {
 }
 
 Reflect.defineMetadata('type', 'controller', Controller.prototype);
+
+export {
+  Controller
+} 

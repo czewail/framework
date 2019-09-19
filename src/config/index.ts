@@ -49,7 +49,7 @@ export class ConfigBase {
 
     for (const file of files) {
       if (!~path.basename(file, '.js').indexOf('.') || !~path.basename(file, '.ts').indexOf('.')) {
-        const currentConfig = (await import(path.join(this._app.configPath, file)));
+        const currentConfig = (await import(path.join(this._app.configPath, file))).default;
         const basename = path.basename(file, '.ts');
         if (!this.has(basename)) {
           this.set(basename, currentConfig);
@@ -57,7 +57,7 @@ export class ConfigBase {
       }
 
       if (~file.indexOf(`.${currentEnv}.js`) || ~file.indexOf(`.${currentEnv}.ts`)) {
-        const currentConfig = (await import(path.join(this._app.configPath, file)));
+        const currentConfig = (await import(path.join(this._app.configPath, file))).default;
         const basename: string = path.basename(file, `.${currentEnv}.js`);
         if (!this.has(basename)) {
           this.set(basename, currentConfig);

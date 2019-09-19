@@ -46,21 +46,21 @@ export class Loader {
   /**
    * auto scan app dir
    */
-  autoLoadApp() {
+  async autoLoadApp() {
     const appFiles = glob.sync(path.resolve(this.app.appPath, '**'), {
       nodir: true,
     });
 
     for (const file of appFiles) {
-      this.loadFile(file);
+      await this.loadFile(file);
     }
   }
 
   /**
    * resolve auto scan
    */
-  resolve() {
-    this.autoLoadApp();
+  async resolve() {
+    await this.autoLoadApp();
     // register middlewares
     // middlewares must be registed before controller
     this.registerMiddlewares();
@@ -73,10 +73,10 @@ export class Loader {
   /**
    * load file with filepath
    */
-  loadFile(filePath: string) {
-    const realPath = require.resolve(filePath);
+  async loadFile(filePath: string) {
+    // const realPath = require.resolve(filePath);
     // eslint-disable-next-line
-    const target = require(realPath);
+    const target = (await import(filePath)).default;
     if (!target || !target.prototype) return;
     const isIgnore = Reflect.getMetadata('ignore', target.prototype);
     if (isIgnore === true) return;
