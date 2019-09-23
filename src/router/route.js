@@ -10,6 +10,7 @@ const is = require('core-util-is');
 const Container = require('../container');
 const Middleware = require('../middleware');
 const Response = require('../response');
+const { parsePattern } = require('./helpers');
 
 class Route {
   /**
@@ -67,6 +68,26 @@ class Route {
     // this.registerDefaultMiddlewares();
 
     this.registerControllerMiddlewares(middlewares);
+  }
+
+  get pieces() {
+    const pieces = pathToRegExp.parse(this.uri);
+    const res = [];
+    for (const piece of pieces) {
+      if (piece && typeof piece === 'string') {
+        res.push(...parsePattern(piece).map(p => ({
+          key: p,
+          type: 'static',
+        })));
+      }
+      if (piece && typeof piece === 'object') {
+        res.push({
+          key: piece.pattern,
+          type: 'reg',
+        });
+      }
+    }
+    return res;
   }
 
   // /**

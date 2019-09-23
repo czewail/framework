@@ -6,7 +6,7 @@
  */
 
 const Route = require('./route');
-const Collection = require('./collection');
+const Trie = require('./trie');
 const Container = require('../container');
 const Dispatcher = require('./dispatcher');
 const { Cors } = require('../foundation/middlewares');
@@ -22,14 +22,16 @@ class Router {
     this.app = Container.get('app');
 
     /**
-     * @type {RouteCollection} collection Router Collection instance
+     * @type {trie} Router trie instance
      */
-    this.collection = new Collection();
+    this.trie = new Trie();
   }
 
   resolve() {
     return async (request) => {
-      const metchedRoute = this.collection.match(request);
+      // const metchedRoute = this.collection.match(request);
+      const metchedRoute = this.trie.match(request);
+
       const dispatcher = new Dispatcher(request, metchedRoute);
       return dispatcher.resolve();
       // return new ResponseFactory(res).output(request);
@@ -47,7 +49,7 @@ class Router {
     } else if (routeCrossOrigin[action]) {
       route.addMethod('OPTIONS').registerMiddleware(Cors, [routeCrossOrigin[action]]);
     }
-    this.collection.add(route);
+    this.trie.add(route);
     return route;
   }
 }
