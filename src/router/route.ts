@@ -11,6 +11,7 @@ import is from 'core-util-is'
 import { Container } from '../container'
 import { Middleware } from '../middleware'
 import { Response } from '../response'
+import { parsePattern } from './helpers'
 
 export class Route {
   app: any;
@@ -76,6 +77,26 @@ export class Route {
     // this.registerDefaultMiddlewares();
 
     this.registerControllerMiddlewares(middlewares);
+  }
+
+  get pieces() {
+    const pieces = pathToRegExp.parse(this.uri);
+    const res = [];
+    for (const piece of pieces) {
+      if (piece && typeof piece === 'string') {
+        res.push(...parsePattern(piece).map(p => ({
+          key: p,
+          type: 'static',
+        })));
+      }
+      if (piece && typeof piece === 'object') {
+        res.push({
+          key: piece.pattern,
+          type: 'reg',
+        });
+      }
+    }
+    return res;
   }
 
   // /**

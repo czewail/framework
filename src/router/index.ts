@@ -6,14 +6,15 @@
  */
 
 import { Route } from './route'
-import { RouteCollection } from './collection'
 import { Container } from '../container'
 import { Dispatcher } from './dispatcher'
+import { Trie } from './trie'
 import { CORSMiddleware } from '../foundation/middlewares'
 
 export class Router {
   app: any;
   collection: any;
+  trie: any;
   /**
    * Create Router
    */
@@ -26,7 +27,7 @@ export class Router {
     /**
      * @type collection Router Collection instance
      */
-    this.collection = new RouteCollection();
+    this.trie = new Trie();
   }
 
   resolve() {
@@ -49,7 +50,7 @@ export class Router {
     } else if (routeCrossOrigin[action]) {
       route.addMethod('OPTIONS').registerMiddleware(CORSMiddleware, [routeCrossOrigin[action]]);
     }
-    this.collection.add(route);
+    this.trie.add(route);
     return route;
   }
 }
