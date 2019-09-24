@@ -20,7 +20,7 @@ function decorateMethod(target: any, name: string, descriptor: any, methods: any
   return descriptor;
 }
 
-function handle(args: any[], methods: any[], uri?: string) {
+function handle(args: any[], methods: any[], uri: string = '') {
   if (args.length > 1) {
     const [target, name, descriptor] = args
     return decorateMethod(target, name, descriptor, methods, uri);
@@ -32,38 +32,38 @@ function Verb(methods: any[], uri = '/') {
   return (...args: any[]) => handle(args, methods, uri);
 }
 
-export function Get(uri?: string) {
+export function Get(uri: string = '') {
   return Verb(['GET'], uri);
 };
 
-export function Post(uri?: string) {
+export function Post(uri: string = '') {
   return Verb(['POST'], uri);
 };
 
-export function Put(uri?: string) {
+export function Put(uri: string = '') {
   return Verb(['PUT'], uri);
 };
 
-export function Patch(uri?: string) {
+export function Patch(uri: string = '') {
   return Verb(['PATCH'], uri);
 };
 
-export function Options(uri?: string) {
+export function Options(uri: string = '') {
   return Verb(['OPTIONS'], uri);
 };
 
-export function Head(uri?: string) {
+export function Head(uri: string = '') {
   return Verb(['HEAD'], uri);
 };
 
-export function Delete(uri?: string) {
+export function Delete(uri: string = '') {
   return Verb(['DELETE'], uri);
 };
 
-export function Del(uri?: string) {
+export function Del(uri: string = '') {
   return Verb(['DEL'], uri);
 };
 
-export function All(uri?: string, methods: any[] = http.METHODS) {
+export function All(uri: string = '', methods: any[] = http.METHODS) {
   return Verb(methods, uri);
 };

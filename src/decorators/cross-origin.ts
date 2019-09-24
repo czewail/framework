@@ -17,7 +17,7 @@ function decoratorMethod(target: any, name: string, descriptor: any, options: an
     ...options,
   };
   Reflect.defineMetadata('routeCrossOrigin', corses, target);
-  return target;
+  return descriptor;
 }
 
 function handle(args: any[], options: any) {

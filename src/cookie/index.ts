@@ -8,33 +8,60 @@
 import assert from 'assert'
 import { Container } from '../container'
 import { IllegalArgumentError} from '../errors/illegal-argument-error'
+import { Application } from '../foundation/application'
+
+export interface ICookieOptions {
+  maxAge?: number,
+  expires?: number,
+  path?: string,
+  signed?: boolean,
+  domain?: string,
+  httpOnly?: boolean,
+  overwrite?: boolean,
+  secure?: boolean,
+}
 
 export class Cookie {
-  app: any;
+  /**
+   * app instance
+   */
+  app: Application;
+
+  /**
+   * cookie name
+   */
   name: string;
+
+  /**
+   * cookie value
+   */
   value: string;
-  options: any;
+
+  /**
+   * cookie options
+   */
+  options: ICookieOptions;
   /**
    * Create Cookie instance
    */
-  constructor(name: string, value: string, options = {}) {
+  constructor(name: string, value: string, options: ICookieOptions = {}) {
     assert(!(/\s|,|;/).test(name), new IllegalArgumentError('Cookie name is not valid!'));
     /**
-     * @var {object} app Application
+     * @var app Application
      */
     this.app = Container.get('app');
     /**
-     * @var {string} name cookie name
+     * @var name cookie name
      */
     this.name = name;
 
     /**
-     * @var {string} value cookie value
+     * @var value cookie value
      */
     this.value = value;
 
     /**
-     * @var {Object} options cookie options
+     * @var options cookie options
      */
     this.options = Object.assign({}, this.app.get('config').get('cookie', {}), options);
   }
@@ -42,28 +69,28 @@ export class Cookie {
   /**
    * get current cookie options
    */
-  getOptions() {
+  getOptions(): ICookieOptions {
     return this.options;
   }
 
   /**
    * get cookie name
    */
-  getName() {
+  getName(): string {
     return this.name;
   }
 
   /**
    * get cookie value
    */
-  getValue() {
+  getValue(): string {
     return this.value;
   }
 
   /**
    * set cookie value
    */
-  setValue(val: string) {
+  setValue(val: string): this {
     if (val) {
       this.value = val;
     }
@@ -73,7 +100,7 @@ export class Cookie {
   /**
    * set cookie options - httpOnly
    */
-  setHttpOnly(flag = true) {
+  setHttpOnly(flag = true): this {
     this.options.httpOnly = flag;
     return this;
   }
@@ -81,7 +108,7 @@ export class Cookie {
   /**
    * set cookie options - signed
    */
-  setSigned(flag = true) {
+  setSigned(flag = true): this {
     this.options.signed = flag;
     return this;
   }
@@ -89,7 +116,7 @@ export class Cookie {
   /**
    * set cookie should signed
    */
-  shouldSigned() {
+  shouldSigned(): this {
     this.setSigned(true);
     return this;
   }
@@ -97,7 +124,7 @@ export class Cookie {
   /**
    * set cookie dont't signed
    */
-  doNotSigned() {
+  doNotSigned(): this {
     this.setSigned(false);
     return this;
   }
@@ -105,7 +132,7 @@ export class Cookie {
   /**
    * set cookie options - maxAge
    */
-  setMaxAge(expiry = 0) {
+  setMaxAge(expiry: number = 0): this {
     this.options.maxAge = expiry;
     return this;
   }
@@ -113,7 +140,7 @@ export class Cookie {
   /**
    * set cookie options - domain
    */
-  setDomain(pattern = '') {
+  setDomain(pattern: string = ''): this {
     this.options.domain = pattern;
     return this;
   }
@@ -121,7 +148,7 @@ export class Cookie {
   /**
    * set cookie options - path
    */
-  setPath(uri = '/') {
+  setPath(uri: string = '/'): this {
     this.options.path = uri;
     return this;
   }
@@ -129,7 +156,7 @@ export class Cookie {
   /**
    * set cookie options - secure
    */
-  setSecure(flag = false) {
+  setSecure(flag: boolean = false): this {
     this.options.secure = flag;
     return this;
   }
@@ -137,7 +164,7 @@ export class Cookie {
   /**
    * set cookie options - expires
    */
-  setExpires(expires: any) {
+  setExpires(expires: number): this {
     this.options.expires = expires;
     return this;
   }

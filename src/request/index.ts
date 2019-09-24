@@ -284,7 +284,7 @@ class RequestBase {
    * Get request Path
    */
   get path() {
-    return parse(this.req).pathname;
+    return parse(this.req)!.pathname;
   }
 
   /**
@@ -298,7 +298,7 @@ class RequestBase {
    * 根据 ? 获取原始查询字符串（不包含 ?）
    */
   get querystring(): any {
-    return parse(this.req).query || '';
+    return parse(this.req)!.query || '';
   }
 
   /**

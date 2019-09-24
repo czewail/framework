@@ -9,7 +9,7 @@ import { HTTP_CODE } from '../symbol'
 
 function injectedMethod(target: any, name: string, descriptor: any, code: number) {
   target[name][HTTP_CODE] = code;
-  return target;
+  return descriptor;
 }
 
 function handle(args: any[], code: number) {

@@ -7,7 +7,6 @@
 import EventEmitter from 'events'
 import * as symbols from '../symbol'
 
-const BIND = Symbol('Container#bind');
 /**
  * The Container
  */
@@ -15,39 +14,42 @@ export class Container extends EventEmitter {
   /**
    * Container binding identifier
    */
-  binds = new Map();
+  protected binds = new Map();
 
   /**
    * instances Map in the container
    */
-  instances = new Map();
+  protected instances = new Map();
 
   /**
    * abstract groups map
    */
-  tags: any = {};
+  protected tags: any = {};
 
-  static instance: any;
+  /**
+   * static instance
+   */
+  private static instance: any;
 
   /**
    * Bind a singleton to the container
    */
-  singleton(abstract: any, concrete: any = null, callable = false) {
-    this[BIND](abstract, concrete, true, callable);
+  public singleton(abstract: any, concrete: any = null, callable = false) {
+    this._bind(abstract, concrete, true, callable);
     return this;
   }
 
   /**
    * Bind a multiton to the container
    */
-  multiton(abstract: any, concrete: any = null, callable = false) {
-    this[BIND](abstract, concrete, false, callable);
+  public multiton(abstract: any, concrete: any = null, callable = false) {
+    this._bind(abstract, concrete, false, callable);
   }
 
   /**
    * Determines if the instance is Shared
    */
-  isShared(abstract: any) {
+  public isShared(abstract: any) {
     return this.instances.has(abstract) || (
       this.binds.get(abstract)
       && Reflect.has(this.binds.get(abstract), 'shared')
@@ -58,21 +60,21 @@ export class Container extends EventEmitter {
   /**
    * Identifies whether the container has been bound
    */
-  bound(abstract: any) {
+  public bound(abstract: any) {
     return this.binds.has(abstract) || this.instances.has(abstract);
   }
 
   /**
    * Identifies whether the container has been instance
    */
-  exists(abstract: any) {
+  public exists(abstract: any) {
     return this.instances.has(abstract);
   }
 
   /**
    * Bind an object to the container
    */
-  [BIND](abstract: any, concrete: any, shared = false, callable = false) {
+  private _bind(abstract: any, concrete: any, shared = false, callable = false) {
     if (!abstract || !concrete) return;
     const isShared = concrete[symbols.MULTITON] === true ? false : shared;
     if (typeof concrete === 'function') {
@@ -95,7 +97,7 @@ export class Container extends EventEmitter {
   /**
    * Create an instance of an object
    */
-  make(abstract: any, args: any[] = [], force = false): any {
+  public make(abstract: any, args: any[] = [], force = false): any {
     const shared = this.isShared(abstract);
     let obj = null;
     // returns directly if an object instance already exists in the container
@@ -131,7 +133,7 @@ export class Container extends EventEmitter {
   /**
    * 调用普通函数
    */
-  invokeFunction(abstract: any, args: any[]) {
+  private invokeFunction(abstract: any, args: any[]) {
     const { concrete } = this.binds.get(abstract);
     return concrete(...args, this);
   }
@@ -139,7 +141,7 @@ export class Container extends EventEmitter {
   /**
    * 调用构造函数
    */
-  invokeConstructor(abstract: any, args: any[]) {
+  private invokeConstructor(abstract: any, args: any[]) {
     const { concrete: Concrete } = this.binds.get(abstract);
     return new Concrete(...args, this);
   }
@@ -147,7 +149,7 @@ export class Container extends EventEmitter {
   /**
    * 调用可注入的 Class
    */
-  invokeInjectAbleClass(abstract: any, args: any[]) {
+  private invokeInjectAbleClass(abstract: any, args: any[]) {
     const { concrete: Concrete } = this.binds.get(abstract);
     const that = this;
     const bindParams = [];
@@ -202,7 +204,7 @@ export class Container extends EventEmitter {
   /**
    * set abstract in groups
    */
-  static tag(abstract: any, tag: string) {
+  public static tag(abstract: any, tag: string) {
     if (!abstract || !tag) return;
     if (!this.getInstance().tags[tag]) this.getInstance().tags[tag] = [];
     this.getInstance().tags[tag].push(abstract);
@@ -211,28 +213,28 @@ export class Container extends EventEmitter {
   /**
    * gets the object instance in the container
    */
-  static get(abstract: any, args: any[] = []) {
+  public static get(abstract: any, args: any[] = []) {
     return this.getInstance().make(abstract, args);
   }
 
   /**
    * bind an abstract in container
    */
-  static bind(abstract: any, concrete: any = null, shared = true, callable = false) {
-    return this.getInstance()[BIND](abstract, concrete, shared, callable);
+  public static bind(abstract: any, concrete: any = null, shared = true, callable = false) {
+    return this.getInstance()._bind(abstract, concrete, shared, callable);
   }
 
   /**
    * Determines whether there is a corresponding binding within the container instance
    */
-  static has(abstract: any) {
+  public static has(abstract: any) {
     return this.getInstance().binds.has(abstract) || this.getInstance().instances.has(abstract);
   }
 
   /**
    * Get the container instance
    */
-  static getInstance() {
+  public static getInstance() {
     if (this.instance === null) {
       this.instance = new this();
     }
@@ -242,7 +244,7 @@ export class Container extends EventEmitter {
   /**
    * Set the container instance
    */
-  static setInstance(instance: any) {
+  public static setInstance(instance: any) {
     this.instance = instance;
   }
 }

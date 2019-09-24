@@ -8,16 +8,19 @@
 import is from 'core-util-is'
 import { Container} from '../container'
 import { IllegalArgumentError} from '../errors/illegal-argument-error'
+import { Application } from '../foundation/application'
 
 export class Controller {
-
-  app: any;
+  /**
+   * application instance
+   */
+  private app: Application;
   /**
    * Create Controller Module
    */
   constructor() {
     /**
-     * @var {object} app Application
+     * @var app Application
      */
     this.app = Container.get('app');
   }
@@ -25,7 +28,7 @@ export class Controller {
   /**
    * register a controller
    */
-  register(controller: any) {
+  public register(controller: any) {
     if (!is.isFunction(controller)) throw new IllegalArgumentError('controller must be a class!');
     this.parseController(controller);
     return this;
@@ -34,7 +37,7 @@ export class Controller {
   /**
    * parse a controller
    */
-  parseController(controller: any) {
+  private parseController(controller: any) {
     if (Reflect.getMetadata('type', controller.prototype) !== 'controller') throw new IllegalArgumentError('controller class must use @Controller decorator!');
     this.app.multiton(controller, controller);
     this.resolve(controller);
@@ -44,7 +47,7 @@ export class Controller {
   /**
    * resolve this controller
    */
-  resolve(controller: any) {
+  public resolve(controller: any) {
     const isRoute = Reflect.getMetadata('isRoute', controller.prototype);
     if (!isRoute) return;
     const routes = Reflect.getMetadata('routes', controller.prototype) || {};
@@ -57,7 +60,7 @@ export class Controller {
   /**
    * register controller routes
    */
-  registerRoutes(controller: any, routes: any, prefix?: string, controllerMiddlewares?: any, routeMiddlewares?: any) {
+  private registerRoutes(controller: any, routes: any, prefix?: string, controllerMiddlewares?: any, routeMiddlewares?: any) {
     const Router = this.app.get('router');
     for (const key of Object.keys(routes)) {
       for (const route of routes[key]) {

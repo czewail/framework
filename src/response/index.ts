@@ -19,13 +19,38 @@ import { ViewFactory } from '../view/factory'
 import { IllegalArgumentError } from '../errors/illegal-argument-error'
 import { View } from '../view'
 import { Cookie } from '../cookie'
+import { Application } from '../foundation/application'
+import { OutgoingHttpHeaders } from 'http'
 
 export class Response {
-  app: any;
-  _code: any;
-  _header: any;
-  _data: any;
-  cookies: any[];
+  /**
+   * app instance
+   */
+  protected app: Application;
+
+  /**
+   * response statusCode
+   */
+  protected _code: number;
+
+  /**
+   * response Header
+   */
+  protected _header: OutgoingHttpHeaders;
+
+  /**
+   * response data
+   */
+  protected _data: { [key: string]: any };
+
+  /**
+   * response cookies
+   */
+  protected cookies: Cookie[] = [];
+
+  /**
+   * patched methods
+   */
   [key: string]: any;
   constructor(data: any = null, code = 200, header = {}) {
     /**
@@ -36,39 +61,52 @@ export class Response {
 
     /**
      * status code
-     * @type {number}
+     * @type
      */
     this._code = code;
 
     /**
      * http headers
-     * @type {object}
+     * @type
      */
     this._header = this.parseHeaders(header);
 
     /**
      * original data
-     * @type {*}
+     * @type
      */
     this._data = data;
 
-    this.cookies = [];
-
+    /**
+     * patch methods
+     */
     this.patchCodeMethods();
   }
 
+  /**
+   * code setter
+   */
   set code(code) {
     this.setCode(code);
   }
 
+  /**
+   * code getter
+   */
   get code() {
     return this._code;
   }
 
+  /**
+   * data setter
+   */
   set data(data) {
     this.setData(data);
   }
 
+  /**
+   * data getter
+   */
   get data() {
     return this._data;
   }
@@ -77,10 +115,10 @@ export class Response {
    * parse init headers
    * @param headers
    */
-  parseHeaders(headers: any) {
+  private parseHeaders(headers: OutgoingHttpHeaders) {
     assert(is.isObject(headers), new IllegalArgumentError('header name must be object'));
     const keys = Object.keys(headers);
-    const _headers: any = {};
+    const _headers: OutgoingHttpHeaders = {};
     for (const key of keys) {
       _headers[key.toLocaleLowerCase()] = headers[key];
     }
@@ -161,7 +199,7 @@ export class Response {
    * 511 NetworkAuthenticationRequired
    * @private
    */
-  patchCodeMethods() {
+  private patchCodeMethods() {
     const { codes } = statuses;
     for (const code of codes) {
       const name = toIdentifier(statuses[code]);
@@ -171,11 +209,6 @@ export class Response {
         this[name] = (data: any) => this.success(data || statuses[code], code);
       }
     }
-  }
-
-  staticServer() {
-    this._isStaticServer = true;
-    return this;
   }
 
   /**
@@ -295,6 +328,10 @@ export class Response {
     return this;
   }
 
+  /**
+   * set content-type
+   * @param type 
+   */
   setType(type: string) {
     const _type = getType(type);
     if (_type) {
@@ -303,13 +340,21 @@ export class Response {
     return this;
   }
 
+  /**
+   * set length header
+   * @param length 
+   */
   setLength(length: number) {
     this.setHeader('Content-Length', length);
     return this;
   }
 
+  /**
+   * set vary header
+   * @param field 
+   */
   setVary(field: string) {
-    const varyHeader = this.getHeader('Vary') || '';
+    const varyHeader = String(this.getHeader('Vary')) || '';
     const varys = varyHeader.split(',');
     varys.push(field);
     this.setHeader('Vary', varys.filter((v: string) => !!v).join(','));

@@ -10,10 +10,18 @@ import * as Resource from '../resource'
 import { Validate } from '../validate'
 
 class Controller extends Base {
-  __context__: any[];
+  __context: any[];
   _view: any;
+
+  set __context__(context: any[]) {
+    this.__context = context
+  }
+
+  get __context__() {
+    return this.__context
+  }
   /**
-   * @var {Object} request request instance
+   * @var request request instance
    */
   get request() {
     return this.__context__[0];

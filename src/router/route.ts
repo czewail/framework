@@ -141,7 +141,7 @@ export class Route {
    * @param path request path
    */
   getParams(requestPath: string) {
-    return requestPath.match(this.regexp).slice(1);
+    return requestPath.match(this.regexp)!.slice(1);
   }
 
   /**

@@ -163,7 +163,7 @@ class LoggerBase {
     return driver === 'compose';
   }
 
-  callCustomDriverCreator(...args: any[]) {
+  callCustomDriverCreator(..._args: any[]) {
     // TODO
   }
 

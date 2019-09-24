@@ -2,8 +2,8 @@
 import { isMatchNodeWithType } from './helpers'
 
 export class Node {
-  key: string;
-  type: string;
+  key?: string;
+  type?: string;
   children: Node[]
   route: any;
   constructor(key?: string, type?: string) {

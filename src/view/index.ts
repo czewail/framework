@@ -48,14 +48,14 @@ export class View {
    * @param template template path and name
    * @param vars template variables
    */
-  render(template = '', vars: any = null) {
+  render(template = '', vars: any = {}) {
     // When parsing the controller, return it if you take this parameter
     // 解析控制器时，如果带此参数则直接 return 出去
     let newTemplate = template;
     let newVars = vars;
     if (is.isObject(newTemplate)) {
       newVars = newTemplate;
-      newTemplate = null;
+      newTemplate = '';
     }
     if (newTemplate) this.template = newTemplate;
     if (newVars) this.vars = this[FINAL_VARS](newVars);

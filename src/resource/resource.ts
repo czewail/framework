@@ -7,44 +7,50 @@
 
 import is from 'core-util-is'
 import { Container } from '../container'
+import { Application } from '../foundation/application'
 
 const DEFAULT_KEY = 'data';
+
+export enum EResourceTypeList {
+  Item = 'item',
+  Collection = 'collection'
+}
 
 export class Resource {
   /**
    * @var app Application instance
    */
-  app = Container.get('app');
+  protected app: Application = Container.get('app');
 
   /**
    * @var key resource data key
    */
-  key = DEFAULT_KEY;
+  public key?: string = DEFAULT_KEY;
 
   /**
    * @var data resource data
    */
-  data: any = null;
+  public data: any;
 
   /**
    * @var formatter resource data formatter
    */
-  formatter: any = null;
+  public formatter: string | ((...args: any[]) => any);
 
   /**
    * @var formatter resource meta data formatter
    */
-  metaFormatter: any = null;
+  public metaFormatter: any;
 
   /**
    * @var meta resource meta data
    */
-  meta: any = null;
+  public meta: any;
 
   /**
    * resource type
    */
-  type: any = null;
+  public type: EResourceTypeList;
 
   /**
    * Create Resource
@@ -59,7 +65,7 @@ export class Resource {
    * set resource data formatter
    * @param formatter resource data formatter
    */
-  setFormatter(formatter: any) {
+  public setFormatter(formatter: any) {
     this.formatter = formatter;
     return this;
   }
@@ -67,7 +73,7 @@ export class Resource {
   /**
    * get resource data formatter
    */
-  getFormatter() {
+  public getFormatter() {
     return this.formatter;
   }
 
@@ -75,7 +81,7 @@ export class Resource {
    * Resource Key getter
    * @var {string} resource key
    */
-  getKey() {
+  public getKey() {
     return this.key;
   }
 
@@ -83,7 +89,7 @@ export class Resource {
    * Resource Key Setter
    * @var resource key
    */
-  setKey(val: string) {
+  public setKey(val: string) {
     this.key = val;
     return this;
   }
@@ -91,14 +97,14 @@ export class Resource {
   /**
    * Resource data getter
    */
-  getData() {
+  public getData() {
     return this.data;
   }
 
   /**
    * Resource data Setter
    */
-  setData(val: any) {
+  public setData(val: any) {
     this.data = val;
     return this;
   }
@@ -106,7 +112,7 @@ export class Resource {
   /**
    * Resource meta getter
    */
-  getMeta() {
+  public getMeta() {
     return this.meta;
   }
 
@@ -114,7 +120,7 @@ export class Resource {
    * Resource meta Setter
    * @var resource meta
    */
-  setMeta(val: any) {
+  public setMeta(val: any) {
     this.meta = val;
     return this;
   }
@@ -122,7 +128,7 @@ export class Resource {
   /**
    * meta formatter formatter getter
    */
-  getMetaFormatter() {
+  public getMetaFormatter() {
     return this.metaFormatter;
   }
 
@@ -130,7 +136,7 @@ export class Resource {
    * meta formatter formatter setter
    * @var meta formatter
    */
-  setMetaFormatter(val: any) {
+  public setMetaFormatter(val: any) {
     this.metaFormatter = val;
     return this;
   }
@@ -140,7 +146,7 @@ export class Resource {
    * @param name meta object key name
    * @param value meta value for name key
    */
-  addMeta(name: any, value: any) {
+  public addMeta(name: any, value: any) {
     if (!this.meta) this.meta = {};
     if (is.isObject(name)) {
       this.meta = Object.assign({}, this.meta, name);
@@ -153,26 +159,26 @@ export class Resource {
   /**
    * remove reource key
    */
-  withoutKey() {
-    this.key = null;
+  public withoutKey() {
+    this.key = undefined;
     return this;
   }
 
   /**
    * transform resource meta object
    */
-  transformResourceMeta() {
+  protected transformResourceMeta() {
     return this.useTransformer(this.metaFormatter, this.meta);
   }
 
   /**
    * transform resource data object or array
    */
-  transformResourceData() {
-    if (this.type === 'item') {
+  protected transformResourceData() {
+    if (this.type === EResourceTypeList.Item) {
       return this.useTransformer(this.formatter, this.data);
     }
-    if (this.type === 'collection') {
+    if (this.type === EResourceTypeList.Collection) {
       return this.data.map((i: any) => this.useTransformer(this.formatter, i));
     }
     return this.data;
@@ -183,7 +189,7 @@ export class Resource {
    * @param formatter resource formatter
    * @param data resource meta or data
    */
-  useTransformer(formatter: any, data: any) {
+  protected useTransformer(formatter: any, data: any) {
     if (!data) return null;
     // 如果是字符串
     if (typeof formatter === 'string') {
@@ -199,11 +205,11 @@ export class Resource {
 
   /**
     * serialize Rource data
-    * @param {boolean} isWrapCollection is collection use wrap key
+    * @param isWrapCollection is collection use wrap key
     */
-  serializeResourceData(isWrapCollection = true) {
+  protected serializeResourceData(isWrapCollection = true) {
     const data = this.transformResourceData();
-    if (this.type === 'collection') {
+    if (this.type === EResourceTypeList.Collection) {
       if (this.key) {
         return {
           [this.key]: data,
@@ -213,7 +219,7 @@ export class Resource {
         data,
       } : data;
     }
-    if (this.type === 'item') {
+    if (this.type === EResourceTypeList.Item) {
       if (this.key) {
         return {
           [this.key]: data,
@@ -232,7 +238,7 @@ export class Resource {
   /**
     * serialize resource meta
     */
-  serializeResourceMeta() {
+  protected serializeResourceMeta() {
     const meta = this.transformResourceMeta();
     return meta ? {
       meta,
@@ -242,7 +248,7 @@ export class Resource {
   /**
    * transform data
    */
-  transform() {
+  public transform() {
     const data = this.serializeResourceData();
     const meta = this.serializeResourceMeta();
 
@@ -255,7 +261,7 @@ export class Resource {
   /**
    * output result
    */
-  output() {
+  public output() {
     return this.transform();
   }
 }

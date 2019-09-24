@@ -15,7 +15,6 @@ export const Http = {
   ...HttpContext
 }
 export * from './route';
-export * from './controller';
 export * from './rest';
 export * from './multiton';
 export * from './component';

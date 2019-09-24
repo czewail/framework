@@ -47,7 +47,7 @@ export class Messenger extends EventEmitter {
   run() {
     if (cluster.isMaster) { // 主进程
       // 主进程监听工作进程发送的消息事件
-      cluster.on('message', (worker, message) => {
+      cluster.on('message', (_worker, message) => {
         // 不处理 Messenger 以外的通信数据
         if (!message || message.action !== MESSENGER) return;
         if (message.type === 'broadcast') {

@@ -163,7 +163,7 @@ export class Master {
     // Receives the daze-restart restart instruction
     // sent by the work process to restart all the work processes
     // 接收工作进程发送的 daze-restart 重启指令，重启所有工作进程
-    cluster.on('message', (worker, message) => {
+    cluster.on('message', (_worker, message) => {
       if (message !== 'daze-restart') return;
       this.reloadWorkers();
     });

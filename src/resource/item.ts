@@ -5,12 +5,12 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { Resource } from './resource'
+import { Resource, EResourceTypeList } from './resource'
 
 export class Item extends Resource {
   constructor(data: any, formatter: any = null, key: any = null) {
     super(data, formatter, key);
-    this.type = 'item';
+    this.type = EResourceTypeList.Item;
   }
 }
 
