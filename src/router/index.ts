@@ -32,7 +32,7 @@ export class Router {
 
   resolve() {
     return async (request: any) => {
-      const metchedRoute = this.collection.match(request);
+      const metchedRoute = this.trie.match(request);
       const dispatcher = new Dispatcher(request, metchedRoute);
       return dispatcher.resolve();
       // return new ResponseFactory(res).output(request);
