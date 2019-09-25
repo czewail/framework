@@ -5,11 +5,12 @@
  * https://opensource.org/licenses/MIT
  */
 import { Base } from './base'
+import { ComponentType } from '../symbol'
 
 
 export class Middleware extends Base {
 
 }
 
-Reflect.defineMetadata('type', 'middleware', Middleware.prototype);
+Reflect.defineMetadata('type', ComponentType.Middleware, Middleware.prototype);
 

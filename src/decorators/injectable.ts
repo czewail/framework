@@ -4,10 +4,9 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-import { INJECT_ABLE } from '../symbol'
 
 function decorateClass(target: any) {
-  Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
+  Reflect.defineMetadata('injectable', true, target.prototype);
   return target;
 }
 

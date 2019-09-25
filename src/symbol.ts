@@ -4,6 +4,17 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+
+export enum ComponentType {
+  Controller =  'controller',
+  Component = 'component',
+  Service = 'service',
+  Resource = 'resource',
+  Validator = 'validator',
+  Middleware = 'middleware'
+}
+
+
 // 容器实例多例标识 - used
 export const MULTITON = Symbol('DAZE#multiton');
 // Session Symboles - used
@@ -40,11 +51,6 @@ export const INJECTORS = {
   COMPONENT: '__DAZE_INJECT_COMPONENT__',
   VALIDATOR: '__DAZE_INJECT_VALIDATOR__',
 };
-
-/**
- * inject able - used
- */
-export const INJECT_ABLE = '__DAZE_INJECT_ABLE__';
 
 /**
  * inject able class kinds - used

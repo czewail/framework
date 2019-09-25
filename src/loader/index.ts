@@ -8,6 +8,7 @@
 import path from 'path'
 import glob from 'glob'
 import { VerifyCsrfToken } from '../foundation/middlewares'
+import { ComponentType } from '../symbol'
 
 export class Loader {
 
@@ -87,18 +88,18 @@ export class Loader {
   /**
    * parse file module
    */
-  parseModule(target: any, type: 'controller' | 'middleware' | 'service' | 'resource' | 'validator' | 'component') {
+  parseModule(target: any, type: ComponentType) {
     switch (type) {
-      case 'controller':
+      case ComponentType.Controller:
         this.controllers.push(target);
         break;
-      case 'middleware':
+      case ComponentType.Middleware:
         this.middlewares.push(target);
         break;
-      case 'service':
-      case 'resource':
-      case 'validator':
-      case 'component':
+      case ComponentType.Service:
+      case ComponentType.Resource:
+      case ComponentType.Validator:
+      case ComponentType.Component:
         this.components.push(target);
         break;
       default:

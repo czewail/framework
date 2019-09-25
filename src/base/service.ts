@@ -5,10 +5,11 @@
  * https://opensource.org/licenses/MIT
  */
 import { Base } from './base'
+import { ComponentType } from '../symbol'
 
 
 export class Service extends Base {
 
 }
 
-Reflect.defineMetadata('type', 'service', Service.prototype);
+Reflect.defineMetadata('type', ComponentType.Service, Service.prototype);

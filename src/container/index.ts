@@ -111,7 +111,7 @@ export class Container extends EventEmitter {
       if (callable) {
         // 普通函数
         obj = this.invokeFunction(abstract, args);
-      } else if (Reflect.getMetadata(symbols.INJECT_ABLE, concrete.prototype) === true) {
+      } else if (Reflect.getMetadata('injectable', concrete.prototype) === true) {
         // 可注入的class
         obj = this.invokeInjectAbleClass(abstract, args);
       } else {

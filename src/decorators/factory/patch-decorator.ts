@@ -4,14 +4,14 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-import { INJECTABLE_KINDS, INJECT_ABLE } from '../../symbol'
+import { INJECTABLE_KINDS } from '../../symbol'
 
 /**
  * CONSTRUCTOR_INJECTORS
  * [ [ type, params ] ]
  */
 export function patchClass(type: string, params: any, target: any) {
-  Reflect.defineMetadata(INJECT_ABLE, true, target.prototype);
+  Reflect.defineMetadata('injectable', true, target.prototype);
   const injectors = Reflect.getMetadata(INJECTABLE_KINDS.CONSTRUCTOR, target.prototype) || [];
   Reflect.defineMetadata(INJECTABLE_KINDS.CONSTRUCTOR, [
     ...injectors,
@@ -25,7 +25,7 @@ export function patchClass(type: string, params: any, target: any) {
  * { [name]: [ type,  params ] }
  */
 export function patchProperty(type: string, params: any, target: any, name: string) {
-  Reflect.defineMetadata(INJECT_ABLE, true, target);
+  Reflect.defineMetadata('injectable', true, target);
   const injectors = Reflect.getMetadata(INJECTABLE_KINDS.PROPERTY, target) || {};
   injectors[name] = [type, params];
   Reflect.defineMetadata(INJECTABLE_KINDS.PROPERTY, injectors, target);
@@ -39,7 +39,7 @@ export function patchProperty(type: string, params: any, target: any, name: stri
  * ] }
  */
 export function patchMethod(type: string, params: any, target: any, name: string) {
-  Reflect.defineMetadata(INJECT_ABLE, true, target);
+  Reflect.defineMetadata('injectable', true, target);
   const injectors = Reflect.getMetadata(INJECTABLE_KINDS.METHOD, target) || {};
   const items = injectors[name] || [];
   items.push([type, params]);

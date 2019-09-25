@@ -6,6 +6,7 @@
  */
 import { Base } from './base'
 import { Item, Collection } from '../resource'
+import { ComponentType } from '../symbol'
 
 export class Resource extends Base {
   /**
@@ -54,4 +55,4 @@ export class Resource extends Base {
   }
 }
 
-Reflect.defineMetadata('type', 'resource', Resource.prototype);
+Reflect.defineMetadata('type', ComponentType.Resource, Resource.prototype);

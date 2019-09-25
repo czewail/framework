@@ -48,8 +48,6 @@ export class Controller {
    * resolve this controller
    */
   public resolve(controller: any) {
-    const isRoute = Reflect.getMetadata('isRoute', controller.prototype);
-    if (!isRoute) return;
     const routes = Reflect.getMetadata('routes', controller.prototype) || {};
     const prefix = Reflect.getMetadata('prefix', controller.prototype) || '';
     const controllerMiddlewares = Reflect.getMetadata('controllerMiddlewares', controller.prototype) || [];

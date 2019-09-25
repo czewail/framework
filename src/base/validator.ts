@@ -5,9 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 import { Base } from './base'
+import { ComponentType } from '../symbol'
 
 export class Validator extends Base {
 
 }
 
-Reflect.defineMetadata('type', 'validator', Validator.prototype);
+Reflect.defineMetadata('type', ComponentType.Validator, Validator.prototype);

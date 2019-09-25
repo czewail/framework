@@ -8,8 +8,9 @@ import { Base } from './base'
 import { View } from '../view'
 import * as Resource from '../resource'
 import { Validate } from '../validate'
+import { ComponentType } from '../symbol'
 
-class Controller extends Base {
+export class Controller extends Base {
   __context: any[];
   _view: any;
 
@@ -121,8 +122,5 @@ class Controller extends Base {
   }
 }
 
-Reflect.defineMetadata('type', 'controller', Controller.prototype);
+Reflect.defineMetadata('type', ComponentType.Controller, Controller.prototype);
 
-export {
-  Controller
-} 
