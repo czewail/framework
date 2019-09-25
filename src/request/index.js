@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Copyright (c) 2018 Chan Zewail
  *
@@ -10,26 +12,31 @@ const typeis = require('type-is');
 const Cookies = require('cookies');
 const accepts = require('accepts');
 const is = require('core-util-is');
-const Container = require('../container');
+const { Container } = require('../container');
 const Validate = require('../validate');
 const ValidateHttpError = require('../errors/validate-http-error');
 const Session = require('../session');
 const parseBody = require('./utils/parse-body');
 
 class Request {
+  /**
+   * Create Request
+   * @param {import('http').IncomingMessage} req
+   * @param {import('http').ServerResponse} res
+   */
   constructor(req, res) {
     /**
-     * @type {object} app Application
+     * @type {import('../foundation/application')} app Application
      */
     this.app = Container.get('app');
 
     /**
-     * @type {http.IncomingMessage} req http.IncomingMessage
+     * @type {import('http').IncomingMessage} req http.IncomingMessage
      */
     this.req = req;
 
     /**
-     * @type {http.ServerResponse} res http.ServerResponse
+     * @type {import('http').ServerResponse} res http.ServerResponse
      */
     this.res = res;
 
@@ -75,10 +82,10 @@ class Request {
 
   /**
    * Return request header.
-   * @param {String} name headers key
+   * @param {string} name headers key
+   * @return {string | string[]}
    */
   getHeader(name) {
-    if (!name) return this.req.headers;
     const field = name.toLowerCase();
     switch (field) {
       case 'referer':
@@ -165,7 +172,7 @@ class Request {
    * @return {Number}
    */
   get length() {
-    const len = this.getHeader('Content-Length');
+    const len = +this.getHeader('Content-Length');
     if (!len) return undefined;
     return len | 0; // eslint-disable-line no-bitwise
   }
@@ -194,6 +201,7 @@ class Request {
 
   /**
    * Get request socket
+   * @type {import('net').Socket}
    */
   get socket() {
     return this.req.socket;
@@ -201,6 +209,7 @@ class Request {
 
   /**
    * Get request socket
+   * @return {import('net').Socket}
    */
   getSocket() {
     return this.socket;
@@ -208,19 +217,19 @@ class Request {
 
   /**
    * Get request protocol
-   * @returns {String} 'http' | 'https'
+   * @returns {string}
    */
   get protocol() {
-    if (this.socket.encrypted) return 'https';
+    // if (this.socket.encrypted) return 'https';
     const proxy = this.app.get('config').get('app.proxy');
     if (!proxy) return 'http';
-    const xForwordedProto = this.getHeader('X-Forwarded-Proto');
+    const xForwordedProto = String(this.getHeader('X-Forwarded-Proto'));
     return xForwordedProto ? xForwordedProto.split(/\s*,\s*/, 1)[0] : 'http';
   }
 
   /**
    * Get request protocol
-   * @returns {String} 'http' | 'https'
+   * @returns {string}
    */
   getProtocol() {
     return this.protocol;
@@ -228,6 +237,7 @@ class Request {
 
   /**
    * get request host
+   * @type {string}
    */
   get host() {
     let host;
@@ -243,6 +253,7 @@ class Request {
 
   /**
    * get request host
+   * @return {string}
    */
   getHost() {
     return this.host;
@@ -250,6 +261,7 @@ class Request {
 
   /**
    * Get request origin
+   * @type {string}
    */
   get origin() {
     return `${this.protocol}://${this.host}`;
@@ -257,6 +269,7 @@ class Request {
 
   /**
    * Get request origin
+   * @return {string}
    */
   getOrigin() {
     return this.origin;

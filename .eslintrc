@@ -1,16 +1,13 @@
 {
   "parser": "babel-eslint",
-  "extends": ["airbnb-base", "plugin:node/recommended"],
+  "extends": ["airbnb-base"],
   "plugins": [
     "babel"
   ],
   "env": {
-    "browser": true,
     "node": true,
     "es6": true,
-    "mocha": true,
-    "jest": true,
-    "jasmine": true
+    "jest": true
   }, 
   "globals": {
     "res": true,
@@ -26,10 +23,11 @@
     "no-bitwise": [0],
     "func-names": [0],
     "no-param-reassign": [0],
-    "node/no-unpublished-require": [0],
-    "node/no-extraneous-require": [0],
     "no-lonely-if": [0],
     "no-continue": [0],
     "no-plusplus": [0]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
   }
 }

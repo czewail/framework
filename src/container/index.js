@@ -32,6 +32,11 @@ class Container extends EventEmitter {
   tags = {};
 
   /**
+   * instance single
+   */
+  static instance = null;
+
+  /**
    * Bind a singleton to the container
    *
    * @param {string} abstract Object identifier
@@ -268,8 +273,8 @@ class Container extends EventEmitter {
    * gets the object instance in the container
    *
    * @param {string} abstract class name or identif∂ier
-   * @param {array} args params
-   * @returns {*} instance
+   * @param {array} [args=[]] params
+   * @returns {any}
    * @public
    * @static
    */
@@ -281,10 +286,10 @@ class Container extends EventEmitter {
    * bind an abstract in container
    *
    * @param {string} abstract Object identifier
-   * @param {array} concrete
-   * @param {boolean} shared forced instantiation
+   * @param {any} concrete
+   * @param {boolean} [shared=true] forced instantiation
    * @param {boolean} [callable=false] Generic Functions
-   * @returns {*} instance
+   * @returns {Container} instance
    * @public
    * @static
    */
@@ -331,6 +336,6 @@ class Container extends EventEmitter {
   }
 }
 
-Container.instance = null;
-
-module.exports = Container;
+module.exports = {
+  Container,
+};

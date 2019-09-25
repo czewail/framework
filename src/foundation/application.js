@@ -392,8 +392,10 @@ class Application extends Container {
 
   /**
    * Gets the binding dependency from the container
-   * @param {*} abstract Dependent identification
-   * @param {array} args Depends on instantiated parameters
+   * @typedef {import('../config')} Config
+   * @type {('config', args: any[] = [], force = false) => Config}
+   * @param {any} abstract Dependent identification
+   * @param {any[]} [args=[]] Depends on instantiated parameters
    * @param {boolean} [force=false] forced instantiation
    */
   get(abstract, args = [], force = false) {

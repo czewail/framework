@@ -1,11 +1,12 @@
+// @ts-check
 /**
  * Copyright (c) 2018 Chan Zewail
  *
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 const is = require('core-util-is');
 const Container = require('../container');
 const IllegalArgumentError = require('../errors/illegal-argument-error');
@@ -19,15 +20,18 @@ const envMap = new Map([
   ['production', 'prod'],
 ]);
 
+/**
+ * @class
+ */
 class Config {
   constructor() {
     /**
-     * @var {object} this._app Application
+     * @type {import('../foundation/application')} _app Application
      */
     this._app = Container.get('app');
 
     /**
-     * @var {object} this._items configuration
+     * @var this._items configuration
      * */
     this._items = {};
     // parse configuration files
@@ -41,21 +45,21 @@ class Config {
     const currentEnv = this.env;
     const files = fs.readdirSync(this._app.configPath);
     // Read a configuration file whose name does not contain '.'
-    files.filter(file => !~path.basename(file, '.js').indexOf('.'))
+    files.filter(file => !~path.basename(file, path.extname(file)).indexOf('.'))
       .forEach((file) => {
         // eslint-disable-next-line
         const currentConfig = require(path.join(this._app.configPath, file));
-        const basename = path.basename(file, '.js');
+        const basename = path.basename(file, path.extname(file));
         if (!this.has(basename)) {
           this.set(basename, currentConfig);
         }
       });
     // Read the configuration file that contains '.'
-    files.filter(file => ~file.indexOf(`.${currentEnv}.js`))
+    files.filter(file => ~file.indexOf(`.${currentEnv}${path.extname(file)}`))
       .forEach((file) => {
         // eslint-disable-next-line
         const currentConfig = require(path.join(this._app.configPath, file));
-        const basename = path.basename(file, `.${currentEnv}.js`);
+        const basename = path.basename(file, `.${currentEnv}${path.extname(file)}`);
         if (!this.has(basename)) {
           this.set(basename, currentConfig);
         } else {
@@ -93,8 +97,8 @@ class Config {
 
   /**
    * Set the property value according to the property name
-   * @param {array|string} name name,  array or string
-   * @param {*} value set value
+   * @param {string} name name,  string
+   * @param {any} value set value
    * @returns {object} this._items
    */
   set(name, value = null) {
@@ -108,24 +112,24 @@ class Config {
 
   /**
    * The name of the configuration
-   * @param {?string} name The name of the configuration
-   * @param {*} def The default configuration
+   * @param {string} [name] The name of the configuration
+   * @param {any} [def] The default configuration
    */
-  get(name = null, def = null) {
+  get(name, def) {
     let value = this._items;
     // Gets all the configuration when name is empty
-    if (name === null) {
+    if (!name) {
       return value;
     }
     const names = name.split('.');
     for (const n of names) {
       if (!Reflect.has(value, n)) {
-        value = null;
+        value = undefined;
         break;
       }
       value = value[n];
     }
-    return value === null ? def : value;
+    return value === undefined ? def : value;
   }
 
   /**
