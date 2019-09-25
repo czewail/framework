@@ -190,7 +190,7 @@ export class Container extends EventEmitter {
                 },
               });
             }
-            const [type, params = []] = propertyInjectors[__name] || [];
+            const [type = '', params = []] = propertyInjectors[__name] || [];
             return type
               ? that.make(type, [...params, ...args])
               : Reflect.get(__target, __name, __receiver);
