@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Copyright (c) 2018 Chan Zewail
  *
@@ -20,10 +22,16 @@ const View = require('../view');
 const Cookie = require('../cookie');
 
 class Response {
-  constructor(data = null, code = 200, header = {}) {
+  /**
+   * Create Response
+   * @param {any} data
+   * @param {number} code
+   * @param {import('http').OutgoingHttpHeaders} header
+   */
+  constructor(data, code = 200, header = {}) {
     /**
      * Application
-     * @type Application
+     * @type {import('../foundation/application')}
      */
     this.app = Container.get('app');
 
@@ -35,16 +43,19 @@ class Response {
 
     /**
      * http headers
-     * @type {object}
+     * @type {import('http').OutgoingHttpHeaders}
      */
     this._header = this.parseHeaders(header);
 
     /**
      * original data
-     * @type {*}
+     * @type {any}
      */
     this._data = data;
 
+    /**
+     * @type {import('../cookie')[]}
+     */
     this.cookies = [];
 
     this.patchCodeMethods();
@@ -66,25 +77,10 @@ class Response {
     return this._data;
   }
 
-  // parseData(data) {
-  //   const shouldSetType = !this.getHeader('content-type');
-  //   if (Buffer.isBuffer(data)) {
-  //     if (shouldSetType) this.setType('bin');
-  //     this.setLength(data.length);
-  //   } else if (typeof data === 'string') {
-  //     if (shouldSetType) this.setType(/^\s*</.test(data) ? 'html' : 'text');
-  //     this.setLength(Buffer.byteLength(data));
-  //   } else if (data instanceof Stream) {
-  //     if (shouldSetType) this.setType('bin');
-  //   } else {
-  //     this.setType('json');
-  //   }
-  //   return data;
-  // }
-
   /**
    * parse init headers
-   * @param {object} headers
+   * @param {import('http').OutgoingHttpHeaders} headers
+   * @return {object & import('http').OutgoingHttpHeaders}
    */
   parseHeaders(headers) {
     assert(is.isObject(headers), new IllegalArgumentError('header name must be object'));
@@ -182,15 +178,11 @@ class Response {
     }
   }
 
-  staticServer() {
-    this._isStaticServer = true;
-    return this;
-  }
-
   /**
    * throw http exception with code and message
    * @param {string} message exception message
    * @param {number} code exception code
+   * @return {this}
    */
   error(message, code) {
     this.setCode(code);
@@ -200,7 +192,7 @@ class Response {
 
   /**
    * set success data in ctx.body
-   * @param {*} data data
+   * @param {any} data data
    * @param {number} code http code
    */
   success(data, code = 200) {
@@ -211,6 +203,7 @@ class Response {
 
   /**
    * get http header
+   * @param {string} name
    */
   getHeader(name) {
     assert(is.isString(name), new IllegalArgumentError('header name must be string'));
@@ -221,8 +214,8 @@ class Response {
    * Set response header
    * The original response headers are merged when the name is passed in as object
    *
-   * @param {object|string} name Response header parameter name
-   * @param {*} value Response header parameter value
+   * @param {object | string} name Response header parameter name
+   * @param {any} value Response header parameter value
    * @returns {this}
    */
   setHeader(name, value) {
@@ -234,16 +227,17 @@ class Response {
   /**
    * getHeader alias
    * @public
-   * @returns {object} http headers
+   * @returns {import('http').OutgoingHttpHeaders} http headers
    */
   getHeaders() {
     return this._header;
   }
 
   /**
-   * setHeader alias
+   * setHeaders
    * @public
-   * @returns {object} http headers
+   * @param {import('http').OutgoingHttpHeaders} headers
+   * @returns {this}
    */
   setHeaders(headers) {
     assert(is.isObject(headers), new IllegalArgumentError('header name must be object'));
@@ -296,7 +290,7 @@ class Response {
   /**
    * get return data
    * @public
-   * @returns {*} data
+   * @returns {any} data
    */
   getData() {
     return this._data;
@@ -313,6 +307,10 @@ class Response {
     return this;
   }
 
+  /**
+   * set type
+   * @param {string} type
+   */
   setType(type) {
     const _type = getType(type);
     if (_type) {
@@ -321,13 +319,21 @@ class Response {
     return this;
   }
 
+  /**
+   * set length
+   * @param {number} length
+   */
   setLength(length) {
     this.setHeader('Content-Length', length);
     return this;
   }
 
+  /**
+   * set response vary
+   * @param {string} field
+   */
   setVary(field) {
-    const varyHeader = this.getHeader('Vary') ?? '';
+    const varyHeader = String(this.getHeader('Vary')) || '';
     const varys = varyHeader.split(',');
     varys.push(field);
     this.setHeader('Vary', varys.filter(v => !!v).join(','));
@@ -336,7 +342,7 @@ class Response {
   /**
    * LastModified
    * @public
-   * @param {string} time time
+   * @param {string | number | Date} time
    * @returns this
    */
   lastModified(time) {
@@ -354,11 +360,18 @@ class Response {
   /**
    * Expires
    * @public
-   * @param {string} time time
+   * @param {string | number | Date} time time
    * @returns this
    */
   expires(time) {
-    this.setHeader('Expires', time);
+    if (time instanceof Date) {
+      this.setHeader('Expires', time.toUTCString());
+      return this;
+    }
+    if (typeof time === 'string' || typeof time === 'number') {
+      this.setHeader('Expires', (new Date(time)).toUTCString());
+      return this;
+    }
     return this;
   }
 
@@ -426,7 +439,9 @@ class Response {
   /**
    * attachment alias
    * @public
-   * @param {string} filename
+   * @param {any} data
+   * @param {string} [filename]
+   * @param {object} [options]
    */
   download(data, filename = null, options) {
     return this.setData(data).attachment(filename, options);
@@ -434,6 +449,7 @@ class Response {
 
   /**
    * handle Resource data
+   * @param {import('../request')} request
    */
   handleData(request) {
     const data = this.getData();
@@ -448,7 +464,7 @@ class Response {
 
   /**
    * response with cookie instance
-   * @param {Cookie} _cookie
+   * @param {import('../cookie')} _cookie
    */
   withCookie(_cookie) {
     if (_cookie instanceof Cookie) {
@@ -459,9 +475,9 @@ class Response {
 
   /**
    * response with cookie
-   * @param {String} key
-   * @param {*} value
-   * @param {Object} options
+   * @param {string} key
+   * @param {any} value
+   * @param {object} [options={}]
    */
   cookie(key, value, options = {}) {
     this.withCookie(new Cookie(key, value, options));
@@ -499,6 +515,10 @@ class Response {
     await request.session().autoCommit();
   }
 
+  /**
+   * prepare Data
+   * @param {any} data
+   */
   prepareData(data) {
     const shouldSetType = !this.getHeader('content-type');
     if (Buffer.isBuffer(data)) {
@@ -517,7 +537,7 @@ class Response {
 
   /**
    * send data
-   * @param {*} request
+   * @param {import('../request')} request
    * @public
    */
   async send(request) {
