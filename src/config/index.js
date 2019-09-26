@@ -45,7 +45,7 @@ class Config {
     const currentEnv = this.env;
     const files = fs.readdirSync(this._app.configPath);
     // Read a configuration file whose name does not contain '.'
-    files.filter(file => !~path.basename(file, path.extname(file)).indexOf('.'))
+    files.filter((file) => !~path.basename(file, path.extname(file)).indexOf('.'))
       .forEach((file) => {
         // eslint-disable-next-line
         const currentConfig = require(path.join(this._app.configPath, file));
@@ -55,7 +55,7 @@ class Config {
         }
       });
     // Read the configuration file that contains '.'
-    files.filter(file => ~file.indexOf(`.${currentEnv}${path.extname(file)}`))
+    files.filter((file) => ~file.indexOf(`.${currentEnv}${path.extname(file)}`))
       .forEach((file) => {
         // eslint-disable-next-line
         const currentConfig = require(path.join(this._app.configPath, file));
@@ -65,7 +65,7 @@ class Config {
         } else {
           const oldConfig = this.get(basename);
           if (is.isObject(oldConfig)) {
-            this.set(basename, Object.assign({}, oldConfig, currentConfig));
+            this.set(basename, { ...oldConfig, ...currentConfig });
           } else {
             this.set(basename, currentConfig);
           }
@@ -141,7 +141,7 @@ class Config {
     if (!name) {
       return false;
     }
-    return !(this.get(name) === null);
+    return !(this.get(name) === undefined);
   }
 
   /**

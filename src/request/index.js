@@ -12,7 +12,7 @@ const typeis = require('type-is');
 const Cookies = require('cookies');
 const accepts = require('accepts');
 const is = require('core-util-is');
-const { Container } = require('../container');
+const Container = require('../container');
 const Validate = require('../validate');
 const ValidateHttpError = require('../errors/validate-http-error');
 const Session = require('../session');
@@ -220,7 +220,7 @@ class Request {
    * @returns {string}
    */
   get protocol() {
-    // if (this.socket.encrypted) return 'https';
+    if (this.socket.encrypted) return 'https';
     const proxy = this.app.get('config').get('app.proxy');
     if (!proxy) return 'http';
     const xForwordedProto = String(this.getHeader('X-Forwarded-Proto'));

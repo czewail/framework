@@ -23,17 +23,6 @@ describe('Request', () => {
       expect(instance.headers).toEqual(_headers);
     });
 
-    it('should return the request headers when no getHeader name', () => {
-      const _headers = {
-        name: 'dazejs',
-      };
-      const { req, res } = context({
-        headers: _headers,
-      });
-      const instance = new Request(req, res);
-      expect(instance.getHeader()).toEqual(_headers);
-    });
-
     it('should return header value use getHeader name', () => {
       const _headers = {
         name: 'dazejs',

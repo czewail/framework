@@ -171,9 +171,9 @@ class Response {
     for (const code of codes) {
       const name = toIdentifier(statuses[code]);
       if (code >= 400) {
-        this[name] = message => this.error(message || statuses[code], code);
+        this[name] = (message) => this.error(message || statuses[code], code);
       } else {
-        this[name] = message => this.success(message || statuses[code], code);
+        this[name] = (message) => this.success(message || statuses[code], code);
       }
     }
   }
@@ -333,10 +333,10 @@ class Response {
    * @param {string} field
    */
   setVary(field) {
-    const varyHeader = String(this.getHeader('Vary')) || '';
+    const varyHeader = this.getHeader('Vary') || '';
     const varys = varyHeader.split(',');
     varys.push(field);
-    this.setHeader('Vary', varys.filter(v => !!v).join(','));
+    this.setHeader('Vary', varys.filter((v) => !!v).join(','));
   }
 
   /**

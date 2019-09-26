@@ -336,6 +336,4 @@ class Container extends EventEmitter {
   }
 }
 
-module.exports = {
-  Container,
-};
+module.exports = Container;
