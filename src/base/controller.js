@@ -6,7 +6,7 @@
  * https://opensource.org/licenses/MIT
  */
 const Base = require('./base');
-const { View } = require('../view');
+const View = require('../view');
 const Resource = require('../resource');
 const Validate = require('../validate');
 const { INJECT_ABLE } = require('../symbol');
