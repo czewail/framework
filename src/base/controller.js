@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Copyright (c) 2019 zewail
  *
@@ -5,14 +6,19 @@
  * https://opensource.org/licenses/MIT
  */
 const Base = require('./base');
-const View = require('../view');
+const { View } = require('../view');
 const Resource = require('../resource');
 const Validate = require('../validate');
 const { INJECT_ABLE } = require('../symbol');
 
 class Controller extends Base {
+  constructor() {
+    super();
+    this.__context__ = [];
+  }
+
   /**
-   * @var {Object} request request instance
+   * @type {any} request request instance
    */
   get request() {
     return this.__context__[0];

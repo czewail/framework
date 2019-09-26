@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Copyright (c) 2019 zewail
  *
@@ -11,6 +12,7 @@ const RedirectResponse = require('../response/redirect');
 class Base {
   /**
    * Application instance getter
+   * @type {import('../foundation/application')}
    */
   get app() {
     return Container.get('app');
@@ -18,6 +20,7 @@ class Base {
 
   /**
    * Config instance getter
+   * @type {import('../config')}
    */
   get config() {
     return Container.get('config');
@@ -25,6 +28,7 @@ class Base {
 
   /**
    * Message instance getter
+   * @type {import('../cluster/messenger')}
    */
   get messenger() {
     return Container.get('messenger');
@@ -32,18 +36,24 @@ class Base {
 
   /**
    * create response instance
-   * @param  {...any} params response constructor params
+   * @param  {any} [data]
+   * @param  {number} [code]
+   * @param  {object} [headers]
+   * @return {import('../response')}
    */
-  response(...params) {
-    return new Response(...params);
+  response(data, code, headers) {
+    return new Response(data, code, headers);
   }
 
   /**
    * create redirect instance
-   * @param  {...any} params redirect constructor params
+   * @param  {string} [url]
+   * @param  {number} [code]
+   * @param  {object} [headers]
+   * @return {import('../response/redirect')}
    */
-  redirect(...params) {
-    return new RedirectResponse(...params);
+  redirect(url, code, headers) {
+    return new RedirectResponse(url, code, headers);
   }
 }
 

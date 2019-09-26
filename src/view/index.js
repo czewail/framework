@@ -4,31 +4,57 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+
 const path = require('path');
 const is = require('core-util-is');
 const Container = require('../container');
 
-const FINAL_VARS = Symbol('View#finalVars');
-
+/**
+ * @class
+ */
 class View {
+  /**
+   * @private
+   */
+  app = Container.get('app');
+
+  /**
+   * @type {object}
+   * @private
+   */
   vars = {};
 
+  /**
+   * @type {string}
+   * @private
+   */
   template = '';
 
+  /**
+   *
+   * @param {string} [template='']
+   * @param {object} [vars={}]
+   */
   constructor(template = '', vars = {}) {
-    this.app = Container.get('app');
-    this.render(template, vars);
+    this.template = template;
+
+    this.vars = vars;
   }
 
   /**
    * Generate template variables
+   * @private
    */
-  [FINAL_VARS](vars = {}) {
-    return Object.assign({}, this.vars, vars);
+  combineVars(vars = {}) {
+    return {
+      ...this.vars,
+      ...vars,
+    };
   }
 
   /**
    * Pass the variable to the template
+   * @public
    * @param {string|object} name variable object or variable name
    * @param {*} value variable value
    */
@@ -43,10 +69,11 @@ class View {
 
   /**
    * render the template
-   * @param {string} template template path and name
-   * @param {object} vars template variables
+   * @public
+   * @param {string | object} template template path and name
+   * @param {object} [vars] template variables
    */
-  render(template = '', vars = null) {
+  render(template = '', vars) {
     // When parsing the controller, return it if you take this parameter
     // 解析控制器时，如果带此参数则直接 return 出去
     let newTemplate = template;
@@ -56,12 +83,13 @@ class View {
       newTemplate = null;
     }
     if (newTemplate) this.template = newTemplate;
-    if (newVars) this.vars = this[FINAL_VARS](newVars);
+    if (newVars) this.vars = this.combineVars(newVars);
     return this;
   }
 
   /**
    * getTemplate
+   * @public
    */
   getTemplate() {
     const config = this.app.get('config');
@@ -74,10 +102,13 @@ class View {
 
   /**
    * getVars
+   * @public
    */
   getVars() {
     return this.vars;
   }
 }
 
-module.exports = View;
+module.exports = {
+  View,
+};
